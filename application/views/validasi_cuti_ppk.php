@@ -15,7 +15,7 @@
             </div>
         </div>
         <!--end breadcrumb-->
-        <h6 class="mb-0 text-uppercase">SEUDATI (Sistem Elektronik untuk Administrasi Izin dan Cuti)</h6>
+        <h6 class="mb-0 text-uppercase">VALIDASI PERMOHONAN CUTI</h6>
         <hr />
 
         <div class="card radius-10">

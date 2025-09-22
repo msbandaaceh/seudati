@@ -15,7 +15,7 @@
             </div>
         </div>
         <!--end breadcrumb-->
-        <h6 class="mb-0 text-uppercase">SEUDATI (Sistem Elektronik untuk Administrasi Izin dan Cuti)</h6>
+        <h6 class="mb-0 text-uppercase">VALIDASI PERMOHONAN CUTI</h6>
         <hr />
 
         <div class="card radius-10">
@@ -130,8 +130,8 @@
                             <div class="row mb-3">
                                 <div class="col">
                                     <label for="status_valid" class="form-label">Proses Cuti <code>*</code></label>
-                                    <select class="form-control" name="status_valid"
-                                        id="status_valid_cuti" onchange="showHide(this.value)">
+                                    <select class="form-control" name="status_valid" id="status_valid_cuti"
+                                        onchange="showHide(this.value)">
                                         <option value='0' selected disabled>Pilih Jenis Proses</option>
                                         <option value='1'>Setuju</option>
                                         <option value='2'>Perubahan</option>
@@ -167,9 +167,9 @@
             <!-- /.modal-dialog -->
         </div>
 
-        <div class="modal fade" id="detil-modal" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <form class="modal-content">
+        <div class="modal fade" id="detil-modal">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
                     <div class="modal-header">
                         <div>
                             <i class="bx bxs-show me-1 font-22 text-info"></i>
@@ -248,12 +248,11 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal">Tutup</button>
                     </div>
-                </form>
+                </div>
                 <!-- /.modal-content -->
             </div>
             <!-- /.modal-dialog -->
         </div>
-
     </div>
 </div>
 

@@ -419,6 +419,7 @@
                 e.preventDefault();
                 let page = $(this).data('page');
                 fetchRequestIzin();
+                $('.wrapper').removeClass('toggled');
                 var legal = document.getElementById('jum_req_legal');
                 if (legal) {
                     fetchRequestLegalisasi();

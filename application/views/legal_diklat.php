@@ -15,7 +15,7 @@
             </div>
         </div>
         <!--end breadcrumb-->
-        <h6 class="mb-0 text-uppercase">SEUDATI (Sistem Elektronik untuk Administrasi Izin dan Cuti)</h6>
+        <h6 class="mb-0 text-uppercase">VERIFIKASI DIKLAT PEGAWAI</h6>
         <hr />
 
         <div class="row row-cols-12">

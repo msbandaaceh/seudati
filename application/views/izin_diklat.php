@@ -15,7 +15,7 @@
             </div>
         </div>
         <!--end breadcrumb-->
-        <h6 class="mb-0 text-uppercase">SEUDATI (Sistem Elektronik untuk Administrasi Izin dan Cuti)</h6>
+        <h6 class="mb-0 text-uppercase">PERMOHONAN IZIN DIKLAT</h6>
         <hr />
 
         <div class="card radius-10">
@@ -101,199 +101,275 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="modal fade" id="tambah-modal" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered">
-                <form method="POST" id="formIzinDiklat" class="modal-content">
-                    <div class="modal-header">
-                        <div>
-                            <i class="bx bxs-user me-1 font-22 text-primary"></i>
-                        </div>
-                        <h5 class="mb-0 text-primary" id="judul"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <input hidden type="text" name="id" id="id_diklat_" class="form-control" />
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="tujuan" class="form-label">Tujuan Permohonan </label><code>*</code>
-                                    <div id="tujuan_"></div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="jenis" class="form-label">Jenis Permohonan </label><code>*</code>
-                                    <div id="jenis_"></div>
-                                    <input type="text" style="display: none" name="jenis_nama" class="form-control mt-2"
-                                        id="jenis_nama" placeholder="Masukkan Jenis Permohonan Lainnya"
-                                        autocomplete="off">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="nama" class="form-label">Nama Diklat/Bimtek </label><code>*</code>
-                                    <input type="text" name="nama" class="form-control" id="nama"
-                                        placeholder="Masukkan Nama Diklat/Bimtek" autocomplete="off">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="tgl_mulai" class="form-label">Tanggal Mulai </label><code>*</code>
-                                    <input type="text" id="tgl_mulai" name="tgl_mulai" class="form-control"
-                                        placeholder="Pilih Tanggal..." />
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="tgl_selesai" class="form-label">Tanggal Mulai </label><code>*</code>
-                                    <input type="text" id="tgl_selesai" name="tgl_selesai" class="form-control"
-                                        placeholder="Pilih Tanggal..." />
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <label class="form-label"><code><i>* Wajib Diisi</i></code></label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="row justify-content-end">
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </div>
-                </form>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-
-        <div class="modal fade" id="detil-modal" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <form class="modal-content">
-                    <div class="modal-header">
-                        <div>
-                            <i class="bx bxs-show me-1 font-22 text-info"></i>
-                        </div>
-                        <h5 class="mb-0 text-info" id="v_judul"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="v_nama" class="form-label">NAMA PEGAWAI </label>
-                                <input type="text" class="form-control" id="v_nama" readonly>
-                            </div>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="v_jenis" class="form-label">JENIS PERMOHONAN </label>
-                                <input type="text" class="form-control" id="v_jenis" readonly>
-                            </div>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="v_nama_diklat" class="form-label">NAMA DIKLAT/BIMTEK </label>
-                                <input type="text" class="form-control" id="v_nama_diklat" readonly>
-                            </div>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="v_tgl_mulai" class="form-label">TANGGAL MULAI DIKLAT/BIMTEK </label>
-                                <input type="text" class="form-control" id="v_tgl_mulai" readonly>
-                            </div>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="v_tgl_selesai" class="form-label">TANGGAL SELESAI DIKLAT/BIMTEK </label>
-                                <input type="text" class="form-control" id="v_tgl_selesai" readonly>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="v_proses" class="form-label">PROSES PERIZINAN
-                                    <code>*</code></label>
-                                <div id="v_proses"></div>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="v_progres" class="form-label">PROGRES DIKLAT/BIMTEK
-                                    <code>*</code></label>
-                                <div id="v_progres"></div>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3" id="v_sertifikat" style="display: none">
-                            <div class="col-12">
-                                <label for="v_progres" class="form-label">DOKUMEN SERTIFIKAT
-                                    <code>*</code></label>
-                                <div id="sertifikat"></div>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="v_ket" id="label_ket">KETERANGAN <code>*</code></label>
-                                <textarea id="v_ket" class="form-control" rows="2" readonly></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </form>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-
-        <div class="modal fade" id="dok_diklat">
-            <div class="modal-dialog modal-dialog-centered">
-                <form method="POST" id="formPegawai" class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="judul_dok"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="dokumen"></div>
-                    </div>
-                </form>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+        data-bs-target="#exampleScrollableModal">Scrollable
+        Modal</button>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+                        egestas
+                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
+                        augue
+                        laoreet rutrum faucibus dolor auctor.</p>
+                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
+                        nisl
+                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+                        egestas
+                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
+                        augue
+                        laoreet rutrum faucibus dolor auctor.</p>
+                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
+                        nisl
+                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+                        egestas
+                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
+                        augue
+                        laoreet rutrum faucibus dolor auctor.</p>
+                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
+                        nisl
+                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+                        egestas
+                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
+                        augue
+                        laoreet rutrum faucibus dolor auctor.</p>
+                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
+                        nisl
+                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+                        egestas
+                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
+                        augue
+                        laoreet rutrum faucibus dolor auctor.</p>
+                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
+                        nisl
+                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
+                        egestas
+                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
+                        augue
+                        laoreet rutrum faucibus dolor auctor.</p>
+                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
+                        nisl
+                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <div class="modal fade" id="proses">
-            <div class="modal-dialog modal-dialog-centered">
-                <form method="POST" id="formProgresDiklat" class="modal-content" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="judul_proses"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="tambah-modal" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <form method="POST" id="formIzinDiklat">
+                <div class="modal-header">
+                    <div>
+                        <i class="bx bxs-user me-1 font-22 text-primary"></i>
                     </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="id" id="id_proses" class="form-control" />
-                        <div class="form-group mb-3">
-                            <label for="status" class="form-label">PROSES DIKLAT/BIMTEK <code>*</code></label>
-                            <select class="form-control" name="status" id="status">
-                                <option value='1'>Lulus</option>
-                                <option value='2'>Tidak Lulus</option>
-                            </select>
+                    <h5 class="mb-0 text-primary" id="judul"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input hidden type="text" name="id" id="id_diklat_" class="form-control" />
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="tujuan" class="form-label">Tujuan Permohonan </label><code>*</code>
+                                <div id="tujuan_"></div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="dokumen" class="form-label">SERTIFIKAT (JIKA LULUS)</label>
-                            <input class="form-control" type="file" id="dokumen" accept="application/pdf" name="dokumen">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="jenis" class="form-label">Jenis Permohonan </label><code>*</code>
+                                <div id="jenis_"></div>
+                                <input type="text" style="display: none" name="jenis_nama" class="form-control mt-2"
+                                    id="jenis_nama" placeholder="Masukkan Jenis Permohonan Lainnya" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="nama" class="form-label">Nama Diklat/Bimtek </label><code>*</code>
+                                <input type="text" name="nama" class="form-control" id="nama"
+                                    placeholder="Masukkan Nama Diklat/Bimtek" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="tgl_mulai" class="form-label">Tanggal Mulai </label><code>*</code>
+                                <input type="text" id="tgl_mulai" name="tgl_mulai" class="form-control"
+                                    placeholder="Pilih Tanggal..." />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="tgl_selesai" class="form-label">Tanggal Mulai </label><code>*</code>
+                                <input type="text" id="tgl_selesai" name="tgl_selesai" class="form-control"
+                                    placeholder="Pilih Tanggal..." />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label class="form-label"><code><i>* Wajib Diisi</i></code></label>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <div class="row justify-content-end">
-                            <button id="submit" type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row justify-content-end">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="detil-modal" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <i class="bx bxs-show me-1 font-22 text-info"></i>
+                </div>
+                <h5 class="mb-0 text-info" id="v_judul"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label for="v_nama" class="form-label">NAMA PEGAWAI </label>
+                        <input type="text" class="form-control" id="v_nama" readonly>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label for="v_jenis" class="form-label">JENIS PERMOHONAN </label>
+                        <input type="text" class="form-control" id="v_jenis" readonly>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label for="v_nama_diklat" class="form-label">NAMA DIKLAT/BIMTEK </label>
+                        <input type="text" class="form-control" id="v_nama_diklat" readonly>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label for="v_tgl_mulai" class="form-label">TANGGAL MULAI DIKLAT/BIMTEK </label>
+                        <input type="text" class="form-control" id="v_tgl_mulai" readonly>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label for="v_tgl_selesai" class="form-label">TANGGAL SELESAI DIKLAT/BIMTEK </label>
+                        <input type="text" class="form-control" id="v_tgl_selesai" readonly>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label for="v_proses" class="form-label">PROSES PERIZINAN
+                            <code>*</code></label>
+                        <div id="v_proses"></div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label for="v_progres" class="form-label">PROGRES DIKLAT/BIMTEK
+                            <code>*</code></label>
+                        <div id="v_progres"></div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3" id="v_sertifikat" style="display: none">
+                    <div class="col-12">
+                        <label for="v_progres" class="form-label">DOKUMEN SERTIFIKAT
+                            <code>*</code></label>
+                        <div id="sertifikat"></div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label for="v_ket" id="label_ket">KETERANGAN <code>*</code></label>
+                        <textarea id="v_ket" class="form-control" rows="2" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </form>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="dok_diklat">
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="POST" id="formPegawai" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="judul_dok"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="dokumen"></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="proses">
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="POST" id="formProgresDiklat" class="modal-content" enctype="multipart/form-data">
+            <div class="modal-header">
+                <h5 class="modal-title" id="judul_proses"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" id="id_proses" class="form-control" />
+                <div class="form-group mb-3">
+                    <label for="status" class="form-label">PROSES DIKLAT/BIMTEK <code>*</code></label>
+                    <select class="form-control" name="status" id="status">
+                        <option value='1'>Lulus</option>
+                        <option value='2'>Tidak Lulus</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dokumen" class="form-label">SERTIFIKAT (JIKA LULUS)</label>
+                    <input class="form-control" type="file" id="dokumen" accept="application/pdf" name="dokumen">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row justify-content-end">
+                    <button id="submit" type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
