@@ -82,7 +82,7 @@
         </div>
 
         <div class="modal fade" id="validasi" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                 <form method="POST" id="formValidasiIzinKeluar" class="modal-content">
                     <div class="modal-header">
                         <div>
@@ -159,7 +159,7 @@
         </div>
 
         <div class="modal fade" id="detil-modal" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                 <form class="modal-content">
                     <div class="modal-header">
                         <div>

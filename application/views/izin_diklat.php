@@ -102,85 +102,10 @@
             </div>
         </div>
     </div>
-
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-        data-bs-target="#exampleScrollableModal">Scrollable
-        Modal</button>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                        egestas
-                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
-                        augue
-                        laoreet rutrum faucibus dolor auctor.</p>
-                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
-                        nisl
-                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                        egestas
-                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
-                        augue
-                        laoreet rutrum faucibus dolor auctor.</p>
-                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
-                        nisl
-                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                        egestas
-                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
-                        augue
-                        laoreet rutrum faucibus dolor auctor.</p>
-                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
-                        nisl
-                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                        egestas
-                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
-                        augue
-                        laoreet rutrum faucibus dolor auctor.</p>
-                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
-                        nisl
-                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                        egestas
-                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
-                        augue
-                        laoreet rutrum faucibus dolor auctor.</p>
-                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
-                        nisl
-                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in,
-                        egestas
-                        eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel
-                        augue
-                        laoreet rutrum faucibus dolor auctor.</p>
-                    <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque
-                        nisl
-                        consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="modal fade" id="tambah-modal" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form method="POST" id="formIzinDiklat">
                 <div class="modal-header">
@@ -248,7 +173,7 @@
 </div>
 
 <div class="modal fade" id="detil-modal" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <form class="modal-content">
             <div class="modal-header">
                 <div>

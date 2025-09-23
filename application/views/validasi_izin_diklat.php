@@ -97,7 +97,7 @@
         </div>
 
         <div class="modal fade" id="proses" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                 <form method="POST" id="formValidasiIzinDiklat" class="modal-content">
                     <div class="modal-header">
                         <div>
@@ -180,7 +180,7 @@
         </div>
 
         <div class="modal fade" id="detil-modal" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                 <form class="modal-content">
                     <div class="modal-header">
                         <div>

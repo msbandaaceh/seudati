@@ -31,7 +31,7 @@
 </div>
 
 <div class="modal fade" id="detil-modal" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <form class="modal-content">
             <div class="modal-header">
                 <div>
