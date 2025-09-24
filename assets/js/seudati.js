@@ -1236,7 +1236,7 @@ function fetchSisaCuti() {
                         notifikasi('Terjadi kesalahan saat menyimpan data.', 4);
                     }
 
-                    
+
                 });
             });
         }
@@ -3288,8 +3288,8 @@ function HariKalender() {
                 }
 
                 document.getElementById('lama').value = validDays;
-                document.getElementById('tgl_awal').value = start.toISOString().split('T')[0];
-                document.getElementById('tgl_akhir').value = end.toISOString().split('T')[0];
+                document.getElementById('tgl_awal').value = formatDate(start);
+                document.getElementById('tgl_akhir').value = formatDate(end);
             }
         }
     });
@@ -3379,8 +3379,8 @@ function HariKerja() {
                             notifikasi('Sisa Cuti Tahunan Anda Tidak Mencukupi, Silakan Periksa Kembali Sisa Cuti Anda Sebelum Mengajukan Permohonan', '2');
                         } else {
                             document.getElementById('lama').value = validDays;
-                            document.getElementById('tgl_awal').value = start.toISOString().split('T')[0];
-                            document.getElementById('tgl_akhir').value = end.toISOString().split('T')[0];
+                            document.getElementById('tgl_awal').value = formatDate(start);
+                            document.getElementById('tgl_akhir').value = formatDate(end);
                         }
                     }
                 }

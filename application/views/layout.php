@@ -444,7 +444,7 @@
         };
     </script>
 
-    <script src="<?= site_url('assets/js/seudati.js'); ?>"></script>
+    <script src="<?= site_url('assets/js/seudati.js?v=1.0.0'); ?>"></script>
 </body>
 
 </html>
