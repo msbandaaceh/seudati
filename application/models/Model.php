@@ -1323,7 +1323,7 @@ class Model extends CI_Model
                         );
                     }
 
-                    $this->pembaharuan_data('cuti_catatan', $dataCuti, 'id', $idCatCuti);
+                    $this->pembaharuan_data('register_catatan_cuti', $dataCuti, 'id', $idCatCuti);
                 } else {
                     if ($jenis == '2') {
                         $dataCuti = array(
@@ -1358,7 +1358,7 @@ class Model extends CI_Model
                                 'modified_on' => date('Y-m-d H:i:s')
                             );
 
-                            $this->update_sisa_cuti('cuti_sisa_tahunan', $data, 'tahun', date("Y") - $i, 'pegawai_id', $pegawai_id);
+                            $this->update_sisa_cuti('register_cuti_sisa_tahunan', $data, 'tahun', date("Y") - $i, 'pegawai_id', $pegawai_id);
                         }
                     } elseif ($jenis == '5') {
                         $dataCuti = array(
