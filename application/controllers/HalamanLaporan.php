@@ -45,6 +45,7 @@ class HalamanLaporan extends MY_Controller {
         foreach ($queryCuti as $row) {
             $dataCuti[] = [
                 'id' => base64_encode($this->encryption->encrypt($row->id)),
+                'created_on' => $row->created_on,
                 'nama' => $row->pegawai_nama,
                 'jabatan' => $row->pegawai_jabatan,
                 'jenis' => $row->jenis_cuti,

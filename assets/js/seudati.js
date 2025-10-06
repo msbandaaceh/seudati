@@ -3211,7 +3211,8 @@ function loadTabelRegisterCuti() {
                         <td>${index + 1}</td>
                         <td>
                             ${row.nama} </br>
-                            <small>${row.jabatan}</small>    
+                            <small>${row.jabatan}</small> </br>
+                            <span class="badge rounded-pill bg-info text-dark">Dibuat tanggal ${row.created_on}</span>
                         </td>
                         <td>${jenisBadge}</td>
                         <td>${row.lama} Hari</td>
