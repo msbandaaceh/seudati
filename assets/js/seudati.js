@@ -3533,6 +3533,8 @@ function BukaModalPenomoranCuti(id) {
             $("#nip").val('');
             $("#jabatan").val('');
             $("#jenis").val('');
+            $('#jenis_cuti').val('');
+            $('#tgl').val('');
 
             $("#judul").append(json.judul);
             $("#id").val(json.id);
@@ -3540,6 +3542,8 @@ function BukaModalPenomoranCuti(id) {
             $("#nip").val(json.nip);
             $("#jabatan").val(json.jabatan);
             $("#jenis").val(json.grup);
+            $('#jenis_cuti').val(json.jenis_cuti);
+            $('#tgl').val(json.tanggal);
         } else if (json.st == 0) {
             pesan('PERINGATAN', json.msg, '');
             $('#table_pegawai').DataTable().ajax.reload();

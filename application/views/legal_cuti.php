@@ -40,28 +40,40 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <input type="hidden" name="id" id="id" class="form-control" />
-                                <div class="row g-2">
+                                <div class="row mb-2">
                                     <div class="col">
                                         <label for="nama" class="form-label">Nama Pegawai</label>
                                         <input type="text" name="nama" id="nama" class="form-control" disabled />
                                     </div>
                                 </div>
-                                <div class="row g-2">
+                                <div class="row mb-2">
                                     <div class="col">
                                         <label for="nip" class="form-label">NIP Pegawai</label>
                                         <input type="text" name="nip" id="nip" class="form-control" disabled />
                                     </div>
                                 </div>
-                                <div class="row g-2">
+                                <div class="row mb-2">
                                     <div class="col">
                                         <label for="jabatan" class="form-label">Jabatan Pegawai</label>
                                         <input type="text" name="jabatan" id="jabatan" class="form-control" disabled />
                                     </div>
                                 </div>
-                                <div class="row g-2">
+                                <div class="row mb-2">
                                     <div class="col">
                                         <label for="jenis" class="form-label">Jenis Pegawai</label>
                                         <input type="text" name="jenis" id="jenis" class="form-control" disabled />
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <label for="jenis" class="form-label">Jenis Cuti</label>
+                                        <input type="text" id="jenis_cuti" class="form-control" disabled />
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <label for="jenis" class="form-label">Tanggal Pengajuan Cuti</label>
+                                        <input type="text" id="tgl" class="form-control" disabled />
                                     </div>
                                 </div>
                                 <br />
@@ -81,7 +93,7 @@
                                         <input type="text" name="nomor_cuti" id="nomor_cuti" class="form-control" autocomplete="off"/>
                                     </div>
                                 </div>
-                                <label for="emailBackdrop" class="form-label"><code><i>* Wajib Diisi</i></code></label>
+                                <label class="form-label"><code><i>* Wajib Diisi</i></code></label>
                             </div>
                         </div>
                         <div class="modal-footer">

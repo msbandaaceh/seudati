@@ -269,7 +269,8 @@ class HalamanCuti extends MY_Controller
         return;
     }
 
-    public function show_nomor() {
+    public function show_nomor()
+    {
         $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
 
         $judul = "PENOMORAN CUTI";
@@ -279,6 +280,27 @@ class HalamanCuti extends MY_Controller
         $jabatan = $cariCuti->row()->pegawai_jabatan;
         $nip = $cariCuti->row()->nip;
         $id_grup = $cariCuti->row()->id_grup;
+        $tgl = date('Y-m-d', strtotime($cariCuti->row()->created_on));
+        switch ($cariCuti->row()->jenis_cuti) {
+            case 1:
+                $jenis_cuti = "Cuti Tahunan";
+                break;
+            case 2:
+                $jenis_cuti = "Cuti Sakit";
+                break;
+            case 3:
+                $jenis_cuti = "Cuti Melahirkan";
+                break;
+            case 4:
+                $jenis_cuti = "Cuti Besar";
+                break;
+            case 5:
+                $jenis_cuti = "Cuti Alasan Penting";
+                break;
+            case 6:
+                $jenis_cuti = "Cuti di Luar Tanggungan Negara";
+                break;
+        }
 
         switch ($id_grup) {
             case 1:
@@ -310,7 +332,9 @@ class HalamanCuti extends MY_Controller
                 'jabatan' => $jabatan,
                 'nip' => $nip,
                 'id_grup' => $id_grup,
-                'grup' => $grup
+                'grup' => $grup,
+                'tanggal' => $this->tanggalhelper->convertDayDate($tgl),
+                'jenis_cuti' => $jenis_cuti
             )
         );
         return;

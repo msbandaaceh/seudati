@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Aplikasi SEUDATI (Sistem Elektronik Untuk Administrasi Izin dan Cuti)">
+    <meta name="description" content="<?= $this->session->userdata('deskripsi_client_app') ?>">
     <title><?= $this->session->userdata('nama_client_app') ?> | <?= $this->session->userdata('deskripsi_client_app') ?>
     </title>
 
@@ -444,7 +444,7 @@
         };
     </script>
 
-    <script src="<?= site_url('assets/js/seudati.js?v=1.0.0'); ?>"></script>
+    <script src="<?= site_url('assets/js/seudati.js'); ?>"></script>
 </body>
 
 </html>
