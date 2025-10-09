@@ -38,6 +38,34 @@ class Api extends CI_Controller
         }
     }
 
+    public function cek_tgl_merah()
+    {
+        $key = $this->input->get('api_key');
+        $tgl = $this->input->get('tgl');
+        if ($key == $this->config->item('api_key')) {
+            $this->load->model('Model', 'model');
+
+            $data = $this->model->get_seleksi_array('register_hari_libur', ['tgl' => $tgl]);
+
+            if ($data->num_rows() > 0) {
+                echo json_encode([
+                    'status' => 'success',
+                    'data' => $data->result_array()
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'kosong',
+                    'message' => 'Data tidak ditemukan.'
+                ]);
+            }
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Anda tidak diijikan akses API'
+            ]);
+        }
+    }
+
     public function pembaharuan_data()
     {
         header('Content-Type: application/json');
