@@ -710,7 +710,6 @@ class Model extends CI_Model
 
     public function get_data_validasi_ppk() {
         $this->db->order_by('status_ppk', 'ASC');
-        $this->db->where('status_ppk', '0');
         $this->db->where('(status_validator = 1 OR status_validator = 5)');
         $this->db->where('id_ppk', $this->session->userdata('jab_id'));
         return $this->db->select('*')->from('v_cuti')->get();
