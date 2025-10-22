@@ -700,6 +700,13 @@ class Model extends CI_Model
         return $this->db->select('*')->from('v_cuti')->get();
     }
 
+    public function get_validasi_ppk() {
+        $this->db->order_by('created_on', 'ASC');
+        $this->db->where('(status_validator = 1 OR status_validator = 5)');
+        $this->db->where('id_ppk', $this->session->userdata('jab_id'));
+        return $this->db->select('*')->from('register_cuti')->get();
+    }
+
     public function proses_simpan_nomor_cuti($data)
     {
         $dataCuti = $this->get_seleksi('v_cuti', 'id', $data['id']);
@@ -1139,6 +1146,14 @@ class Model extends CI_Model
                         }
 
                         $sisa_n3 = $n3;
+                    } elseif ($n2 < 0 && $n1 == 12) {
+                        # hutang cuti PPPK
+                        # kuota cuti = tahun ini + tahun lalu
+                        $n1 = $n1 + $n2;
+                        $n2 = 0;
+                        $sisa_n1 = $n1 - $lama;
+                        $sisa_n2 = $n2;
+                        $sisa_n3 = $n3;
                     } else {
                         //kuota cuti = sisa tahun ini
                         $sisa_n1 = $n1 - $lama;
@@ -1153,6 +1168,8 @@ class Model extends CI_Model
                 }
 
                 $dataCuti = array($sisa_n1, $sisa_n2, $sisa_n3);
+
+                die(var_dump($dataCuti));
 
                 for ($i = 0; $i < 3; $i++) {
                     $this->update_sisa_cuti('register_sisa_cuti_tahunan', array('sisa' => $dataCuti[$i]), 'tahun', date("Y") - $i, 'pegawai_id', $tujuanNotif);

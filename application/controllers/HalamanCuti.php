@@ -109,6 +109,109 @@ class HalamanCuti extends MY_Controller
         echo json_encode(['data_cuti' => $data]);
     }
 
+    public function show_cuti_admin()
+    {
+        $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
+
+        $n1 = 0;
+        $n2 = 0;
+        $n3 = 0;
+        $kuota_cuti = 0;
+
+        $queryn1 = $this->model->cek_sisa_cuti(date("Y"), $id);
+        $queryn2 = $this->model->cek_sisa_cuti(date("Y") - 1, $id);
+        $queryn3 = $this->model->cek_sisa_cuti(date("Y") - 2, $id);
+
+        //die(var_dump($this->session->userdata('id_pegawai')));
+        if ($queryn1->num_rows() > 0) {
+            $n1 = $queryn1->row()->sisa;
+        }
+
+        if ($queryn2->num_rows() > 0) {
+            $n2 = $queryn2->row()->sisa;
+        }
+
+        if ($queryn3->num_rows() > 0) {
+            $n3 = $queryn3->row()->sisa;
+        }
+
+        $data = [
+            "tabel" => "v_pegawai",
+            "kolom_seleksi" => "id",
+            "seleksi" => $id
+        ];
+
+        $users = $this->apihelper->get('apiclient/get_data_seleksi', $data);
+
+        if ($users['status_code'] === 200 && $users['response']['status'] == 'success') {
+            $id_grup = $users['response']['data'][0]['id_grup'];
+        }
+
+        if ($id_grup != '3') {
+            //Selain PPNPN
+            if ($n3 == 12 && $n2 == 12) {
+                $kuota_cuti = $n1 + 12;
+            } elseif ($n2 == 12 || ($n2 > 6 && $n2 < 12)) {
+                $kuota_cuti = $n1 + 6;
+            } elseif ($n2 <= 6) {
+                $kuota_cuti = $n1 + $n2;
+            }
+        } else {
+            //PPNPN
+            $kuota_cuti = $n1;
+        }
+
+        $lama = '';
+        $tgl_awal = '';
+        $tgl_akhir = '';
+        $alasan = '';
+        $alamat = '';
+        $jenis_cuti = '';
+
+        if ($id_grup == '6') {
+            $jenis = array(
+                '' => "Pilih Jenis Cuti",
+                '1' => 'Cuti Tahunan',
+                '2' => 'Cuti Sakit',
+                '3' => 'Cuti Melahirkan'
+            );
+        } elseif ($id_grup == '3') {
+            $jenis = array(
+                '' => "Pilih Jenis Cuti",
+                '1' => 'Cuti Tahunan',
+                '3' => 'Cuti Melahirkan'
+            );
+        } else {
+            $jenis = array(
+                '' => "Pilih Jenis Cuti",
+                '1' => 'Cuti Tahunan',
+                '2' => 'Cuti Sakit',
+                '3' => 'Cuti Melahirkan',
+                '4' => 'Cuti Besar',
+                '5' => 'Cuti Alasan Penting',
+                '6' => 'Cuti di Luar Tanggungan Negara'
+            );
+        }
+
+        $id = '';
+        $jenis = form_dropdown('jenis', $jenis, '', 'onchange="UbahKalender(this)" class="form-control" id="jenis"');
+
+        echo json_encode(
+            array(
+                'st' => 1,
+                'jenis' => $jenis,
+                'jenis_cuti' => $jenis_cuti,
+                'lama' => $lama,
+                'kuota' => $kuota_cuti,
+                'tgl_awal' => $tgl_awal,
+                'tgl_akhir' => $tgl_akhir,
+                'alasan' => $alasan,
+                'alamat' => $alamat
+            )
+        );
+        return;
+    }
+
     public function show_cuti()
     {
         $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));

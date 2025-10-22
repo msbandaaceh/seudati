@@ -20,6 +20,12 @@
         <div class="row row-cols-12">
             <div class="col">
                 <div class="card border-primary border-top border-3 border-0">
+                    <div class="card-header text-end">
+                        <button type="button" class="btn btn-outline-primary px-5" data-bs-toggle="modal"
+                            data-bs-target="#tambah-modal"
+                            onclick="BukaModalCutiAdmin()"><i
+                                class="bx bx-user mr-1"></i>Tambah</button>
+                    </div>
                     <div class="card-body">
                         <div class="card-body" id="tabelRegisterCuti">
                         </div>
@@ -110,6 +116,95 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </form>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="tambah-modal" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <form method="POST" id="formCuti" class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <i class="bx bxs-user me-1 font-22 text-primary"></i>
+                </div>
+                <h5 class="mb-0 text-primary" id="judul"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <label for="pegawai" class="form-label">Pilih Pegawai </label><code>*</code>
+                        <div id="pegawai_"></div>
+                    </div>
+                </div>
+                <div class="form-group" id="isiform">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <div class="card radius-10">
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <div
+                                            class="widgets-icons rounded-circle mx-auto bg-light-primary text-primary mb-3">
+                                            <i class="bx bx-calendar-check"></i>
+                                        </div>
+                                        <h4 class="my-1" id="kuota_show"></h4>
+                                        <p class="mb-0 text-secondary">Cuti Bisa Diambil</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="kuota" id="kuota" class="form-control" />
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="jenis" class="form-label">Jenis Cuti </label><code>*</code>
+                            <div id="jenis_"></div>
+                        </div>
+                    </div>
+                    <div id="detil_cuti">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="tgl_cuti" class="form-label">Tanggal Cuti </label><code>*</code>
+                                <input type="text" id="tgl_cuti" name="tgl_cuti" class="form-control"
+                                    placeholder="Pilih Tanggal..." />
+                                <input type="hidden" name="tgl_awal" id="tgl_awal" />
+                                <input type="hidden" name="tgl_akhir" id="tgl_akhir" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="lama" class="form-label">Lama Cuti </label><code>*</code>
+                                <input type="text" id="lama" name="lama" class="form-control"
+                                    placeholder="Lama Hari Cuti" readonly></input>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="alamat" class="form-label">Alamat Selama Cuti </label><code>*</code>
+                                <input type="text" id="alamat" name="alamat" class="form-control" autocomplete="off"
+                                    placeholder="Alamat Selama Cuti"></input>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="alasan" class="form-label">Alasan Cuti </label><code>*</code>
+                                <textarea id="alasan" class="form-control" rows="2" name="alasan"
+                                    placeholder="Alasan Cuti"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label for="submit" class="form-label"><code><i>* Wajib Diisi</i></code></label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row justify-content-end">
+                    <button id="submit" type="submit" class="btn btn-primary">Simpan</button>
+                </div>
             </div>
         </form>
         <!-- /.modal-content -->

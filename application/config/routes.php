@@ -80,6 +80,9 @@ $route['cari_izin_keluar'] = 'HalamanLaporan/cari_izin_keluar';
 $route['cari_izin_diklat'] = 'HalamanLaporan/cari_izin_diklat';
 $route['cari_cuti'] = 'HalamanLaporan/cari_cuti';
 
+$route['show_pegawai'] = 'HalamanUtama/show_pegawai';
+$route['show_cuti_admin'] = 'HalamanCuti/show_cuti_admin';
+
 # ROUTE PROSES PERAN
 $route['show_role'] = 'HalamanUtama/show_role';
 $route['simpan_peran'] = 'HalamanUtama/simpan_peran';

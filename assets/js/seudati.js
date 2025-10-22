@@ -2808,6 +2808,120 @@ function BukaModalCuti(id) {
     });
 }
 
+function inputCutiAdmin() {
+    var pegawai_id = document.getElementById('pegawai').value;
+    console.log(pegawai_id);
+
+    document.getElementById('isiform').style.display = "block";
+    document.getElementById('detil_cuti').style.display = "none";
+    $.post('show_cuti_admin', {
+        id: pegawai_id
+    }, function (response) {
+        var json = jQuery.parseJSON(response);
+        if (json.st == 1) {
+            // reset data form
+            $('#jenis_').html('');
+            $('#kuota').val('');
+            $('#kuota_show').html('');
+            $('#lama').val('');
+            $('#alasan').val('');
+            $('#alamat').val('');
+
+            // isi data dari response
+            $('#jenis_').append(json.jenis);
+            $('#kuota_show').append(json.kuota + ' HARI');
+            $('#kuota').val(json.kuota);
+            $('#lama').val(json.lama);
+            $('#alasan').val(json.alasan);
+            $('#alamat').val(json.alamat);
+
+            // kalau tgl_mulai dan tgl_selesai ada, set value
+            if (json.id && json.tgl_awal && json.tgl_akhir) {
+                window.tglAwalSet = json.tgl_awal;
+                window.tglAkhirSet = json.tgl_akhir;
+
+                let jenis = document.getElementById('jenis').value;
+                if (jenis == 1 || jenis == 2) {
+                    HariKerja();
+                } else {
+                    HariKalender();
+                }
+
+                $('#detil_cuti').show();
+            }
+
+        } else if (json.st == 0) {
+            pesan('PERINGATAN', json.msg, '');
+            $('#table_pegawai').DataTable().ajax.reload();
+        }
+    });
+}
+
+function BukaModalCutiAdmin() {
+    document.getElementById('isiform').style.display = "none";
+    $.post('show_pegawai',
+        function (res) {
+            var json = jQuery.parseJSON(res);
+            $("#judul").html("");
+            $('#pegawai_').html("");
+
+            $("#judul").append(json.judul);
+            $('#pegawai_').append(json.pegawai);
+
+            $('#pegawai').select2({
+                theme: 'bootstrap4',
+                dropdownParent: $('#tambah-modal'),
+                width: '100%',
+            })
+        }
+    );
+    /*
+    document.getElementById('detil_cuti').style.display = "none";
+    $.post('show_cuti', {
+        id: id
+    }, function (response) {
+        var json = jQuery.parseJSON(response);
+        if (json.st == 1) {
+            // reset data form
+            $("#id_cuti_").val('');
+            $('#jenis_').html('');
+            $('#kuota').val('');
+            $('#kuota_show').html('');
+            $('#lama').val('');
+            $('#alasan').val('');
+            $('#alamat').val('');
+
+            // isi data dari response
+            $("#id_cuti_").val(json.id);
+            $('#jenis_').append(json.jenis);
+            $('#kuota_show').append(json.kuota + ' HARI');
+            $('#kuota').val(json.kuota);
+            $('#lama').val(json.lama);
+            $('#alasan').val(json.alasan);
+            $('#alamat').val(json.alamat);
+
+            // kalau tgl_mulai dan tgl_selesai ada, set value
+            if (json.id && json.tgl_awal && json.tgl_akhir) {
+                window.tglAwalSet = json.tgl_awal;
+                window.tglAkhirSet = json.tgl_akhir;
+
+                let jenis = document.getElementById('jenis').value;
+                if (jenis == 1 || jenis == 2) {
+                    HariKerja();
+                } else {
+                    HariKalender();
+                }
+
+                $('#detil_cuti').show();
+            }
+
+        } else if (json.st == 0) {
+            pesan('PERINGATAN', json.msg, '');
+            $('#table_pegawai').DataTable().ajax.reload();
+        }
+    });*/
+}
+
 function loadTabelValidasiCutiAtasan() {
     $.post('show_tabel_validasi_cuti_atasan', function (response) {
         try {
@@ -2895,7 +3009,7 @@ function loadTabelValidasiCutiAtasan() {
                             <i class="bx bxs-printer"></i>
                         </button>
                     `;
-                } else if (row.status_cuti == '0') {
+                } else if (row.status == '0') {
                     tombolAksi += `
                         <button type="button" class="btn btn-warning" data-bs-target="#tambah-modal"
                             onclick="BukaModalValidasiCuti('${row.id}')" data-bs-toggle="modal" title="Proses">
@@ -3052,7 +3166,7 @@ function loadTabelValidasiCutiPPK() {
                             <i class="bx bxs-printer"></i>
                         </button>
                     `;
-                } else if (row.status_cuti == '0') {
+                } else if (row.status == '0') {
                     tombolAksi += `
                         <button type="button" class="btn btn-warning" data-bs-target="#tambah-modal"
                             onclick="BukaModalValidasiCuti('${row.id}')" data-bs-toggle="modal" title="Proses">
@@ -3208,7 +3322,7 @@ function loadTabelRegisterCuti() {
                             <i class="bx bxs-printer"></i>
                         </button>
                     `;
-                } else if (row.status_cuti == '0') {
+                } else if (row.status_validator == '0') {
                     tombolAksi += `
                         <button type="button" class="btn btn-warning" data-bs-target="#tambah-modal"
                             onclick="BukaModalCuti('${row.id}')" data-bs-toggle="modal" title="Edit Data">
@@ -3349,6 +3463,16 @@ function HariKerja() {
                     var day = dayElem.dateObj.getDay();
                     var dateStr = fp.formatDate(dayElem.dateObj, "Y-m-d");
 
+                    /*
+                    var today = new Date();
+                    var minDate = new Date();
+                    minDate.setDate(today.getDate() + 5);
+
+                    // Disable 5 hari ke belakang
+                    if (dayElem.dateObj < minDate) {
+                        dayElem.classList.add("disabled-date");
+                    }*/
+
                     // Disable Sabtu & Minggu + tanggal merah (tidak bisa diklik langsung)
                     if (day === 0 || day === 6 || disabledDates.includes(dateStr)) {
                         dayElem.classList.add("disabled-date");
@@ -3444,7 +3568,7 @@ function UbahKalender(id) {
             break;
         case 2:
             $('#detil_cuti').show();
-            HariKerja();
+            HariKalender();
             break;
         case 3:
             //console.log("Masuk Sini " + jk);

@@ -38,7 +38,7 @@ class HalamanUtama extends MY_Controller
         if (in_array($halaman, $allowed)) {
             $data['peran'] = $this->session->userdata('peran');
             $data['page'] = $halaman;
-            
+
             $this->load->view($halaman, $data);
         } else {
             show_404();
@@ -67,6 +67,33 @@ class HalamanUtama extends MY_Controller
         redirect($sso_server . '/keluar');
     }
 
+    public function show_pegawai()
+    {
+        $data = [
+            "tabel" => "v_users",
+            "kolom_seleksi" => "status_pegawai",
+            "seleksi" => "1"
+        ];
+
+        $users = $this->apihelper->get('apiclient/get_data_seleksi', $data);
+
+        $pegawai = array();
+        if ($users['status_code'] === 200) {
+            foreach ($users['response']['data'] as $item) {
+                $pegawai[$item['pegawai_id']] = $item['fullname'];
+            }
+        }
+
+        $pegawai_ = form_dropdown('pegawai', $pegawai, '', 'class = "form-control select2" onchange="inputCutiAdmin()" id="pegawai"');
+
+        echo json_encode(
+            array(
+                'judul' => 'INPUT REGISTER CUTI',
+                'pegawai' => $pegawai_,
+            )
+        );
+    }
+
     public function show_role()
     {
         $id = $this->input->post('id');
@@ -79,7 +106,7 @@ class HalamanUtama extends MY_Controller
         $users = $this->apihelper->get('apiclient/get_data_seleksi', $data);
 
         $pegawai = array();
-        if ($users['status_code'] === '200') {
+        if ($users['status_code'] === 200) {
             foreach ($users['response']['data'] as $item) {
                 $pegawai[$item['userid']] = $item['fullname'];
             }
@@ -271,7 +298,7 @@ class HalamanUtama extends MY_Controller
 
     public function ambil_permohonan_cuti_ppk()
     {
-        $req_cuti = $this->model->get_seleksi2('register_cuti', 'id_ppk', $this->session->userdata('jab_id'), 'status_ppk', '0')->result_array();
+        $req_cuti = $this->model->get_validasi_ppk()->result_array();
         echo json_encode($req_cuti);
     }
 }

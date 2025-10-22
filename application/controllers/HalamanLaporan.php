@@ -50,7 +50,9 @@ class HalamanLaporan extends MY_Controller {
                 'jabatan' => $row->pegawai_jabatan,
                 'jenis' => $row->jenis_cuti,
                 'lama' => $row->lama,
-                'status_cuti' => $row->status_cuti
+                'status_cuti' => $row->status_cuti,
+                'status_validator' => $row->status_validator,
+                'status_ppk' => $row->status_ppk
             ];
         }
 
