@@ -61,6 +61,30 @@ class MY_Controller extends CI_Controller
                     $this->session->set_userdata('jk', $user_data['jk']);
                     $this->session->set_userdata('jabatan', $user_data['jabatan']);
                 }
+            } else {
+                $params = [
+                    'tabel' => 'v_plh',
+                    'kolom_seleksi' => 'plh_id_jabatan',
+                    'seleksi' => $this->session->userdata("jab_id")
+                ];
+
+                $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
+                if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
+                    $user_data = $result['response']['data'][0];
+                    $this->session->set_userdata('pegawai_id', $user_data['pegawai_id']);
+                }
+            }
+        } else {
+            $params = [
+                'tabel' => 'v_plh',
+                'kolom_seleksi' => 'plh_id_jabatan',
+                'seleksi' => $this->session->userdata("jab_id")
+            ];
+
+            $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
+            if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
+                $user_data = $result['response']['data'][0];
+                $this->session->set_userdata('pegawai_id', $user_data['pegawai_id']);
             }
         }
 
@@ -77,18 +101,6 @@ class MY_Controller extends CI_Controller
             } else {
                 $this->session->set_userdata('peran', '');
             }
-        }
-
-        $params = [
-            'tabel' => 'v_users',
-            'kolom_seleksi' => 'userid',
-            'seleksi' => $this->session->userdata("userid")
-        ];
-
-        $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
-        if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
-            $user_data = $result['response']['data'][0];
-            $this->session->set_userdata('pegawai_id', $user_data['pegawai_id']);
         }
 
         $this->session->set_userdata('logged_in', TRUE);
