@@ -708,6 +708,14 @@ class Model extends CI_Model
         return $this->db->select('*')->from('register_cuti')->get();
     }
 
+    public function get_data_validasi_ppk() {
+        $this->db->order_by('status_ppk', 'ASC');
+        $this->db->where('status_ppk', '0');
+        $this->db->where('(status_validator = 1 OR status_validator = 5)');
+        $this->db->where('id_ppk', $this->session->userdata('jab_id'));
+        return $this->db->select('*')->from('v_cuti')->get();
+    }
+
     public function proses_simpan_nomor_cuti($data)
     {
         $dataCuti = $this->get_seleksi('v_cuti', 'id', $data['id']);

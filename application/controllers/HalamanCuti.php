@@ -74,7 +74,7 @@ class HalamanCuti extends MY_Controller
 
     public function show_tabel_validasi_cuti_ppk()
     {
-        $queryCuti = $this->model->get_seleksi_order('v_cuti', 'id_ppk', $this->session->userdata('jab_id'), 'status_ppk', 'ASC')->result();
+        $queryCuti = $this->model->get_data_validasi_ppk()->result();
 
         $dataCuti = [];
         foreach ($queryCuti as $row) {
