@@ -1177,7 +1177,7 @@ class Model extends CI_Model
 
                 $dataCuti = array($sisa_n1, $sisa_n2, $sisa_n3);
 
-                die(var_dump($dataCuti));
+                #die(var_dump($dataCuti));
 
                 for ($i = 0; $i < 3; $i++) {
                     $this->update_sisa_cuti('register_sisa_cuti_tahunan', array('sisa' => $dataCuti[$i]), 'tahun', date("Y") - $i, 'pegawai_id', $tujuanNotif);
