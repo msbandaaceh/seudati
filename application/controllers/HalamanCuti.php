@@ -497,7 +497,7 @@ class HalamanCuti extends MY_Controller
 
         $data = [
             'id' => $this->input->post('id'),
-            'pegawai_id' => $this->input->post('pegawai_id'),
+            'pegawai_id' => $this->input->post('pegawai'),
             'jenis' => $this->input->post('jenis'),
             'tgl_awal' => $this->input->post('tgl_awal'),
             'tgl_akhir' => $this->input->post('tgl_akhir'),

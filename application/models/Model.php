@@ -700,7 +700,8 @@ class Model extends CI_Model
         return $this->db->select('*')->from('v_cuti')->get();
     }
 
-    public function get_validasi_ppk() {
+    public function get_validasi_ppk()
+    {
         $this->db->order_by('created_on', 'ASC');
         $this->db->where('status_ppk', '0');
         $this->db->where('(status_validator = 1 OR status_validator = 5)');
@@ -708,7 +709,8 @@ class Model extends CI_Model
         return $this->db->select('*')->from('register_cuti')->get();
     }
 
-    public function get_data_validasi_ppk() {
+    public function get_data_validasi_ppk()
+    {
         $this->db->order_by('status_ppk', 'ASC');
         $this->db->where('(status_validator = 1 OR status_validator = 5)');
         $this->db->where('id_ppk', $this->session->userdata('jab_id'));
@@ -794,9 +796,12 @@ class Model extends CI_Model
             }
 
             $dataPegawai = $this->get_seleksi($this->db_sso . '.v_users', 'pegawai_id', $data['pegawai_id']);
+            if ($dataPegawai->row()->atasan_id == NULL || $dataPegawai->row()->atasan_id == '0') {
+                return ['status' => false, 'message' => 'Atasan langsung belum diisi, silakan isi atau hubungi bagian kepegawaian.'];
+            }
             $id_jabatan_atasan = $dataPegawai->row()->atasan_id;
             $jabatan_atasan = $dataPegawai->row()->jabatan_atasan;
-
+            
             # Cek apakah atasan langsung ada plh
             $queryPlh = $this->get_seleksi($this->db_sso . '.v_plh', 'plh_id_jabatan', $id_jabatan_atasan);
             if ($queryPlh->row()->pegawai_id != null) {
