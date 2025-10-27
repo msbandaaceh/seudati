@@ -2810,7 +2810,6 @@ function BukaModalCuti(id) {
 
 function inputCutiAdmin() {
     var pegawai_id = document.getElementById('pegawai').value;
-    console.log(pegawai_id);
 
     document.getElementById('isiform').style.display = "block";
     document.getElementById('detil_cuti').style.display = "none";

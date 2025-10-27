@@ -111,7 +111,7 @@ class HalamanCuti extends MY_Controller
 
     public function show_cuti_admin()
     {
-        $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
+        $id = $this->input->post('id');
 
         $n1 = 0;
         $n2 = 0;

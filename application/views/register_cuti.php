@@ -134,7 +134,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col">
                         <label for="pegawai" class="form-label">Pilih Pegawai </label><code>*</code>
                         <div id="pegawai_"></div>
