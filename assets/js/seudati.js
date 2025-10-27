@@ -284,7 +284,7 @@ $(function () {
         });
     });
 
-    $(document).off('submit', '#formCutiAdmin').on('submit', '#formCuti', function (e) {
+    $(document).off('submit', '#formCutiAdmin').on('submit', '#formCutiAdmin', function (e) {
         e.preventDefault();
         let form = this;
         let formData = new FormData(form);
