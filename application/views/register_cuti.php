@@ -125,7 +125,7 @@
 
 <div class="modal fade" id="tambah-modal" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <form method="POST" id="formCuti" class="modal-content">
+        <form method="POST" id="formCutiAdmin" class="modal-content">
             <div class="modal-header">
                 <div>
                     <i class="bx bxs-user me-1 font-22 text-primary"></i>

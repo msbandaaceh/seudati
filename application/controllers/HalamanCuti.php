@@ -478,6 +478,42 @@ class HalamanCuti extends MY_Controller
         }
     }
 
+    public function simpan_cuti_admin()
+    {
+        $this->form_validation->set_rules('pegawai', 'Pegawai', 'trim|required');
+        $this->form_validation->set_rules('jenis', 'Jenis Cuti', 'trim|required');
+        $this->form_validation->set_rules('tgl_awal', 'Tanggal Awal', 'trim|required');
+        $this->form_validation->set_rules('tgl_akhir', 'Tanggal Akhir', 'trim|required');
+        $this->form_validation->set_rules('lama', 'Lama Cuti', 'trim|required');
+        $this->form_validation->set_rules('alamat', 'Alamat Selama Cuti', 'trim|required');
+        $this->form_validation->set_rules('alasan', 'Alasan Cuti', 'trim|required');
+
+        $this->form_validation->set_message(['required' => '%s Tidak Boleh Kosong']);
+
+        if ($this->form_validation->run() == FALSE) {
+            echo json_encode(['success' => 2, 'message' => validation_errors()]);
+            return;
+        }
+
+        $data = [
+            'id' => $this->input->post('id'),
+            'pegawai_id' => $this->input->post('pegawai_id'),
+            'jenis' => $this->input->post('jenis'),
+            'tgl_awal' => $this->input->post('tgl_awal'),
+            'tgl_akhir' => $this->input->post('tgl_akhir'),
+            'lama' => $this->input->post('lama'),
+            'alamat' => $this->input->post('alamat'),
+            'alasan' => $this->input->post('alasan')
+        ];
+
+        $result = $this->model->proses_simpan_cuti($data);
+        if ($result['status']) {
+            echo json_encode(['success' => 1, 'message' => $result['message']]);
+        } else {
+            echo json_encode(['success' => 3, 'message' => $result['message']]);
+        }
+    }
+
     public function simpan_validasi_cuti_atasan()
     {
         $this->form_validation->set_rules('status_valid', 'Status Atasan', 'trim|required');
