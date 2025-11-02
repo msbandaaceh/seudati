@@ -6,6 +6,12 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['cek_token'] = 'HalamanUtama/cek_token_sso';
 
+# ROUTE PANDUAN
+$route['get_panduan_content'] = 'HalamanPanduan/get_panduan_content';
+
+# ROUTE DOKUMENTASI
+$route['get_doc_content'] = 'HalamanDokumentasi/get_content';
+
 $route['ambil_permohonan_nomor'] = 'HalamanUtama/ambil_permohonan_nomor';
 $route['ambil_permohonan_dokumen_diklat'] = 'HalamanUtama/ambil_permohonan_dokumen';
 $route['ambil_permohonan_izin_keluar'] = 'HalamanUtama/ambil_permohonan_izin_keluar';

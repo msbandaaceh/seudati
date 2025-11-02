@@ -16,6 +16,8 @@ class HalamanUtama extends MY_Controller
         // Amanin nama file view agar tidak sembarang file bisa diload
         $allowed = [
             'dashboard',
+            'panduan',
+            'dokumentasi',
             'legal_cuti',
             'legal_diklat',
             'izin_keluar',
