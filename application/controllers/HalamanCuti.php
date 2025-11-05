@@ -717,9 +717,10 @@ class HalamanCuti extends MY_Controller
         }
 
         $logoPath = $this->session->userdata('logo_satker');
-        $data['ttd'] = $this->qrhelper->create(site_url('halamankartupegawai/kartu_pegawai/' . $data['userid_pegawai']), $logoPath);
-        $data['ttd_validator'] = $this->qrhelper->create(site_url('halamankartupegawai/kartu_pegawai/' . $data['userid_validator']), $logoPath);
-        $data['ttd_ppk'] = $this->qrhelper->create(site_url('halamankartupegawai/kartu_pegawai/' . $data['userid_ppk']), $logoPath);
+        $sso_server = $this->config->item('sso_server');
+        $data['ttd'] = $this->qrhelper->create($sso_server . 'halamankartupegawai/kartu_pegawai/' . $data['userid_pegawai'], $logoPath);
+        $data['ttd_validator'] = $this->qrhelper->create($sso_server . 'halamankartupegawai/kartu_pegawai/' . $data['userid_validator'], $logoPath);
+        $data['ttd_ppk'] = $this->qrhelper->create($sso_server . 'halamankartupegawai/kartu_pegawai/' . $data['userid_ppk'], $logoPath);
 
         $this->load->view('cetak/cetak_cuti', $data);
     }

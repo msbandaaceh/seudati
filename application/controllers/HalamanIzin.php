@@ -226,8 +226,9 @@ class HalamanIzin extends MY_Controller
         }
 
         $logoPath = $this->session->userdata('logo_satker');
-        $data['qr_pegawai_image'] = $this->qrhelper->create(site_url('halamankartupegawai/kartu_pegawai/' . $data['userid_pegawai']), $logoPath);
-        $data['qr_atasan_image'] = $this->qrhelper->create(site_url('halamankartupegawai/kartu_pegawai/' . $data['userid_validator']), $logoPath);
+        $sso_server = $this->config->item('sso_server');
+        $data['qr_pegawai_image'] = $this->qrhelper->create($sso_server . 'halamankartupegawai/kartu_pegawai/' . $data['userid_pegawai'], $logoPath);
+        $data['qr_atasan_image'] = $this->qrhelper->create($sso_server . 'halamankartupegawai/kartu_pegawai/' . $data['userid_validator'], $logoPath);
 
         $this->load->view('cetak/cetak_izin', $data);
     }
