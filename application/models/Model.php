@@ -765,7 +765,17 @@ class Model extends CI_Model
 
     public function proses_simpan_cuti($data)
     {
-        $nama = $this->session->userdata('fullname');
+        $param = [
+            "tabel" => "v_pegawai",
+            "kolom_seleksi" => "id",
+            "seleksi" => $data['pegawai_id']
+        ];
+
+        $users = $this->apihelper->get('apiclient/get_data_seleksi', $param);
+
+        if ($users['status_code'] === 200 && $users['response']['status'] == 'success') {
+            $nama = $users['response']['data'][0]['nama_gelar'];
+        }
 
         if ($data['id']) {
             $dataPengguna = array(
