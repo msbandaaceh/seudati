@@ -66,6 +66,44 @@ class Api extends CI_Controller
         }
     }
 
+    public function get_all_tanggal_merah()
+    {
+        $key = $this->input->get('api_key');
+        $tahun = $this->input->get('tahun');
+        
+        if ($key == $this->config->item('api_key')) {
+            $this->load->model('Model', 'model');
+
+            // Jika tahun tidak diisi, gunakan tahun sekarang
+            if (empty($tahun)) {
+                $tahun = date('Y');
+            }
+
+            // Ambil semua tanggal merah untuk tahun tertentu
+            $this->db->select('tgl');
+            $this->db->from('register_hari_libur');
+            $this->db->where('YEAR(tgl)', $tahun);
+            $this->db->order_by('tgl', 'ASC');
+            $query = $this->db->get();
+
+            $tanggal_merah = [];
+            foreach ($query->result() as $row) {
+                $tanggal_merah[] = $row->tgl;
+            }
+
+            echo json_encode([
+                'status' => 'success',
+                'tahun' => $tahun,
+                'data' => $tanggal_merah
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Anda tidak diijikan akses API'
+            ]);
+        }
+    }
+
     public function pembaharuan_data()
     {
         header('Content-Type: application/json');
