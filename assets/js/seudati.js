@@ -1569,7 +1569,7 @@ function loadTabelKeluar() {
                             ${row.tgl_izin} <br>
                             <span class="badge rounded-pill bg-info"><i>Dibuat pada ${row.created_on}</i></span>
                         </td>
-                        <td>${row.alasan}</td>
+                        <td style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">${row.alasan}</td>
                         <td>${statusBadge}</td>
                         <td>${tombolAksi}</td>
                     </tr>
@@ -1690,7 +1690,7 @@ function loadTabelValidasiKeluar() {
                             ${row.tgl_izin} <br>
                             <span class="badge rounded-pill bg-info text-dark"><i>Dibuat pada ${row.created_on}</i></span>
                         </td>
-                        <td>${row.alasan}</td>
+                        <td style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">${row.alasan}</td>
                         <td>${tombolAksi}</td>
                     </tr>
                 `;

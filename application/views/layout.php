@@ -463,7 +463,7 @@
         };
     </script>
 
-    <script src="<?= site_url('assets/js/seudati.js?v=1.0.8'); ?>"></script>
+    <script src="<?= site_url('assets/js/seudati.js?v=1.1.0'); ?>"></script>
 </body>
 
 </html>
