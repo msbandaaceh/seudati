@@ -149,7 +149,7 @@
 
                         <div class="row mb-3">
                             <div class="col">
-                                <label for="tgl_selesai" class="form-label">Tanggal Mulai </label><code>*</code>
+                                <label for="tgl_selesai" class="form-label">Tanggal Selesai </label><code>*</code>
                                 <input type="text" id="tgl_selesai" name="tgl_selesai" class="form-control"
                                     placeholder="Pilih Tanggal..." />
                             </div>
