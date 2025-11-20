@@ -2957,6 +2957,12 @@ function BukaModalCuti(id) {
  * @param {string} param - Jika '-1' = input baru (load dropdown pegawai), jika id_cuti = edit cuti
  */
 function BukaModalCutiAdmin(param) {
+    // Reset scroll position modal body saat dibuka
+    var modalBody = $('#tambah-modal .modal-body');
+    if (modalBody.length) {
+        modalBody.scrollTop(0);
+    }
+    
     // Jika param adalah '-1', berarti input baru - load dropdown pegawai
     if (param == '-1') {
         document.getElementById('isiform').style.display = "none";

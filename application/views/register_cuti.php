@@ -130,7 +130,7 @@
 </div>
 
 <div class="modal fade" id="tambah-modal" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <form method="POST" id="formCutiAdmin" class="modal-content" enctype="multipart/form-data">
             <div class="modal-header">
                 <div>
@@ -260,5 +260,21 @@
 <script>
     $(document).ready(function () {
         loadTabelRegisterCuti();
+        
+        // Reset scroll position saat modal ditutup
+        $('#tambah-modal').on('hidden.bs.modal', function () {
+            var modalBody = $(this).find('.modal-body');
+            if (modalBody.length) {
+                modalBody.scrollTop(0);
+            }
+        });
+        
+        // Reset scroll position saat modal dibuka
+        $('#tambah-modal').on('show.bs.modal', function () {
+            var modalBody = $(this).find('.modal-body');
+            if (modalBody.length) {
+                modalBody.scrollTop(0);
+            }
+        });
     });
 </script>
