@@ -2873,12 +2873,51 @@ function BukaModalCuti(id) {
             $('#alamat').val(json.alamat);
 
             // Tampilkan dokumen pendukung jika ada (untuk edit)
-            if (json.dokumen_pendukung) {
+            let jenis_cuti_id = document.getElementById('jenis').value;
+            if (jenis_cuti_id == 2 || jenis_cuti_id == 5) {
                 $('#preview_dokumen').show();
-                $('#nama_file_sekarang').html(json.dokumen_pendukung);
+                if (json.dokumen_pendukung && json.dokumen_pendukung !== '') {
+                    var dokumenUrl = 'dokumen/cuti/' + json.dokumen_pendukung;
+                    var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
+                    var isPdf = fileExtension === 'pdf';
+                    var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
+                    
+                    var dokumenHtml = '';
+                    if (isPdf) {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="bx bx-file"></i> Buka Dokumen PDF
+                                </a>
+                            </div>
+                        `;
+                    } else if (isImage) {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="bx bx-image"></i> Buka Dokumen Gambar
+                                </a>
+                            </div>
+                        `;
+                    } else {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary" download>
+                                    <i class="bx bx-download"></i> Download Dokumen
+                                </a>
+                            </div>
+                        `;
+                    }
+                    $('#dokumen_pendukung_info').html(dokumenHtml);
+                } else {
+                    $('#dokumen_pendukung_info').html('<div class="alert alert-warning"><i class="bx bx-info-circle"></i> Tidak Ada Dokumen Pendukung</div>');
+                }
             } else {
                 $('#preview_dokumen').hide();
-                $('#nama_file_sekarang').html('');
+                $('#dokumen_pendukung_info').html('');
             }
 
             // kalau tgl_mulai dan tgl_selesai ada, set value
@@ -2913,20 +2952,91 @@ function BukaModalCuti(id) {
     });
 }
 
-function inputCutiAdmin() {
-    var pegawai_id = document.getElementById('pegawai').value;
+/**
+ * Fungsi untuk membuka modal cuti admin (input baru atau edit)
+ * @param {string} param - Jika '-1' = input baru (load dropdown pegawai), jika id_cuti = edit cuti
+ */
+function BukaModalCutiAdmin(param) {
+    // Jika param adalah '-1', berarti input baru - load dropdown pegawai
+    if (param == '-1') {
+        document.getElementById('isiform').style.display = "none";
+        $.post('show_pegawai',
+            function (res) {
+                var json = jQuery.parseJSON(res);
+                $("#judul").html("");
+                $('#pegawai_').html("");
+    
+                $("#judul").append(json.judul);
+                $('#pegawai_').append(json.pegawai);
+    
+                $('#pegawai').select2({
+                    theme: 'bootstrap4',
+                    dropdownParent: $('#tambah-modal'),
+                    width: '100%',
+                });
+            }
+        );
+    } else {
+        // Jika param adalah id_cuti, berarti edit - ambil pegawai_id dari cuti
+        $.post('get_pegawai_id_from_cuti', {
+            id: param
+        }, function (res) {
+            var jsonPegawai = jQuery.parseJSON(res);
+            if (jsonPegawai.st == 1) {
+                // Panggil inputCutiAdmin dengan pegawai_id dan id_cuti untuk edit
+                $("#judul").html("");
+                $('#pegawai_').html("");
+    
+                $("#judul").append(jsonPegawai.judul);
+                $('#pegawai_').append(jsonPegawai.pegawai);
+
+                $('#pegawai').select2({
+                    theme: 'bootstrap4',
+                    dropdownParent: $('#tambah-modal'),
+                    width: '100%',
+                });
+                
+                inputCutiAdmin(jsonPegawai.pegawai_id, param);
+            } else {
+                pesan('PERINGATAN', 'Gagal mengambil data pegawai', '');
+            }
+        });
+    }
+}
+
+/**
+ * Fungsi untuk populate form cuti admin
+ * @param {string} pegawai_id - ID pegawai
+ * @param {string} id_cuti_edit - ID cuti untuk edit (opsional, jika ada berarti mode edit)
+ */
+function inputCutiAdmin(pegawai_id, id_cuti_edit) {
+    // Jika pegawai_id tidak diberikan, ambil dari dropdown
+    if (!pegawai_id) {
+        pegawai_id = document.getElementById('pegawai').value;
+    }
 
     document.getElementById('isiform').style.display = "block";
     document.getElementById('detil_cuti').style.display = "none";
-    $.post('show_cuti_admin', {
+    
+    // Siapkan data untuk dikirim
+    var postData = {
         id: pegawai_id
-    }, function (response) {
+    };
+    
+    // Jika ada id_cuti_edit, tambahkan ke postData
+    if (id_cuti_edit) {
+        postData.id_cuti_edit = id_cuti_edit;
+    }
+    
+    $.post('show_cuti_admin', postData, function (response) {
         var json = jQuery.parseJSON(response);
         if (json.st == 1) {
             // reset data form
             $('#jenis_').html('');
             $('#kuota').val('');
             $('#kuota_show').html('');
+            $('#cuti_sakit_show_admin').html('');
+            $('#cuti_alasan_penting_show_admin').html('');
             $('#lama').val('');
             $('#alasan').val('');
             $('#alamat').val('');
@@ -2935,25 +3045,69 @@ function inputCutiAdmin() {
             $('#dokumen_pendukung_admin').prop('required', false);
             $('#preview_dokumen_admin').hide();
             $('#nama_file_sekarang_admin').html('');
+            
+            // Hapus hidden input id_cuti jika ada
+            $('#id_cuti_admin').remove();
 
             // isi data dari response
             $('#jenis_').append(json.jenis);
-            $('#kuota_show').append(json.kuota + ' HARI');
+            $('#kuota_show').html(json.kuota + ' HARI');
+            $('#cuti_sakit_show_admin').html((json.sisa_cuti_sakit || 0) + ' HARI');
+            $('#cuti_alasan_penting_show_admin').html((json.sisa_cuti_alasan_penting || 0) + ' HARI');
             $('#kuota').val(json.kuota);
             $('#lama').val(json.lama);
             $('#alasan').val(json.alasan);
             $('#alamat').val(json.alamat);
 
+            // Jika mode edit, set hidden input id_cuti
+            if (json.id && json.id !== '') {
+                $('#formCutiAdmin').append('<input type="hidden" name="id" id="id_cuti_admin" value="' + json.id + '">');
+            }
+
             // Tampilkan dokumen pendukung jika ada (untuk edit)
-            if (json.dokumen_pendukung) {
+            if (json.dokumen_pendukung && json.dokumen_pendukung !== '') {
                 $('#preview_dokumen_admin').show();
-                $('#nama_file_sekarang_admin').html(json.dokumen_pendukung);
+                var dokumenUrl = 'dokumen/cuti/' + json.dokumen_pendukung;
+                var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
+                var isPdf = fileExtension === 'pdf';
+                var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
+                
+                var dokumenHtml = '';
+                if (isPdf) {
+                    dokumenHtml = `
+                        <div class="alert alert-info">
+                            <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                            <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                <i class="bx bx-file"></i> Buka Dokumen PDF
+                            </a>
+                        </div>
+                    `;
+                } else if (isImage) {
+                    dokumenHtml = `
+                        <div class="alert alert-info">
+                            <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                            <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                <i class="bx bx-image"></i> Buka Dokumen Gambar
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    dokumenHtml = `
+                        <div class="alert alert-info">
+                            <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                            <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary" download>
+                                <i class="bx bx-download"></i> Download Dokumen
+                            </a>
+                        </div>
+                    `;
+                }
+                $('#nama_file_sekarang_admin').html(dokumenHtml);
             } else {
                 $('#preview_dokumen_admin').hide();
                 $('#nama_file_sekarang_admin').html('');
             }
 
-            // kalau tgl_mulai dan tgl_selesai ada, set value
+            // kalau tgl_mulai dan tgl_selesai ada, set value (untuk edit)
             if (json.id && json.tgl_awal && json.tgl_akhir) {
                 window.tglAwalSet = json.tgl_awal;
                 window.tglAkhirSet = json.tgl_akhir;
@@ -2963,7 +3117,12 @@ function inputCutiAdmin() {
                 // Tampilkan/sembunyikan field dokumen berdasarkan jenis cuti
                 if (jenis == 2 || jenis == 5) {
                     $('#row_dokumen_pendukung_admin').show();
-                    $('#dokumen_pendukung_admin').prop('required', true);
+                    // Jika edit dan sudah ada dokumen, tidak wajib upload baru
+                    if (!json.dokumen_pendukung || json.dokumen_pendukung === '') {
+                        $('#dokumen_pendukung_admin').prop('required', true);
+                    } else {
+                        $('#dokumen_pendukung_admin').prop('required', false);
+                    }
                 } else {
                     $('#row_dokumen_pendukung_admin').hide();
                     $('#dokumen_pendukung_admin').prop('required', false);
@@ -2983,71 +3142,6 @@ function inputCutiAdmin() {
             $('#table_pegawai').DataTable().ajax.reload();
         }
     });
-}
-
-function BukaModalCutiAdmin() {
-    document.getElementById('isiform').style.display = "none";
-    $.post('show_pegawai',
-        function (res) {
-            var json = jQuery.parseJSON(res);
-            $("#judul").html("");
-            $('#pegawai_').html("");
-
-            $("#judul").append(json.judul);
-            $('#pegawai_').append(json.pegawai);
-
-            $('#pegawai').select2({
-                theme: 'bootstrap4',
-                dropdownParent: $('#tambah-modal'),
-                width: '100%',
-            })
-        }
-    );
-    /*
-    document.getElementById('detil_cuti').style.display = "none";
-    $.post('show_cuti', {
-        id: id
-    }, function (response) {
-        var json = jQuery.parseJSON(response);
-        if (json.st == 1) {
-            // reset data form
-            $("#id_cuti_").val('');
-            $('#jenis_').html('');
-            $('#kuota').val('');
-            $('#kuota_show').html('');
-            $('#lama').val('');
-            $('#alasan').val('');
-            $('#alamat').val('');
-
-            // isi data dari response
-            $("#id_cuti_").val(json.id);
-            $('#jenis_').append(json.jenis);
-            $('#kuota_show').append(json.kuota + ' HARI');
-            $('#kuota').val(json.kuota);
-            $('#lama').val(json.lama);
-            $('#alasan').val(json.alasan);
-            $('#alamat').val(json.alamat);
-
-            // kalau tgl_mulai dan tgl_selesai ada, set value
-            if (json.id && json.tgl_awal && json.tgl_akhir) {
-                window.tglAwalSet = json.tgl_awal;
-                window.tglAkhirSet = json.tgl_akhir;
-
-                let jenis = document.getElementById('jenis').value;
-                if (jenis == 1 || jenis == 2) {
-                    HariKerja();
-                } else {
-                    HariKalender();
-                }
-
-                $('#detil_cuti').show();
-            }
-
-        } else if (json.st == 0) {
-            pesan('PERINGATAN', json.msg, '');
-            $('#table_pegawai').DataTable().ajax.reload();
-        }
-    });*/
 }
 
 function loadTabelValidasiCutiAtasan() {
@@ -3453,7 +3547,7 @@ function loadTabelRegisterCuti() {
                 } else if (row.status_validator == '0') {
                     tombolAksi += `
                         <button type="button" class="btn btn-warning" data-bs-target="#tambah-modal"
-                            onclick="BukaModalCuti('${row.id}')" data-bs-toggle="modal" title="Edit Data">
+                            onclick="BukaModalCutiAdmin('${row.id}')" data-bs-toggle="modal" title="Edit Data">
                             <i class="bx bxs-pencil"></i>
                         </button>
                         <button type="button" class="btn btn-danger" id="hapusCutiAdmin" data-id="${row.id}" title="Hapus Data">
@@ -3790,6 +3884,54 @@ function BukaModalDetailCuti(id) {
             $("#v_lama").val(json.lama + ' Hari');
             $("#v_alamat").val(json.alamat);
             $("#v_alasan").val(json.alasan);
+            
+            // Tampilkan dokumen pendukung jika jenis cuti adalah Cuti Sakit (2) atau Cuti Alasan Penting (5)
+            if (json.jenis_cuti_id == '2' || json.jenis_cuti_id == '5') {
+                $('#v_row_dokumen').show();
+                if (json.dokumen_pendukung && json.dokumen_pendukung !== '') {
+                    var dokumenUrl = 'assets/dokumen/cuti/' + json.dokumen_pendukung;
+                    var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
+                    var isPdf = fileExtension === 'pdf';
+                    var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
+                    
+                    var dokumenHtml = '';
+                    if (isPdf) {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="bx bx-file"></i> Buka Dokumen PDF
+                                </a>
+                            </div>
+                        `;
+                    } else if (isImage) {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="bx bx-image"></i> Buka Dokumen Gambar
+                                </a>
+                            </div>
+                        `;
+                    } else {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary" download>
+                                    <i class="bx bx-download"></i> Download Dokumen
+                                </a>
+                            </div>
+                        `;
+                    }
+                    $('#v_dokumen_pendukung_info').html(dokumenHtml);
+                } else {
+                    $('#v_dokumen_pendukung_info').html('<div class="alert alert-warning"><i class="bx bx-info-circle"></i> Tidak Ada Dokumen Pendukung</div>');
+                }
+            } else {
+                $('#v_row_dokumen').hide();
+                $('#v_dokumen_pendukung_info').html('');
+            }
+            
             if (json.status_validator == '1' || json.status_validator == '5') {
                 $("#v_status_atasan").append('<span class="btn radius-30 btn-outline-success">Disetujui</span>');
             } else if (json.status_validator == '2' || json.status_validator == '6') {
@@ -3882,6 +4024,53 @@ function BukaModalValidasiCuti(id) {
             $("#tgl_selesai").val(json.tgl_akhir);
             $("#alamat").val(json.alamat);
             $("#alasan").val(json.alasan);
+            
+            // Tampilkan dokumen pendukung jika jenis cuti adalah Cuti Sakit (2) atau Cuti Alasan Penting (5)
+            if (json.jenis_cuti_id == '2' || json.jenis_cuti_id == '5') {
+                $('#row_dokumen_validasi').show();
+                if (json.dokumen_pendukung && json.dokumen_pendukung !== '') {
+                    var dokumenUrl = 'dokumen/cuti/' + json.dokumen_pendukung;
+                    var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
+                    var isPdf = fileExtension === 'pdf';
+                    var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
+                    
+                    var dokumenHtml = '';
+                    if (isPdf) {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="bx bx-file"></i> Buka Dokumen PDF
+                                </a>
+                            </div>
+                        `;
+                    } else if (isImage) {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="bx bx-image"></i> Buka Dokumen Gambar
+                                </a>
+                            </div>
+                        `;
+                    } else {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary" download>
+                                    <i class="bx bx-download"></i> Download Dokumen
+                                </a>
+                            </div>
+                        `;
+                    }
+                    $('#dokumen_pendukung_info').html(dokumenHtml);
+                } else {
+                    $('#dokumen_pendukung_info').html('<div class="alert alert-warning"><i class="bx bx-info-circle"></i> Tidak Ada Dokumen Pendukung</div>');
+                }
+            } else {
+                $('#row_dokumen_validasi').hide();
+                $('#dokumen_pendukung_info').html('');
+            }
         } else if (json.st == 0) {
             pesan('PERINGATAN', json.msg, '');
             $('#table_pegawai').DataTable().ajax.reload();

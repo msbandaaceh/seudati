@@ -87,7 +87,7 @@ class HalamanUtama extends MY_Controller
             }
         }
 
-        $pegawai_ = form_dropdown('pegawai', $pegawai, '', 'class = "form-control select2" onchange="inputCutiAdmin()" id="pegawai"');
+        $pegawai_ = form_dropdown('pegawai', $pegawai, '', 'class = "form-control select2" onchange="inputCutiAdmin(this.value)" id="pegawai"');
 
         echo json_encode(
             array(

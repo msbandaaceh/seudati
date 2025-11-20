@@ -23,7 +23,7 @@
                     <div class="card-header text-end">
                         <button type="button" class="btn btn-outline-primary px-5" data-bs-toggle="modal"
                             data-bs-target="#tambah-modal"
-                            onclick="BukaModalCutiAdmin()"><i
+                            onclick="BukaModalCutiAdmin('-1')"><i
                                 class="bx bx-user mr-1"></i>Tambah</button>
                     </div>
                     <div class="card-body">
@@ -81,6 +81,12 @@
                     <div class="col-12">
                         <label for="v_alasan" class="form-label">Alasan Cuti </label>
                         <input type="text" class="form-control" id="v_alasan" readonly>
+                    </div>
+                </div>
+                <div class="row g-3 mb-3" id="v_row_dokumen" style="display: none;">
+                    <div class="col-12">
+                        <label class="form-label">Dokumen Pendukung</label>
+                        <div id="v_dokumen_pendukung_info"></div>
                     </div>
                 </div>
 
@@ -142,7 +148,7 @@
                 </div>
                 <div class="form-group" id="isiform">
                     <div class="row mb-3">
-                        <div class="col">
+                        <div class="col-md-4">
                             <div class="card radius-10">
                                 <div class="card-body">
                                     <div class="text-center">
@@ -151,7 +157,35 @@
                                             <i class="bx bx-calendar-check"></i>
                                         </div>
                                         <h4 class="my-1" id="kuota_show"></h4>
-                                        <p class="mb-0 text-secondary">Cuti Bisa Diambil</p>
+                                        <p class="mb-0 text-secondary">Cuti Tahunan Bisa Diambil</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card radius-10">
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <div
+                                            class="widgets-icons rounded-circle mx-auto bg-light-danger text-danger mb-3">
+                                            <i class="bx bx-plus-medical"></i>
+                                        </div>
+                                        <h4 class="my-1" id="cuti_sakit_show_admin"></h4>
+                                        <p class="mb-0 text-secondary">Sisa Cuti Sakit Tahun Ini</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card radius-10">
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <div
+                                            class="widgets-icons rounded-circle mx-auto bg-light-warning text-warning mb-3">
+                                            <i class="bx bx-info-circle"></i>
+                                        </div>
+                                        <h4 class="my-1" id="cuti_alasan_penting_show_admin"></h4>
+                                        <p class="mb-0 text-secondary">Sisa Cuti Alasan Penting Tahun Ini</p>
                                     </div>
                                 </div>
                             </div>

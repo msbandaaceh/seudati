@@ -127,6 +127,12 @@
                                     <textarea id="alasan" class="form-control" rows="2" readonly></textarea>
                                 </div>
                             </div>
+                            <div class="row mb-3" id="row_dokumen_validasi" style="display: none;">
+                                <div class="col">
+                                    <label class="form-label">Dokumen Pendukung</label>
+                                    <div id="dokumen_pendukung_info"></div>
+                                </div>
+                            </div>
                             <div class="row mb-3">
                                 <div class="col">
                                     <label for="status_valid" class="form-label">Proses Cuti <code>*</code></label>

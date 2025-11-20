@@ -203,7 +203,7 @@
                                         <small class="text-muted">Format: PDF, JPG, JPEG, PNG. Maksimal 5MB</small>
                                         <div id="preview_dokumen" class="mt-2" style="display: none;">
                                             <p class="mb-1"><strong>File saat ini:</strong></p>
-                                            <p class="mb-0" id="nama_file_sekarang"></p>
+                                            <div id="dokumen_pendukung_info"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -269,6 +269,12 @@
                             <div class="col-12">
                                 <label for="v_alasan" class="form-label">Alasan Cuti </label>
                                 <input type="text" class="form-control" id="v_alasan" readonly>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3" id="v_row_dokumen" style="display: none;">
+                            <div class="col-12">
+                                <label class="form-label">Dokumen Pendukung</label>
+                                <div id="v_dokumen_pendukung_info"></div>
                             </div>
                         </div>
 

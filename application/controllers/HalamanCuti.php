@@ -112,6 +112,7 @@ class HalamanCuti extends MY_Controller
     public function show_cuti_admin()
     {
         $id = $this->input->post('id');
+        $id_cuti_edit = $this->encryption->decrypt(base64_decode($this->input->post('id_cuti_edit'))); // ID cuti untuk edit
 
         $n1 = 0;
         $n2 = 0;
@@ -167,6 +168,45 @@ class HalamanCuti extends MY_Controller
         $alasan = '';
         $alamat = '';
         $jenis_cuti = '';
+        $dokumen_pendukung = '';
+        $id_cuti = '';
+
+        // Ambil data cuti sakit dan cuti alasan penting dari register_catatan_cuti
+        $cuti_sakit_sudah_diambil = 0;
+        $cuti_alasan_penting_sudah_diambil = 0;
+        $queryCatatanCuti = $this->model->cek_cuti_sakit_alasan_penting(date("Y"), $id);
+        if ($queryCatatanCuti && $queryCatatanCuti->num_rows() > 0) {
+            $cuti_sakit_sudah_diambil = $queryCatatanCuti->row()->cuti_sakit ?? 0;
+            $cuti_alasan_penting_sudah_diambil = $queryCatatanCuti->row()->cuti_alasan_penting ?? 0;
+        }
+
+        // Hitung sisa cuti sakit (14 hari - yang sudah diambil)
+        $sisa_cuti_sakit = 14 - $cuti_sakit_sudah_diambil;
+        if ($sisa_cuti_sakit < 0) {
+            $sisa_cuti_sakit = 0;
+        }
+
+        // Hitung sisa cuti alasan penting (10 hari - yang sudah diambil)
+        $sisa_cuti_alasan_penting = 10 - $cuti_alasan_penting_sudah_diambil;
+        if ($sisa_cuti_alasan_penting < 0) {
+            $sisa_cuti_alasan_penting = 0;
+        }
+
+        // Jika mode edit, ambil data cuti
+        if (!empty($id_cuti_edit)) {
+            $cariCuti = $this->model->get_seleksi('register_cuti', 'id', $id_cuti_edit);
+            if ($cariCuti->num_rows() > 0) {
+                $cuti_data = $cariCuti->row();
+                $id_cuti = $id_cuti_edit;
+                $lama = $cuti_data->lama;
+                $tgl_awal = $cuti_data->tgl_awal;
+                $tgl_akhir = $cuti_data->tgl_akhir;
+                $alasan = $cuti_data->alasan;
+                $alamat = $cuti_data->alamat;
+                $jenis_cuti = $cuti_data->jenis_cuti;
+                $dokumen_pendukung = $cuti_data->dokumen_pendukung ?? '';
+            }
+        }
 
         if ($id_grup == '6') {
             $jenis = array(
@@ -193,18 +233,18 @@ class HalamanCuti extends MY_Controller
             );
         }
 
-        $id = '';
-        $dokumen_pendukung = '';
-        $jenis = form_dropdown('jenis', $jenis, '', 'onchange="UbahKalender(this)" class="form-control" id="jenis"');
+        $jenis = form_dropdown('jenis', $jenis, $jenis_cuti, 'onchange="UbahKalender(this)" class="form-control" id="jenis"');
 
         echo json_encode(
             array(
                 'st' => 1,
-                'id' => $id,
+                'id' => $id_cuti,
                 'jenis' => $jenis,
                 'jenis_cuti' => $jenis_cuti,
                 'lama' => $lama,
                 'kuota' => $kuota_cuti,
+                'sisa_cuti_sakit' => $sisa_cuti_sakit,
+                'sisa_cuti_alasan_penting' => $sisa_cuti_alasan_penting,
                 'tgl_awal' => $tgl_awal,
                 'tgl_akhir' => $tgl_akhir,
                 'alasan' => $alasan,
@@ -264,13 +304,13 @@ class HalamanCuti extends MY_Controller
             $cuti_sakit_sudah_diambil = $queryCatatanCuti->row()->cuti_sakit ?? 0;
             $cuti_alasan_penting_sudah_diambil = $queryCatatanCuti->row()->cuti_alasan_penting ?? 0;
         }
-        
+
         // Hitung sisa cuti sakit (14 hari - yang sudah diambil)
         $sisa_cuti_sakit = 14 - $cuti_sakit_sudah_diambil;
         if ($sisa_cuti_sakit < 0) {
             $sisa_cuti_sakit = 0;
         }
-        
+
         // Hitung sisa cuti alasan penting (10 hari - yang sudah diambil)
         $sisa_cuti_alasan_penting = 10 - $cuti_alasan_penting_sudah_diambil;
         if ($sisa_cuti_alasan_penting < 0) {
@@ -383,6 +423,8 @@ class HalamanCuti extends MY_Controller
         $tgl_akhir = $this->tanggalhelper->convertDayDate($cariCuti->row()->tgl_akhir);
         $alasan = $cariCuti->row()->alasan;
         $alamat = $cariCuti->row()->alamat;
+        $jenis_cuti_id = $cariCuti->row()->jenis_cuti; // ID jenis cuti (angka)
+        $dokumen_pendukung = $cariCuti->row()->dokumen_pendukung ?? '';
 
         echo json_encode(
             array(
@@ -393,6 +435,8 @@ class HalamanCuti extends MY_Controller
                 'nip' => $nip,
                 'jabatan' => $jabatan,
                 'jenis_cuti' => $jenis_cuti,
+                'jenis_cuti_id' => $jenis_cuti_id, // ID jenis cuti untuk cek apakah 2 atau 5
+                'dokumen_pendukung' => $dokumen_pendukung,
                 'tgl_awal' => $tgl_awal,
                 'tgl_akhir' => $tgl_akhir,
                 'alamat' => $alamat,
@@ -509,24 +553,24 @@ class HalamanCuti extends MY_Controller
             if (!empty($_FILES['dokumen_pendukung']['name'])) {
                 // Ada file baru yang diupload
 
-            // Konfigurasi upload
-            $config['upload_path'] = './assets/dokumen/cuti/';
-            $config['allowed_types'] = 'pdf|jpg|jpeg|png';
-            $config['max_size'] = 5120; // 5MB dalam KB
-            $config['encrypt_name'] = TRUE;
+                // Konfigurasi upload
+                $config['upload_path'] = './dokumen/cuti/';
+                $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+                $config['max_size'] = 5120; // 5MB dalam KB
+                $config['encrypt_name'] = TRUE;
 
-            // Buat folder jika belum ada
-            if (!is_dir($config['upload_path'])) {
-                mkdir($config['upload_path'], 0755, true);
-            }
+                // Buat folder jika belum ada
+                if (!is_dir($config['upload_path'])) {
+                    mkdir($config['upload_path'], 0755, true);
+                }
 
-            $this->load->library('upload', $config);
+                $this->load->library('upload', $config);
 
-            if (!$this->upload->do_upload('dokumen_pendukung')) {
-                $error = $this->upload->display_errors('', '');
-                echo json_encode(['success' => 2, 'message' => 'Upload Dokumen Gagal: ' . $error]);
-                return;
-            }
+                if (!$this->upload->do_upload('dokumen_pendukung')) {
+                    $error = $this->upload->display_errors('', '');
+                    echo json_encode(['success' => 2, 'message' => 'Upload Dokumen Gagal: ' . $error]);
+                    return;
+                }
 
                 $upload_data = $this->upload->data();
                 $dokumen_pendukung = $upload_data['file_name'];
@@ -601,7 +645,7 @@ class HalamanCuti extends MY_Controller
             if (!empty($_FILES['dokumen_pendukung']['name'])) {
                 // Ada file baru yang diupload
                 // Konfigurasi upload
-                $config['upload_path'] = './assets/dokumen/cuti/';
+                $config['upload_path'] = './dokumen/cuti/';
                 $config['allowed_types'] = 'pdf|jpg|jpeg|png';
                 $config['max_size'] = 5120; // 5MB dalam KB
                 $config['encrypt_name'] = TRUE;
@@ -813,6 +857,8 @@ class HalamanCuti extends MY_Controller
         $alasan = $cariCuti->row()->alasan;
         $alamat = $cariCuti->row()->alamat;
         $status_validator = $cariCuti->row()->status_validator;
+        $jenis_cuti_id = $cariCuti->row()->jenis_cuti; // ID jenis cuti (angka)
+        $dokumen_pendukung = $cariCuti->row()->dokumen_pendukung ?? '';
 
         if ($cariCuti->row()->alasan_validator) {
             $alasan_validator = $cariCuti->row()->alasan_validator;
@@ -833,6 +879,8 @@ class HalamanCuti extends MY_Controller
                 'id' => $id,
                 'judul' => $judul,
                 'jenis_cuti' => $jenis_cuti,
+                'jenis_cuti_id' => $jenis_cuti_id, // ID jenis cuti untuk cek apakah 2 atau 5
+                'dokumen_pendukung' => $dokumen_pendukung,
                 'tgl_awal' => $tgl_awal,
                 'tgl_akhir' => $tgl_akhir,
                 'lama' => $lama,
@@ -844,6 +892,48 @@ class HalamanCuti extends MY_Controller
                 'alasan_ppk' => $alasan_ppk
             )
         );
+        return;
+    }
+
+    public function get_pegawai_id_from_cuti()
+    {
+        $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
+        $cariCuti = $this->model->get_seleksi('register_cuti', 'id', $id);
+
+        $data = [
+            "tabel" => "v_users",
+            "kolom_seleksi" => "status_pegawai",
+            "seleksi" => "1"
+        ];
+
+        $users = $this->apihelper->get('apiclient/get_data_seleksi', $data);
+
+        $pegawai = array();
+        if ($users['status_code'] === 200) {
+            foreach ($users['response']['data'] as $item) {
+                $pegawai[$item['pegawai_id']] = $item['fullname'];
+            }
+        }
+
+        if ($cariCuti->num_rows() > 0) {
+            $pegawai_ = form_dropdown('pegawai', $pegawai, $cariCuti->row()->pegawai_id, 'class = "form-control select2" onchange="inputCutiAdmin(this.value)" id="pegawai"');
+
+            echo json_encode(
+                array(
+                    'st' => 1,
+                    'judul' => 'EDIT REGISTER CUTI',
+                    'pegawai' => $pegawai_,
+                )
+            );
+            
+        } else {
+            echo json_encode(
+                array(
+                    'st' => 0,
+                    'msg' => 'Data cuti tidak ditemukan'
+                )
+            );
+        }
         return;
     }
 
@@ -906,12 +996,12 @@ class HalamanCuti extends MY_Controller
     {
         $start = $this->input->get('start');
         $end = $this->input->get('end');
-        
+
         $data_cuti = $this->model->get_cuti_kalender($start, $end);
         $data_izin_keluar = $this->model->get_izin_keluar_kalender($start, $end);
-        
+
         $events = [];
-        
+
         // Event Cuti
         foreach ($data_cuti as $cuti) {
             $jenis_cuti = '';
@@ -946,7 +1036,7 @@ class HalamanCuti extends MY_Controller
                     $color = '#343a40';
                     break;
             }
-            
+
             $events[] = [
                 'id' => 'cuti_' . $cuti['id'],
                 'title' => $cuti['nama_pegawai'] . ' - ' . $jenis_cuti,
@@ -962,18 +1052,18 @@ class HalamanCuti extends MY_Controller
                 ]
             ];
         }
-        
+
         // Event Izin Keluar
         foreach ($data_izin_keluar as $izin) {
             $start_datetime = $izin['tgl_izin'] . 'T' . $izin['jam_mulai'];
             $end_datetime = $izin['tgl_izin'] . 'T' . $izin['jam_akhir'];
-            
+
             // Jika jam_akhir lebih kecil dari jam_mulai, berarti sampai hari berikutnya
             if (strtotime($izin['jam_akhir']) < strtotime($izin['jam_mulai'])) {
                 $end_date = date('Y-m-d', strtotime($izin['tgl_izin'] . ' +1 day'));
                 $end_datetime = $end_date . 'T' . $izin['jam_akhir'];
             }
-            
+
             $events[] = [
                 'id' => 'izin_' . $izin['id'],
                 'title' => $izin['nama_pegawai'] . ' - Izin Keluar',
@@ -991,7 +1081,7 @@ class HalamanCuti extends MY_Controller
                 ]
             ];
         }
-        
+
         echo json_encode($events);
     }
 }
