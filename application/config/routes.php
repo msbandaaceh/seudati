@@ -107,4 +107,6 @@ $route['generate_cuti'] = 'HalamanPengaturan/generate_cuti';
 $route['show_tabel_sisa_cuti'] = 'HalamanPengaturan/show_tabel_sisa_cuti';
 $route['simpan_sisa_cuti'] = 'HalamanPengaturan/simpan_sisa_cuti';
 
+$route['get_cuti_kalender'] = 'HalamanCuti/get_cuti_kalender';
+
 $route['keluar'] = 'HalamanUtama/keluar';

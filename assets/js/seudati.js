@@ -1213,6 +1213,17 @@ function fetchSisaCuti() {
             $('#tabelSisaCuti').html('');
 
             let dataTabel = `
+                <style>
+                    #tabelSisaCutiData td, #tabelSisaCutiData th {
+                        white-space: normal;
+                        word-wrap: break-word;
+                        overflow-wrap: break-word;
+                        max-width: 150px;
+                    }
+                    #tabelSisaCutiData td[contenteditable="true"] {
+                        max-width: 100px;
+                    }
+                </style>
                 <div class="table-responsive">
                 <table id="tabelSisaCutiData" class="table table-striped table-bordered table-hover">
                     <thead>
@@ -1222,6 +1233,8 @@ function fetchSisaCuti() {
                             <th>SISA TAHUN INI</th>
                             <th>SISA TAHUN LALU</th>
                             <th>SISA 2 TAHUN LALU</th>
+                            <th>SISA CUTI SAKIT TAHUN INI</th>
+                            <th>SISA CUTI ALASAN PENTING TAHUN INI</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1237,6 +1250,12 @@ function fetchSisaCuti() {
                 if (row.n3 == null) {
                     row.n3 = '';
                 }
+                if (row.cuti_sakit == null) {
+                    row.cuti_sakit = 0;
+                }
+                if (row.cuti_alasan_penting == null) {
+                    row.cuti_alasan_penting = 0;
+                }
 
                 // Baris tabel
                 dataTabel += `
@@ -1246,6 +1265,8 @@ function fetchSisaCuti() {
                         <td contenteditable="true" data-kelas="1" data-id="${row.id_n1}">${row.n1}</td>
                         <td contenteditable="true" data-kelas="2" data-id="${row.id_n2}">${row.n2}</td>
                         <td contenteditable="true" data-kelas="3" data-id="${row.id_n3}">${row.n3}</td>
+                        <td>${14-row.cuti_sakit}</td>
+                        <td>${10-row.cuti_alasan_penting}</td>
                     </tr>
                 `;
             });
@@ -1259,6 +1280,8 @@ function fetchSisaCuti() {
                             <th>SISA TAHUN INI</th>
                             <th>SISA TAHUN LALU</th>
                             <th>SISA 2 TAHUN LALU</th>
+                            <th>SISA CUTI SAKIT TAHUN INI</th>
+                            <th>SISA CUTI ALASAN PENTING TAHUN INI</th>
                         </tr>
                     </tfoot>
                 </table>
@@ -2826,9 +2849,16 @@ function BukaModalCuti(id) {
             $('#jenis_').html('');
             $('#kuota').val('');
             $('#kuota_show').html('');
+            $('#cuti_sakit_show').html('');
+            $('#cuti_alasan_penting_show').html('');
             $('#lama').val('');
             $('#alasan').val('');
             $('#alamat').val('');
+            $('#dokumen_pendukung').val('');
+            $('#row_dokumen_pendukung').hide();
+            $('#dokumen_pendukung').prop('required', false);
+            $('#preview_dokumen').hide();
+            $('#nama_file_sekarang').html('');
 
             // isi data dari response
             $("#judul").append(json.judul);
@@ -2836,9 +2866,20 @@ function BukaModalCuti(id) {
             $('#jenis_').append(json.jenis);
             $('#kuota_show').append(json.kuota + ' HARI');
             $('#kuota').val(json.kuota);
+            $('#cuti_sakit_show').html((json.sisa_cuti_sakit || 0) + ' HARI');
+            $('#cuti_alasan_penting_show').html((json.sisa_cuti_alasan_penting || 0) + ' HARI');
             $('#lama').val(json.lama);
             $('#alasan').val(json.alasan);
             $('#alamat').val(json.alamat);
+
+            // Tampilkan dokumen pendukung jika ada (untuk edit)
+            if (json.dokumen_pendukung) {
+                $('#preview_dokumen').show();
+                $('#nama_file_sekarang').html(json.dokumen_pendukung);
+            } else {
+                $('#preview_dokumen').hide();
+                $('#nama_file_sekarang').html('');
+            }
 
             // kalau tgl_mulai dan tgl_selesai ada, set value
             if (json.id && json.tgl_awal && json.tgl_akhir) {
@@ -2846,6 +2887,16 @@ function BukaModalCuti(id) {
                 window.tglAkhirSet = json.tgl_akhir;
 
                 let jenis = document.getElementById('jenis').value;
+                
+                // Tampilkan/sembunyikan field dokumen berdasarkan jenis cuti
+                if (jenis == 2 || jenis == 5) {
+                    $('#row_dokumen_pendukung').show();
+                    $('#dokumen_pendukung').prop('required', true);
+                } else {
+                    $('#row_dokumen_pendukung').hide();
+                    $('#dokumen_pendukung').prop('required', false);
+                }
+                
                 if (jenis == 1 || jenis == 2) {
                     HariKerja();
                 } else {
@@ -2879,6 +2930,11 @@ function inputCutiAdmin() {
             $('#lama').val('');
             $('#alasan').val('');
             $('#alamat').val('');
+            $('#dokumen_pendukung_admin').val('');
+            $('#row_dokumen_pendukung_admin').hide();
+            $('#dokumen_pendukung_admin').prop('required', false);
+            $('#preview_dokumen_admin').hide();
+            $('#nama_file_sekarang_admin').html('');
 
             // isi data dari response
             $('#jenis_').append(json.jenis);
@@ -2888,12 +2944,31 @@ function inputCutiAdmin() {
             $('#alasan').val(json.alasan);
             $('#alamat').val(json.alamat);
 
+            // Tampilkan dokumen pendukung jika ada (untuk edit)
+            if (json.dokumen_pendukung) {
+                $('#preview_dokumen_admin').show();
+                $('#nama_file_sekarang_admin').html(json.dokumen_pendukung);
+            } else {
+                $('#preview_dokumen_admin').hide();
+                $('#nama_file_sekarang_admin').html('');
+            }
+
             // kalau tgl_mulai dan tgl_selesai ada, set value
             if (json.id && json.tgl_awal && json.tgl_akhir) {
                 window.tglAwalSet = json.tgl_awal;
                 window.tglAkhirSet = json.tgl_akhir;
 
                 let jenis = document.getElementById('jenis').value;
+                
+                // Tampilkan/sembunyikan field dokumen berdasarkan jenis cuti
+                if (jenis == 2 || jenis == 5) {
+                    $('#row_dokumen_pendukung_admin').show();
+                    $('#dokumen_pendukung_admin').prop('required', true);
+                } else {
+                    $('#row_dokumen_pendukung_admin').hide();
+                    $('#dokumen_pendukung_admin').prop('required', false);
+                }
+                
                 if (jenis == 1 || jenis == 2) {
                     HariKerja();
                 } else {
@@ -3516,7 +3591,6 @@ function HariKerja() {
                     var day = dayElem.dateObj.getDay();
                     var dateStr = fp.formatDate(dayElem.dateObj, "Y-m-d");
 
-                    /*
                     var today = new Date();
                     var minDate = new Date();
                     minDate.setDate(today.getDate() + 5);
@@ -3524,7 +3598,7 @@ function HariKerja() {
                     // Disable 5 hari ke belakang
                     if (dayElem.dateObj < minDate) {
                         dayElem.classList.add("disabled-date");
-                    }*/
+                    }
 
                     // Disable Sabtu & Minggu + tanggal merah (tidak bisa diklik langsung)
                     if (day === 0 || day === 6 || disabledDates.includes(dateStr)) {
@@ -3616,11 +3690,25 @@ function UbahKalender(id) {
                 notifikasi(pesan, '2');
             } else {
                 $('#detil_cuti').show();
+                $('#row_dokumen_pendukung').hide();
+                $('#dokumen_pendukung').prop('required', false);
+                // Untuk form admin
+                if ($('#row_dokumen_pendukung_admin').length) {
+                    $('#row_dokumen_pendukung_admin').hide();
+                    $('#dokumen_pendukung_admin').prop('required', false);
+                }
                 HariKerja();
             }
             break;
         case 2:
             $('#detil_cuti').show();
+            $('#row_dokumen_pendukung').show();
+            $('#dokumen_pendukung').prop('required', true);
+            // Untuk form admin
+            if ($('#row_dokumen_pendukung_admin').length) {
+                $('#row_dokumen_pendukung_admin').show();
+                $('#dokumen_pendukung_admin').prop('required', true);
+            }
             HariKalender();
             break;
         case 3:
@@ -3630,6 +3718,13 @@ function UbahKalender(id) {
                 notifikasi(pesan, '2');
             } else {
                 $('#detil_cuti').show();
+                $('#row_dokumen_pendukung').hide();
+                $('#dokumen_pendukung').prop('required', false);
+                // Untuk form admin
+                if ($('#row_dokumen_pendukung_admin').length) {
+                    $('#row_dokumen_pendukung_admin').hide();
+                    $('#dokumen_pendukung_admin').prop('required', false);
+                }
                 HariKalender();
             }
             break;
@@ -3639,11 +3734,20 @@ function UbahKalender(id) {
                 notifikasi(pesan, '2');
             } else {
                 $('#detil_cuti').show();
+                $('#row_dokumen_pendukung').hide();
+                $('#dokumen_pendukung').prop('required', false);
                 HariKalender();
             }
             break;
         case 5:
             $('#detil_cuti').show();
+            $('#row_dokumen_pendukung').show();
+            $('#dokumen_pendukung').prop('required', true);
+            // Untuk form admin
+            if ($('#row_dokumen_pendukung_admin').length) {
+                $('#row_dokumen_pendukung_admin').show();
+                $('#dokumen_pendukung_admin').prop('required', true);
+            }
             HariKalender();
             break;
         case 6:
@@ -3652,6 +3756,8 @@ function UbahKalender(id) {
                 notifikasi(pesan, '2');
             } else {
                 $('#detil_cuti').show();
+                $('#row_dokumen_pendukung').hide();
+                $('#dokumen_pendukung').prop('required', false);
                 HariKalender();
             }
             break;

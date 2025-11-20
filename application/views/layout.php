@@ -23,6 +23,7 @@
     <link href="assets/plugins/flatpickr/flatpickr.min.css" rel="stylesheet" />
     <link href="assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.min.css"
         rel="stylesheet" />
+    <link href="assets/plugins/fullcalendar/css/main.min.css" rel="stylesheet" />
 
     <!-- Bootstrap CSS -->
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
@@ -277,6 +278,11 @@
                             <div class="menu-title">Sisa Cuti</div>
                         </a>
                     </li>
+                    <li><a href="javascript:;" data-page="kalender_cuti">
+                            <div class="parent-icon"><i class="bx bx-calendar"></i></div>
+                            <div class="menu-title">Kalender Cuti</div>
+                        </a>
+                    </li>
                 <?php } ?>
                 <!--end navigation-->
             </ul>
@@ -408,6 +414,7 @@
     <script src="assets/plugins/flatpickr/flatpickr.js"></script>
     <script src="assets/plugins/bootstrap-material-datetimepicker/js/moment.min.js"></script>
     <script src="assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.min.js"></script>
+    <script src="assets/plugins/fullcalendar/js/main.min.js"></script>
 
     <!--app JS-->
     <script src="assets/js/app.js"></script>
@@ -463,7 +470,7 @@
         };
     </script>
 
-    <script src="<?= site_url('assets/js/seudati.js?v=1.1.0'); ?>"></script>
+    <script src="<?= site_url('assets/js/seudati.js?v=1.2.0'); ?>"></script>
 </body>
 
 </html>
