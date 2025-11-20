@@ -35,6 +35,7 @@ class HalamanUtama extends MY_Controller
             'laporan_cuti',
             'tgl_merah',
             'sisa_cuti',
+            'kalender_cuti',
         ];
 
         if (in_array($halaman, $allowed)) {
