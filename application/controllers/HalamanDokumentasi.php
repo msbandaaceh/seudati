@@ -60,6 +60,9 @@ class HalamanDokumentasi extends MY_Controller
                     <li><strong>Manajemen Izin Keluar Kantor</strong>: Pengajuan dan validasi izin keluar kantor</li>
                     <li><strong>Manajemen Izin Diklat/Bimtek</strong>: Pengajuan, validasi, dan verifikasi izin diklat/bimtek</li>
                     <li><strong>Manajemen Cuti</strong>: Pengajuan dan validasi cuti (tahunan, sakit, melahirkan, besar, dll)</li>
+                    <li><strong>Upload Dokumen Pendukung</strong>: Upload dokumen untuk cuti sakit dan cuti alasan penting (maks 5MB)</li>
+                    <li><strong>Kalender Cuti & Izin Keluar</strong>: Visualisasi cuti dan izin keluar dalam bentuk kalender interaktif</li>
+                    <li><strong>Informasi Sisa Cuti</strong>: Menampilkan sisa cuti tahunan, cuti sakit, dan cuti alasan penting</li>
                     <li><strong>Sistem Notifikasi</strong>: Notifikasi otomatis via sistem</li>
                     <li><strong>Laporan & Register</strong>: Laporan periodik dan register permohonan</li>
                     <li><strong>Manajemen Peran</strong>: Pengelolaan hak akses berdasarkan peran</li>
@@ -145,6 +148,16 @@ class HalamanDokumentasi extends MY_Controller
                             <tr>
                                 <td>PDF Viewer</td>
                                 <td>PDF.js</td>
+                                <td>Latest</td>
+                            </tr>
+                            <tr>
+                                <td>Calendar Library</td>
+                                <td>FullCalendar.js</td>
+                                <td>6.x</td>
+                            </tr>
+                            <tr>
+                                <td>Date Picker</td>
+                                <td>Flatpickr</td>
                                 <td>Latest</td>
                             </tr>
                         </tbody>
@@ -250,13 +263,13 @@ class HalamanDokumentasi extends MY_Controller
                             <div class="card-body">
                                 <p><strong>Menyimpan data transaksi:</strong></p>
                                 <ul>
-                                    <li><code>register_izin_keluar</code></li>
-                                    <li><code>register_izin_diklat</code></li>
-                                    <li><code>register_cuti</code></li>
-                                    <li><code>register_sisa_cuti_tahunan</code></li>
-                                    <li><code>register_catatan_cuti</code></li>
-                                    <li><code>register_hari_libur</code></li>
-                                    <li><code>peran</code></li>
+                                    <li><code>register_izin_keluar</code> - Data izin keluar kantor</li>
+                                    <li><code>register_izin_diklat</code> - Data izin diklat/bimtek</li>
+                                    <li><code>register_cuti</code> - Data permohonan cuti (termasuk kolom dokumen_pendukung)</li>
+                                    <li><code>register_sisa_cuti_tahunan</code> - Sisa cuti tahunan pegawai</li>
+                                    <li><code>register_catatan_cuti</code> - Catatan cuti (cuti_sakit, cuti_alasan_penting, dll)</li>
+                                    <li><code>register_hari_libur</code> - Data hari libur nasional</li>
+                                    <li><code>peran</code> - Manajemen peran pengguna</li>
                                 </ul>
                             </div>
                         </div>
@@ -300,8 +313,10 @@ class HalamanDokumentasi extends MY_Controller
 ├── assets/
 │   ├── css/            # Stylesheets
 │   ├── js/             # JavaScript
-│   └── plugins/        # Third-party plugins
-├── dokumen/            # Upload storage
+│   ├── plugins/        # Third-party plugins
+│   └── dokumen/        # Upload dokumen (cuti, diklat)
+│       ├── cuti/       # Dokumen pendukung cuti sakit & alasan penting
+│       └── diklat/     # Dokumen diklat (ST, sertifikat)
 ├── system/             # CodeIgniter core
 └── vendor/             # Composer packages</code></pre>
 
@@ -583,7 +598,42 @@ $id = $this->encryption->decrypt(base64_decode($encrypted));</code></pre>
                     </div>
                 </div>
 
-                <h3 class="mt-4">5.3 Flow Pengajuan Izin Diklat/Bimtek</h3>
+                <h3 class="mt-4">5.3 Flow Pengajuan Cuti dengan Dokumen Pendukung</h3>
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Cuti Sakit & Cuti Alasan Penting</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <span class="badge bg-primary">1</span>
+                                <p>Pegawai membuka menu "Cuti" dan klik "Tambah Permohonan Cuti"</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-primary">2</span>
+                                <p>Pegawai memilih jenis cuti: "Cuti Sakit" atau "Cuti Alasan Penting"</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-warning">3</span>
+                                <p>Field "Dokumen Pendukung" muncul (wajib diisi)</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-primary">4</span>
+                                <p>Pegawai upload dokumen (PDF/JPG/PNG, maks 5MB)</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-success">5</span>
+                                <p>Sistem validasi file dan simpan ke folder assets/dokumen/cuti/</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-info">6</span>
+                                <p>Permohonan diproses seperti cuti biasa (validasi atasan → PPK → legalisasi)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="mt-4">5.4 Flow Pengajuan Izin Diklat/Bimtek</h3>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead class="table-dark">
@@ -688,7 +738,39 @@ $id = $this->encryption->decrypt(base64_decode($encrypted));</code></pre>
                                     <li><code>POST /simpan_validasi_cuti_ppk</code> - Validasi PPK</li>
                                     <li><code>POST /simpan_nomor</code> - Legalisasi nomor</li>
                                     <li><code>GET /cetak_cuti/{id}</code> - Cetak formulir</li>
+                                    <li><code>POST /simpan_cuti_admin</code> - Simpan cuti dari admin (dengan upload dokumen)</li>
+                                    <li><code>GET /get_cuti_kalender</code> - Ambil data cuti dan izin keluar untuk kalender (AJAX)</li>
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKalender">
+                                Kalender Cuti
+                            </button>
+                        </h2>
+                        <div id="collapseKalender" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li><code>GET /kalender_cuti</code> - Halaman kalender cuti</li>
+                                    <li><code>GET /get_cuti_kalender?start={date}&end={date}</code> - API untuk mengambil data event kalender</li>
+                                </ul>
+                                <p class="mt-2"><strong>Response Format:</strong></p>
+                                <pre class="bg-light p-2"><code>[{
+  "id": "cuti-123",
+  "title": "Nama Pegawai - Cuti Tahunan",
+  "start": "2024-01-15",
+  "end": "2024-01-20",
+  "color": "#28a745",
+  "extendedProps": {
+    "tipe": "cuti",
+    "nama": "Nama Pegawai",
+    "jenis": "Cuti Tahunan",
+    "nomor_cuti": "001/CUTI/2024",
+    "alasan": "Alasan cuti"
+  }
+}]</code></pre>
                             </div>
                         </div>
                     </div>
@@ -795,6 +877,9 @@ chmod -R 777 dokumen</code></pre>
                         <li>✅ Enable HTTPS/SSL</li>
                         <li>✅ Set proper file permissions</li>
                         <li>✅ Setup automated backup</li>
+                        <li>✅ Set permission 755 untuk folder assets/dokumen/cuti/</li>
+                        <li>✅ Pastikan folder assets/dokumen/cuti/ dapat diakses untuk upload</li>
+                        <li>✅ Jalankan script SQL untuk menambahkan kolom dokumen_pendukung</li>
                     </ul>
                 </div>
             '
@@ -1032,6 +1117,55 @@ git push origin feature/nama-fitur
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <h3 class="mt-4">9.3 Database Schema Updates</h3>
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Kolom Baru di Tabel register_cuti</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Kolom</th>
+                                    <th>Tipe</th>
+                                    <th>Deskripsi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>dokumen_pendukung</code></td>
+                                    <td>VARCHAR(255)</td>
+                                    <td>Nama file dokumen pendukung untuk cuti sakit dan cuti alasan penting</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="mt-3"><strong>Script SQL:</strong></p>
+                        <pre class="bg-light p-2"><code>ALTER TABLE `register_cuti` 
+ADD COLUMN `dokumen_pendukung` VARCHAR(255) NULL DEFAULT NULL 
+COMMENT \'Nama file dokumen pendukung untuk cuti sakit dan cuti alasan penting\' 
+AFTER `alasan`;</code></pre>
+                    </div>
+                </div>
+
+                <h3 class="mt-4">9.4 Upload File Configuration</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <p><strong>Konfigurasi Upload Dokumen Pendukung Cuti:</strong></p>
+                        <ul>
+                            <li><strong>Path:</strong> <code>./assets/dokumen/cuti/</code></li>
+                            <li><strong>Allowed Types:</strong> pdf, jpg, jpeg, png</li>
+                            <li><strong>Max Size:</strong> 5MB (5120 KB)</li>
+                            <li><strong>File Naming:</strong> Encrypted (menggunakan CodeIgniter upload library dengan encrypt_name = TRUE)</li>
+                            <li><strong>Auto Create Folder:</strong> Folder dibuat otomatis jika belum ada</li>
+                        </ul>
+                        <p class="mt-3"><strong>Contoh Kode:</strong></p>
+                        <pre class="bg-light p-2"><code>$config[\'upload_path\'] = \'./assets/dokumen/cuti/\';
+$config[\'allowed_types\'] = \'pdf|jpg|jpeg|png\';
+$config[\'max_size\'] = 5120; // 5MB
+$config[\'encrypt_name\'] = TRUE;</code></pre>
                     </div>
                 </div>
             '
