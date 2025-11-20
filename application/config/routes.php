@@ -89,6 +89,7 @@ $route['cari_cuti'] = 'HalamanLaporan/cari_cuti';
 $route['show_pegawai'] = 'HalamanUtama/show_pegawai';
 $route['show_cuti_admin'] = 'HalamanCuti/show_cuti_admin';
 $route['simpan_cuti_admin'] = 'HalamanCuti/simpan_cuti_admin';
+$route['get_pegawai_id_from_cuti'] = 'HalamanCuti/get_pegawai_id_from_cuti';
 
 # ROUTE PROSES PERAN
 $route['show_role'] = 'HalamanUtama/show_role';
