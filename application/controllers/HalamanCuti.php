@@ -194,11 +194,13 @@ class HalamanCuti extends MY_Controller
         }
 
         $id = '';
+        $dokumen_pendukung = '';
         $jenis = form_dropdown('jenis', $jenis, '', 'onchange="UbahKalender(this)" class="form-control" id="jenis"');
 
         echo json_encode(
             array(
                 'st' => 1,
+                'id' => $id,
                 'jenis' => $jenis,
                 'jenis_cuti' => $jenis_cuti,
                 'lama' => $lama,
@@ -206,7 +208,8 @@ class HalamanCuti extends MY_Controller
                 'tgl_awal' => $tgl_awal,
                 'tgl_akhir' => $tgl_akhir,
                 'alasan' => $alasan,
-                'alamat' => $alamat
+                'alamat' => $alamat,
+                'dokumen_pendukung' => $dokumen_pendukung
             )
         );
         return;
@@ -252,6 +255,28 @@ class HalamanCuti extends MY_Controller
             $kuota_cuti = $n1;
         }
 
+        // Ambil data cuti sakit dan cuti alasan penting dari register_catatan_cuti
+        // Hitung sisa cuti sakit (14 hari - yang sudah diambil) dan sisa cuti alasan penting (10 hari - yang sudah diambil)
+        $cuti_sakit_sudah_diambil = 0;
+        $cuti_alasan_penting_sudah_diambil = 0;
+        $queryCatatanCuti = $this->model->cek_cuti_sakit_alasan_penting(date("Y"), $this->session->userdata('pegawai_id'));
+        if ($queryCatatanCuti && $queryCatatanCuti->num_rows() > 0) {
+            $cuti_sakit_sudah_diambil = $queryCatatanCuti->row()->cuti_sakit ?? 0;
+            $cuti_alasan_penting_sudah_diambil = $queryCatatanCuti->row()->cuti_alasan_penting ?? 0;
+        }
+        
+        // Hitung sisa cuti sakit (14 hari - yang sudah diambil)
+        $sisa_cuti_sakit = 14 - $cuti_sakit_sudah_diambil;
+        if ($sisa_cuti_sakit < 0) {
+            $sisa_cuti_sakit = 0;
+        }
+        
+        // Hitung sisa cuti alasan penting (10 hari - yang sudah diambil)
+        $sisa_cuti_alasan_penting = 10 - $cuti_alasan_penting_sudah_diambil;
+        if ($sisa_cuti_alasan_penting < 0) {
+            $sisa_cuti_alasan_penting = 0;
+        }
+
         $lama = '';
         $tgl_awal = '';
         $tgl_akhir = '';
@@ -284,6 +309,7 @@ class HalamanCuti extends MY_Controller
             );
         }
 
+        $dokumen_pendukung = '';
         if ($id == '-1') {
             $judul = "PERMOHONAN CUTI BARU";
             $id = '';
@@ -297,6 +323,7 @@ class HalamanCuti extends MY_Controller
             $alasan = $cariCuti->row()->alasan;
             $alamat = $cariCuti->row()->alamat;
             $jenis_cuti = $cariCuti->row()->jenis_cuti;
+            $dokumen_pendukung = $cariCuti->row()->dokumen_pendukung ?? '';
             $jenis = form_dropdown('jenis', $jenis, $jenis_cuti, 'onchange="UbahKalender(this)" class="form-control" id="jenis"');
         }
 
@@ -309,10 +336,13 @@ class HalamanCuti extends MY_Controller
                 'jenis_cuti' => $jenis_cuti,
                 'lama' => $lama,
                 'kuota' => $kuota_cuti,
+                'sisa_cuti_sakit' => $sisa_cuti_sakit,
+                'sisa_cuti_alasan_penting' => $sisa_cuti_alasan_penting,
                 'tgl_awal' => $tgl_awal,
                 'tgl_akhir' => $tgl_akhir,
                 'alasan' => $alasan,
-                'alamat' => $alamat
+                'alamat' => $alamat,
+                'dokumen_pendukung' => $dokumen_pendukung
             )
         );
         return;
@@ -459,21 +489,77 @@ class HalamanCuti extends MY_Controller
             return;
         }
 
+        $jenis_cuti = $this->input->post('jenis');
+        $id_cuti = $this->input->post('id');
+        $dokumen_pendukung = '';
+
+        // Cek apakah edit dan sudah ada dokumen
+        $dokumen_lama = '';
+        if (!empty($id_cuti)) {
+            $cuti_lama = $this->model->get_seleksi('register_cuti', 'id', $id_cuti);
+            if ($cuti_lama->num_rows() > 0) {
+                $dokumen_lama = $cuti_lama->row()->dokumen_pendukung ?? '';
+            }
+        }
+
+        // Validasi upload dokumen untuk cuti sakit (2) dan cuti alasan penting (5)
+        if (in_array($jenis_cuti, ['2', '5'])) {
+            // Jika edit dan sudah ada dokumen, tidak wajib upload ulang
+            // Tapi jika upload file baru, proses upload
+            if (!empty($_FILES['dokumen_pendukung']['name'])) {
+                // Ada file baru yang diupload
+
+            // Konfigurasi upload
+            $config['upload_path'] = './assets/dokumen/cuti/';
+            $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+            $config['max_size'] = 5120; // 5MB dalam KB
+            $config['encrypt_name'] = TRUE;
+
+            // Buat folder jika belum ada
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+
+            $this->load->library('upload', $config);
+
+            if (!$this->upload->do_upload('dokumen_pendukung')) {
+                $error = $this->upload->display_errors('', '');
+                echo json_encode(['success' => 2, 'message' => 'Upload Dokumen Gagal: ' . $error]);
+                return;
+            }
+
+                $upload_data = $this->upload->data();
+                $dokumen_pendukung = $upload_data['file_name'];
+            } elseif (empty($dokumen_lama)) {
+                // Tidak ada file baru dan tidak ada file lama, wajib upload
+                echo json_encode(['success' => 2, 'message' => 'Dokumen Pendukung Tidak Boleh Kosong untuk Cuti Sakit dan Cuti Alasan Penting']);
+                return;
+            } else {
+                // Tidak ada file baru tapi ada file lama, gunakan file lama
+                $dokumen_pendukung = $dokumen_lama;
+            }
+        }
+
         $data = [
             'id' => $this->input->post('id'),
             'pegawai_id' => $this->session->userdata('pegawai_id'),
-            'jenis' => $this->input->post('jenis'),
+            'jenis' => $jenis_cuti,
             'tgl_awal' => $this->input->post('tgl_awal'),
             'tgl_akhir' => $this->input->post('tgl_akhir'),
             'lama' => $this->input->post('lama'),
             'alamat' => $this->input->post('alamat'),
-            'alasan' => $this->input->post('alasan')
+            'alasan' => $this->input->post('alasan'),
+            'dokumen_pendukung' => $dokumen_pendukung
         ];
 
         $result = $this->model->proses_simpan_cuti($data);
         if ($result['status']) {
             echo json_encode(['success' => 1, 'message' => $result['message']]);
         } else {
+            // Hapus file yang sudah diupload jika gagal simpan
+            if (!empty($dokumen_pendukung) && file_exists($config['upload_path'] . $dokumen_pendukung)) {
+                unlink($config['upload_path'] . $dokumen_pendukung);
+            }
             echo json_encode(['success' => 3, 'message' => $result['message']]);
         }
     }
@@ -495,21 +581,76 @@ class HalamanCuti extends MY_Controller
             return;
         }
 
+        $jenis_cuti = $this->input->post('jenis');
+        $id_cuti = $this->input->post('id');
+        $dokumen_pendukung = '';
+
+        // Cek apakah edit dan sudah ada dokumen
+        $dokumen_lama = '';
+        if (!empty($id_cuti)) {
+            $cuti_lama = $this->model->get_seleksi('register_cuti', 'id', $id_cuti);
+            if ($cuti_lama->num_rows() > 0) {
+                $dokumen_lama = $cuti_lama->row()->dokumen_pendukung ?? '';
+            }
+        }
+
+        // Validasi upload dokumen untuk cuti sakit (2) dan cuti alasan penting (5)
+        if (in_array($jenis_cuti, ['2', '5'])) {
+            // Jika edit dan sudah ada dokumen, tidak wajib upload ulang
+            // Tapi jika upload file baru, proses upload
+            if (!empty($_FILES['dokumen_pendukung']['name'])) {
+                // Ada file baru yang diupload
+                // Konfigurasi upload
+                $config['upload_path'] = './assets/dokumen/cuti/';
+                $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+                $config['max_size'] = 5120; // 5MB dalam KB
+                $config['encrypt_name'] = TRUE;
+
+                // Buat folder jika belum ada
+                if (!is_dir($config['upload_path'])) {
+                    mkdir($config['upload_path'], 0755, true);
+                }
+
+                $this->load->library('upload', $config);
+
+                if (!$this->upload->do_upload('dokumen_pendukung')) {
+                    $error = $this->upload->display_errors('', '');
+                    echo json_encode(['success' => 2, 'message' => 'Upload Dokumen Gagal: ' . $error]);
+                    return;
+                }
+
+                $upload_data = $this->upload->data();
+                $dokumen_pendukung = $upload_data['file_name'];
+            } elseif (empty($dokumen_lama)) {
+                // Tidak ada file baru dan tidak ada file lama, wajib upload
+                echo json_encode(['success' => 2, 'message' => 'Dokumen Pendukung Tidak Boleh Kosong untuk Cuti Sakit dan Cuti Alasan Penting']);
+                return;
+            } else {
+                // Tidak ada file baru tapi ada file lama, gunakan file lama
+                $dokumen_pendukung = $dokumen_lama;
+            }
+        }
+
         $data = [
-            'id' => $this->input->post('id'),
+            'id' => $id_cuti,
             'pegawai_id' => $this->input->post('pegawai'),
-            'jenis' => $this->input->post('jenis'),
+            'jenis' => $jenis_cuti,
             'tgl_awal' => $this->input->post('tgl_awal'),
             'tgl_akhir' => $this->input->post('tgl_akhir'),
             'lama' => $this->input->post('lama'),
             'alamat' => $this->input->post('alamat'),
-            'alasan' => $this->input->post('alasan')
+            'alasan' => $this->input->post('alasan'),
+            'dokumen_pendukung' => $dokumen_pendukung
         ];
 
         $result = $this->model->proses_simpan_cuti($data);
         if ($result['status']) {
             echo json_encode(['success' => 1, 'message' => $result['message']]);
         } else {
+            // Hapus file yang sudah diupload jika gagal simpan
+            if (!empty($dokumen_pendukung) && file_exists($config['upload_path'] . $dokumen_pendukung)) {
+                unlink($config['upload_path'] . $dokumen_pendukung);
+            }
             echo json_encode(['success' => 3, 'message' => $result['message']]);
         }
     }
@@ -759,5 +900,98 @@ class HalamanCuti extends MY_Controller
         }
 
         return;
+    }
+
+    public function get_cuti_kalender()
+    {
+        $start = $this->input->get('start');
+        $end = $this->input->get('end');
+        
+        $data_cuti = $this->model->get_cuti_kalender($start, $end);
+        $data_izin_keluar = $this->model->get_izin_keluar_kalender($start, $end);
+        
+        $events = [];
+        
+        // Event Cuti
+        foreach ($data_cuti as $cuti) {
+            $jenis_cuti = '';
+            $color = '';
+            switch ($cuti['jenis_cuti']) {
+                case '1':
+                    $jenis_cuti = 'Cuti Tahunan';
+                    $color = '#28a745'; // hijau
+                    break;
+                case '2':
+                    $jenis_cuti = 'Cuti Sakit';
+                    $color = '#dc3545'; // merah
+                    break;
+                case '3':
+                    $jenis_cuti = 'Cuti Melahirkan';
+                    $color = '#ffc107'; // kuning
+                    break;
+                case '4':
+                    $jenis_cuti = 'Cuti Besar';
+                    $color = '#17a2b8'; // biru
+                    break;
+                case '5':
+                    $jenis_cuti = 'Cuti Alasan Penting';
+                    $color = '#6f42c1'; // ungu
+                    break;
+                case '6':
+                    $jenis_cuti = 'Cuti di Luar Tanggungan Negara';
+                    $color = '#6c757d'; // abu-abu
+                    break;
+                default:
+                    $jenis_cuti = 'Cuti Lainnya';
+                    $color = '#343a40';
+                    break;
+            }
+            
+            $events[] = [
+                'id' => 'cuti_' . $cuti['id'],
+                'title' => $cuti['nama_pegawai'] . ' - ' . $jenis_cuti,
+                'start' => $cuti['tgl_awal'],
+                'end' => date('Y-m-d', strtotime($cuti['tgl_akhir'] . ' +1 day')), // FullCalendar end is exclusive
+                'color' => $color,
+                'extendedProps' => [
+                    'tipe' => 'cuti',
+                    'nama' => $cuti['nama_pegawai'],
+                    'jenis' => $jenis_cuti,
+                    'nomor_cuti' => $cuti['nomor_cuti'],
+                    'alasan' => $cuti['alasan']
+                ]
+            ];
+        }
+        
+        // Event Izin Keluar
+        foreach ($data_izin_keluar as $izin) {
+            $start_datetime = $izin['tgl_izin'] . 'T' . $izin['jam_mulai'];
+            $end_datetime = $izin['tgl_izin'] . 'T' . $izin['jam_akhir'];
+            
+            // Jika jam_akhir lebih kecil dari jam_mulai, berarti sampai hari berikutnya
+            if (strtotime($izin['jam_akhir']) < strtotime($izin['jam_mulai'])) {
+                $end_date = date('Y-m-d', strtotime($izin['tgl_izin'] . ' +1 day'));
+                $end_datetime = $end_date . 'T' . $izin['jam_akhir'];
+            }
+            
+            $events[] = [
+                'id' => 'izin_' . $izin['id'],
+                'title' => $izin['nama_pegawai'] . ' - Izin Keluar',
+                'start' => $start_datetime,
+                'end' => $end_datetime,
+                'color' => '#fd7e14', // orange
+                'display' => 'block',
+                'extendedProps' => [
+                    'tipe' => 'izin_keluar',
+                    'nama' => $izin['nama_pegawai'],
+                    'jenis' => 'Izin Keluar',
+                    'alasan' => $izin['alasan'],
+                    'jam_mulai' => $izin['jam_mulai'],
+                    'jam_akhir' => $izin['jam_akhir']
+                ]
+            ];
+        }
+        
+        echo json_encode($events);
     }
 }

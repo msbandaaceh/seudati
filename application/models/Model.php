@@ -681,6 +681,18 @@ class Model extends CI_Model
         }
     }
 
+    public function cek_cuti_sakit_alasan_penting($tahun, $pegawai_id)
+    {
+        try {
+            $this->db->select('cuti_sakit, cuti_alasan_penting');
+            $this->db->where('pegawai_id', $pegawai_id);
+            $this->db->where('tahun', $tahun);
+            return $this->db->get('register_catatan_cuti');
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
     public function get_tgl_merah()
     {
         try {
@@ -789,6 +801,19 @@ class Model extends CI_Model
                 'modified_by' => $this->session->userdata('fullname'),
                 'modified_on' => date('Y-m-d H:i:s')
             );
+
+            // Update dokumen pendukung jika ada
+            if (isset($data['dokumen_pendukung']) && !empty($data['dokumen_pendukung'])) {
+                // Hapus file lama jika ada
+                $cuti_lama = $this->get_seleksi('register_cuti', 'id', $data['id']);
+                if ($cuti_lama->num_rows() > 0 && !empty($cuti_lama->row()->dokumen_pendukung)) {
+                    $file_lama = './assets/dokumen/cuti/' . $cuti_lama->row()->dokumen_pendukung;
+                    if (file_exists($file_lama)) {
+                        unlink($file_lama);
+                    }
+                }
+                $dataPengguna['dokumen_pendukung'] = $data['dokumen_pendukung'];
+            }
 
             $querySimpan = $this->pembaharuan_data('register_cuti', $dataPengguna, 'id', $data['id']);
         } else {
@@ -911,6 +936,11 @@ class Model extends CI_Model
                 'created_by' => $this->session->userdata('fullname'),
                 'created_on' => date('Y-m-d H:i:s')
             );
+
+            // Tambahkan dokumen pendukung jika ada
+            if (isset($data['dokumen_pendukung']) && !empty($data['dokumen_pendukung'])) {
+                $dataPengguna['dokumen_pendukung'] = $data['dokumen_pendukung'];
+            }
 
             $dataNotif = array(
                 'jenis_pesan' => 'cuti',
@@ -1579,6 +1609,32 @@ class Model extends CI_Model
         return $this->db->select('*')->from('v_cuti')->where('Date(created_on) BETWEEN "' . $tgl_awal . '" AND "' . $tgl_akhir . '"')->get()->result();
     }
 
+    public function get_cuti_kalender($tgl_awal, $tgl_akhir)
+    {
+        $this->db->select('c.id, c.pegawai_id, c.tgl_awal, c.tgl_akhir, c.jenis_cuti, c.nomor_cuti, c.alasan, p.nama_gelar AS nama_pegawai');
+        $this->db->from('register_cuti c');
+        $this->db->join($this->db_sso . '.v_pegawai p', 'c.pegawai_id = p.id', 'left');
+        $this->db->where('c.nomor_cuti IS NOT NULL');
+        $this->db->where('c.hapus', '0');
+        $this->db->where("(c.tgl_awal <= '" . $tgl_akhir . "' AND c.tgl_akhir >= '" . $tgl_awal . "')");
+        $this->db->order_by('c.tgl_awal', 'ASC');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_izin_keluar_kalender($tgl_awal, $tgl_akhir)
+    {
+        $this->db->select('i.id, i.id_user, i.tgl_izin, i.jam_mulai, i.jam_akhir, i.alasan, i.status, u.fullname AS nama_pegawai');
+        $this->db->from('register_izin_keluar i');
+        $this->db->join($this->db_sso . '.v_users u', 'i.id_user = u.userid', 'left');
+        $this->db->where_in('i.status', [1, 3]); // Hanya izin yang disetujui
+        $this->db->where('i.hapus', '0');
+        $this->db->where("i.tgl_izin >= '" . $tgl_awal . "'");
+        $this->db->where("i.tgl_izin <= '" . $tgl_akhir . "'");
+        $this->db->order_by('i.tgl_izin', 'ASC');
+        $this->db->order_by('i.jam_mulai', 'ASC');
+        return $this->db->get()->result_array();
+    }
+
     public function get_tahun_terakhir()
     {
         try {
@@ -1653,10 +1709,13 @@ class Model extends CI_Model
                    MAX(CASE WHEN s.tahun = YEAR(CURDATE()) - 2 THEN s.id ELSE NULL END) AS id_n3, 
                    MAX(CASE WHEN s.tahun = YEAR(CURDATE()) THEN s.sisa ELSE NULL END) AS n1, 
                    MAX(CASE WHEN s.tahun = YEAR(CURDATE()) - 1 THEN s.sisa ELSE NULL END) AS n2, 
-                   MAX(CASE WHEN s.tahun = YEAR(CURDATE()) - 2 THEN s.sisa ELSE NULL END) AS n3');
+                   MAX(CASE WHEN s.tahun = YEAR(CURDATE()) - 2 THEN s.sisa ELSE NULL END) AS n3,
+                   COALESCE(MAX(CASE WHEN c.tahun = YEAR(CURDATE()) THEN c.cuti_sakit ELSE NULL END), 0) AS cuti_sakit,
+                   COALESCE(MAX(CASE WHEN c.tahun = YEAR(CURDATE()) THEN c.cuti_alasan_penting ELSE NULL END), 0) AS cuti_alasan_penting');
 
         $this->db->from($this->db_sso . '.pegawai p');
         $this->db->join('register_sisa_cuti_tahunan s', 'p.id = s.pegawai_id', 'left');
+        $this->db->join('register_catatan_cuti c', 'p.id = c.pegawai_id', 'left');
         $this->db->where('p.status_pegawai', 1);
         $this->db->where('p.jenis_pegawai <>', 5);
         $this->db->group_by('p.id');

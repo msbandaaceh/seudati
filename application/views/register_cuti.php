@@ -125,7 +125,7 @@
 
 <div class="modal fade" id="tambah-modal" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <form method="POST" id="formCutiAdmin" class="modal-content">
+        <form method="POST" id="formCutiAdmin" class="modal-content" enctype="multipart/form-data">
             <div class="modal-header">
                 <div>
                     <i class="bx bxs-user me-1 font-22 text-primary"></i>
@@ -193,6 +193,17 @@
                                 <label for="alasan" class="form-label">Alasan Cuti </label><code>*</code>
                                 <textarea id="alasan" class="form-control" rows="2" name="alasan"
                                     placeholder="Alasan Cuti"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3" id="row_dokumen_pendukung_admin" style="display: none;">
+                            <div class="col">
+                                <label for="dokumen_pendukung_admin" class="form-label">Dokumen Pendukung </label><code>*</code>
+                                <input type="file" id="dokumen_pendukung_admin" name="dokumen_pendukung" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                                <small class="text-muted">Format: PDF, JPG, JPEG, PNG. Maksimal 5MB</small>
+                                <div id="preview_dokumen_admin" class="mt-2" style="display: none;">
+                                    <p class="mb-1"><strong>File saat ini:</strong></p>
+                                    <p class="mb-0" id="nama_file_sekarang_admin"></p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -103,7 +103,7 @@
 
         <div class="modal fade" id="tambah-modal" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-                <form method="POST" id="formCuti" class="modal-content">
+                <form method="POST" id="formCuti" class="modal-content" enctype="multipart/form-data">
                     <div class="modal-header">
                         <div>
                             <i class="bx bxs-user me-1 font-22 text-primary"></i>
@@ -115,7 +115,7 @@
                         <div class="form-group">
                             <input type="hidden" name="id" id="id_cuti_" class="form-control" />
                             <div class="row mb-3">
-                                <div class="col">
+                                <div class="col-md-4">
                                     <div class="card radius-10">
                                         <div class="card-body">
                                             <div class="text-center">
@@ -124,7 +124,35 @@
                                                     <i class="bx bx-calendar-check"></i>
                                                 </div>
                                                 <h4 class="my-1" id="kuota_show"></h4>
-                                                <p class="mb-0 text-secondary">Cuti Bisa Diambil</p>
+                                                <p class="mb-0 text-secondary">Cuti Tahunan Bisa Diambil</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card radius-10">
+                                        <div class="card-body">
+                                            <div class="text-center">
+                                                <div
+                                                    class="widgets-icons rounded-circle mx-auto bg-light-danger text-danger mb-3">
+                                                    <i class="bx bx-plus-medical"></i>
+                                                </div>
+                                                <h4 class="my-1" id="cuti_sakit_show"></h4>
+                                                <p class="mb-0 text-secondary">Sisa Cuti Sakit Tahun Ini</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card radius-10">
+                                        <div class="card-body">
+                                            <div class="text-center">
+                                                <div
+                                                    class="widgets-icons rounded-circle mx-auto bg-light-warning text-warning mb-3">
+                                                    <i class="bx bx-info-circle"></i>
+                                                </div>
+                                                <h4 class="my-1" id="cuti_alasan_penting_show"></h4>
+                                                <p class="mb-0 text-secondary">Sisa Cuti Alasan Penting Tahun Ini</p>
                                             </div>
                                         </div>
                                     </div>
@@ -166,6 +194,17 @@
                                         <label for="alasan" class="form-label">Alasan Cuti </label><code>*</code>
                                         <textarea id="alasan" class="form-control" rows="2" name="alasan"
                                             placeholder="Alasan Cuti"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row mb-3" id="row_dokumen_pendukung" style="display: none;">
+                                    <div class="col">
+                                        <label for="dokumen_pendukung" class="form-label">Dokumen Pendukung </label><code>*</code>
+                                        <input type="file" id="dokumen_pendukung" name="dokumen_pendukung" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                                        <small class="text-muted">Format: PDF, JPG, JPEG, PNG. Maksimal 5MB</small>
+                                        <div id="preview_dokumen" class="mt-2" style="display: none;">
+                                            <p class="mb-1"><strong>File saat ini:</strong></p>
+                                            <p class="mb-0" id="nama_file_sekarang"></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
