@@ -1265,8 +1265,8 @@ function fetchSisaCuti() {
                         <td contenteditable="true" data-kelas="1" data-id="${row.id_n1}">${row.n1}</td>
                         <td contenteditable="true" data-kelas="2" data-id="${row.id_n2}">${row.n2}</td>
                         <td contenteditable="true" data-kelas="3" data-id="${row.id_n3}">${row.n3}</td>
-                        <td>${14-row.cuti_sakit}</td>
-                        <td>${10-row.cuti_alasan_penting}</td>
+                        <td>${14 - row.cuti_sakit}</td>
+                        <td>${10 - row.cuti_alasan_penting}</td>
                     </tr>
                 `;
             });
@@ -2881,7 +2881,7 @@ function BukaModalCuti(id) {
                     var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
                     var isPdf = fileExtension === 'pdf';
                     var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
-                    
+
                     var dokumenHtml = '';
                     if (isPdf) {
                         dokumenHtml = `
@@ -2926,7 +2926,7 @@ function BukaModalCuti(id) {
                 window.tglAkhirSet = json.tgl_akhir;
 
                 let jenis = document.getElementById('jenis').value;
-                
+
                 // Tampilkan/sembunyikan field dokumen berdasarkan jenis cuti
                 if (jenis == 2 || jenis == 5) {
                     $('#row_dokumen_pendukung').show();
@@ -2935,7 +2935,7 @@ function BukaModalCuti(id) {
                     $('#row_dokumen_pendukung').hide();
                     $('#dokumen_pendukung').prop('required', false);
                 }
-                
+
                 if (jenis == 1 || jenis == 2) {
                     HariKerja();
                 } else {
@@ -2962,7 +2962,7 @@ function BukaModalCutiAdmin(param) {
     if (modalBody.length) {
         modalBody.scrollTop(0);
     }
-    
+
     // Jika param adalah '-1', berarti input baru - load dropdown pegawai
     if (param == '-1') {
         document.getElementById('isiform').style.display = "none";
@@ -2971,10 +2971,10 @@ function BukaModalCutiAdmin(param) {
                 var json = jQuery.parseJSON(res);
                 $("#judul").html("");
                 $('#pegawai_').html("");
-    
+
                 $("#judul").append(json.judul);
                 $('#pegawai_').append(json.pegawai);
-    
+
                 $('#pegawai').select2({
                     theme: 'bootstrap4',
                     dropdownParent: $('#tambah-modal'),
@@ -2992,7 +2992,7 @@ function BukaModalCutiAdmin(param) {
                 // Panggil inputCutiAdmin dengan pegawai_id dan id_cuti untuk edit
                 $("#judul").html("");
                 $('#pegawai_').html("");
-    
+
                 $("#judul").append(jsonPegawai.judul);
                 $('#pegawai_').append(jsonPegawai.pegawai);
 
@@ -3001,7 +3001,7 @@ function BukaModalCutiAdmin(param) {
                     dropdownParent: $('#tambah-modal'),
                     width: '100%',
                 });
-                
+
                 inputCutiAdmin(jsonPegawai.pegawai_id, param);
             } else {
                 pesan('PERINGATAN', 'Gagal mengambil data pegawai', '');
@@ -3023,17 +3023,17 @@ function inputCutiAdmin(pegawai_id, id_cuti_edit) {
 
     document.getElementById('isiform').style.display = "block";
     document.getElementById('detil_cuti').style.display = "none";
-    
+
     // Siapkan data untuk dikirim
     var postData = {
         id: pegawai_id
     };
-    
+
     // Jika ada id_cuti_edit, tambahkan ke postData
     if (id_cuti_edit) {
         postData.id_cuti_edit = id_cuti_edit;
     }
-    
+
     $.post('show_cuti_admin', postData, function (response) {
         var json = jQuery.parseJSON(response);
         if (json.st == 1) {
@@ -3051,7 +3051,7 @@ function inputCutiAdmin(pegawai_id, id_cuti_edit) {
             $('#dokumen_pendukung_admin').prop('required', false);
             $('#preview_dokumen_admin').hide();
             $('#nama_file_sekarang_admin').html('');
-            
+
             // Hapus hidden input id_cuti jika ada
             $('#id_cuti_admin').remove();
 
@@ -3077,7 +3077,7 @@ function inputCutiAdmin(pegawai_id, id_cuti_edit) {
                 var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
                 var isPdf = fileExtension === 'pdf';
                 var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
-                
+
                 var dokumenHtml = '';
                 if (isPdf) {
                     dokumenHtml = `
@@ -3119,7 +3119,7 @@ function inputCutiAdmin(pegawai_id, id_cuti_edit) {
                 window.tglAkhirSet = json.tgl_akhir;
 
                 let jenis = document.getElementById('jenis').value;
-                
+
                 // Tampilkan/sembunyikan field dokumen berdasarkan jenis cuti
                 if (jenis == 2 || jenis == 5) {
                     $('#row_dokumen_pendukung_admin').show();
@@ -3133,9 +3133,9 @@ function inputCutiAdmin(pegawai_id, id_cuti_edit) {
                     $('#row_dokumen_pendukung_admin').hide();
                     $('#dokumen_pendukung_admin').prop('required', false);
                 }
-                
+
                 if (jenis == 1 || jenis == 2) {
-                    HariKerja();
+                    HariKerjaAdmin();
                 } else {
                     HariKalender();
                 }
@@ -3718,6 +3718,105 @@ function HariKerja() {
                         }
                     }, true);
 
+                    tglCutiPicker.clear();
+
+                    if (window.tglAwalSet && window.tglAkhirSet) {
+                        instance.setDate([window.tglAwalSet, window.tglAkhirSet], true);
+                    }
+                },
+                onChange: function (selectedDates, dateStr, instance) {
+                    if (selectedDates.length === 2) {
+                        var start = selectedDates[0];
+                        var end = selectedDates[1];
+
+                        // Hitung jumlah hari valid
+                        var validDays = 0;
+                        var currentDate = new Date(start);
+
+                        while (currentDate <= end) {
+                            var day = currentDate.getDay();
+                            var formatted = instance.formatDate(currentDate, 'Y-m-d');
+
+                            if (day !== 0 && day !== 6 && !disabledDates.includes(formatted)) {
+                                validDays++;
+                            }
+                            currentDate.setDate(currentDate.getDate() + 1);
+                        }
+
+                        var jenis = document.getElementById('jenis').value;
+                        var kuota = parseInt(document.getElementById('kuota').value);
+
+                        if (jenis == 1 && validDays > kuota) {
+                            notifikasi('Sisa Cuti Tahunan Anda Tidak Mencukupi, Silakan Periksa Kembali Sisa Cuti Anda Sebelum Mengajukan Permohonan', '2');
+                        } else {
+                            document.getElementById('lama').value = validDays;
+                            document.getElementById('tgl_awal').value = formatDate(start);
+                            document.getElementById('tgl_akhir').value = formatDate(end);
+                        }
+                    }
+                }
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error("Error in fetching dates: ", error);
+        }
+    });
+}
+
+function HariKerjaAdmin() {
+    var disabledDates = []; // Untuk menyimpan tanggal yang dinonaktifkan
+
+    // AJAX untuk mengambil tanggal dari database
+    $.ajax({
+        url: 'get_tgl_merah', // URL ke script PHP yang dibuat
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            disabledDates = response; // Menyimpan tanggal dari respons ke array
+            //console.log(disabledDates); // Cek data yang diterima (optional)
+
+            // Inisialisasi daterangepicker setelah data diterima
+            tglCutiPicker = flatpickr('#tgl_cuti', {
+                mode: 'range',
+                altFormat: 'd F Y',
+                altInput: true,
+                dateFormat: 'Y-m-d',
+                locale: {
+                    firstDayOfWeek: 7,
+                    rangeSeparator: " sampai ",
+                    weekdays: {
+                        shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                        longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                    },
+                    months: {
+                        shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+                            'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                        longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                    },
+                },
+                onDayCreate: function (dObj, dStr, fp, dayElem) {
+                    var day = dayElem.dateObj.getDay();
+                    var dateStr = fp.formatDate(dayElem.dateObj, "Y-m-d");
+
+                    // Disable Sabtu & Minggu + tanggal merah (tidak bisa diklik langsung)
+                    if (day === 0 || day === 6 || disabledDates.includes(dateStr)) {
+                        dayElem.classList.add("disabled-date");
+                    }
+
+                    // Highlight merah untuk tanggal merah
+                    if (disabledDates.includes(dateStr)) {
+                        dayElem.classList.add("tanggal-merah");
+                    }
+                },
+                onReady: function (selectedDates, dateStr, instance) {
+                    // Cegah klik langsung di tanggal disable
+                    instance.calendarContainer.addEventListener("click", function (e) {
+                        if (e.target.closest(".disabled-date")) {
+                            e.stopPropagation();
+                        }
+                    }, true);
+
                     if (window.tglAwalSet && window.tglAkhirSet) {
                         instance.setDate([window.tglAwalSet, window.tglAkhirSet], true);
                     }
@@ -3862,7 +3961,111 @@ function UbahKalender(id) {
             }
             break;
     }
+}
 
+function UbahKalenderAdmin(id) {
+    var pegawai_id = document.getElementById('pegawai').value;
+    var masa_kerja;
+    var id_grup;
+    var jk;
+
+    $.post('get_data_pegawai', {
+        pegawai_id: pegawai_id
+    }, function (res) {
+        var json = jQuery.parseJSON(res);
+        console.log(json);
+        if (json.success == 1) {
+            masa_kerja = parseInt(json.masa_kerja);
+            id_grup = json.id_grup;
+            jk = json.jk;
+
+            console.log("masa_kerja " + masa_kerja);
+            console.log("id_grup " + id_grup);
+            console.log("jk " + jk);
+
+            switch (parseInt(id.value)) {
+                case 1:
+                    if (masa_kerja < 1) {
+                        var pesan = 'Masa Kerja anda belum genap 1 Tahun. Anda belum diperbolehkan untuk melakukan permohonan Cuti Tahunan';
+                        notifikasi(pesan, '2');
+                    } else {
+                        $('#detil_cuti').show();
+                        $('#row_dokumen_pendukung').hide();
+                        $('#dokumen_pendukung').prop('required', false);
+                        // Untuk form admin
+                        if ($('#row_dokumen_pendukung_admin').length) {
+                            $('#row_dokumen_pendukung_admin').hide();
+                            $('#dokumen_pendukung_admin').prop('required', false);
+                        }
+                        HariKerjaAdmin();
+                    }
+                    break;
+                case 2:
+                    $('#detil_cuti').show();
+                    $('#row_dokumen_pendukung').show();
+                    $('#dokumen_pendukung').prop('required', true);
+                    // Untuk form admin
+                    if ($('#row_dokumen_pendukung_admin').length) {
+                        $('#row_dokumen_pendukung_admin').show();
+                        $('#dokumen_pendukung_admin').prop('required', true);
+                    }
+                    HariKalender();
+                    break;
+                case 3:
+                    //console.log("Masuk Sini " + jk);
+                    if (jk == '1') {
+                        var pesan = 'Anda Bukan Wanita, Anda Tidak Melahirkan';
+                        notifikasi(pesan, '2');
+                    } else {
+                        $('#detil_cuti').show();
+                        $('#row_dokumen_pendukung').hide();
+                        $('#dokumen_pendukung').prop('required', false);
+                        // Untuk form admin
+                        if ($('#row_dokumen_pendukung_admin').length) {
+                            $('#row_dokumen_pendukung_admin').hide();
+                            $('#dokumen_pendukung_admin').prop('required', false);
+                        }
+                        HariKalender();
+                    }
+                    break;
+                case 4:
+                    if (masa_kerja < 5) {
+                        var pesan = 'Masa Kerja anda belum genap 5 Tahun. Anda belum diperbolehkan untuk melakukan permohonan Cuti Besar';
+                        notifikasi(pesan, '2');
+                    } else {
+                        $('#detil_cuti').show();
+                        $('#row_dokumen_pendukung').hide();
+                        $('#dokumen_pendukung').prop('required', false);
+                        HariKalender();
+                    }
+                    break;
+                case 5:
+                    $('#detil_cuti').show();
+                    $('#row_dokumen_pendukung').show();
+                    $('#dokumen_pendukung').prop('required', true);
+                    // Untuk form admin
+                    if ($('#row_dokumen_pendukung_admin').length) {
+                        $('#row_dokumen_pendukung_admin').show();
+                        $('#dokumen_pendukung_admin').prop('required', true);
+                    }
+                    HariKalender();
+                    break;
+                case 6:
+                    if (masa_kerja < 5) {
+                        var pesan = 'Masa Kerja anda belum genap 5 Tahun. Anda belum diperbolehkan untuk melakukan permohonan Cuti di Luar Tanggungan Negara';
+                        notifikasi(pesan, '2');
+                    } else {
+                        $('#detil_cuti').show();
+                        $('#row_dokumen_pendukung').hide();
+                        $('#dokumen_pendukung').prop('required', false);
+                        HariKalender();
+                    }
+                    break;
+            }
+        } else {
+            pesan('PERINGATAN', 'Gagal mengambil data pegawai', '');
+        }
+    });
 }
 
 function BukaModalDetailCuti(id) {
@@ -3890,7 +4093,7 @@ function BukaModalDetailCuti(id) {
             $("#v_lama").val(json.lama + ' Hari');
             $("#v_alamat").val(json.alamat);
             $("#v_alasan").val(json.alasan);
-            
+
             // Tampilkan dokumen pendukung jika jenis cuti adalah Cuti Sakit (2) atau Cuti Alasan Penting (5)
             if (json.jenis_cuti_id == '2' || json.jenis_cuti_id == '5') {
                 $('#v_row_dokumen').show();
@@ -3899,7 +4102,7 @@ function BukaModalDetailCuti(id) {
                     var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
                     var isPdf = fileExtension === 'pdf';
                     var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
-                    
+
                     var dokumenHtml = '';
                     if (isPdf) {
                         dokumenHtml = `
@@ -3937,7 +4140,7 @@ function BukaModalDetailCuti(id) {
                 $('#v_row_dokumen').hide();
                 $('#v_dokumen_pendukung_info').html('');
             }
-            
+
             if (json.status_validator == '1' || json.status_validator == '5') {
                 $("#v_status_atasan").append('<span class="btn radius-30 btn-outline-success">Disetujui</span>');
             } else if (json.status_validator == '2' || json.status_validator == '6') {
@@ -4030,7 +4233,7 @@ function BukaModalValidasiCuti(id) {
             $("#tgl_selesai").val(json.tgl_akhir);
             $("#alamat").val(json.alamat);
             $("#alasan").val(json.alasan);
-            
+
             // Tampilkan dokumen pendukung jika jenis cuti adalah Cuti Sakit (2) atau Cuti Alasan Penting (5)
             if (json.jenis_cuti_id == '2' || json.jenis_cuti_id == '5') {
                 $('#row_dokumen_validasi').show();
@@ -4039,7 +4242,7 @@ function BukaModalValidasiCuti(id) {
                     var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
                     var isPdf = fileExtension === 'pdf';
                     var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
-                    
+
                     var dokumenHtml = '';
                     if (isPdf) {
                         dokumenHtml = `

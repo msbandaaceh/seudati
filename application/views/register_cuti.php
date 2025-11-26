@@ -1,3 +1,17 @@
+<style>
+    .disabled-date {
+        background-color: #eee !important;
+        color: #888 !important;
+        pointer-events: none;
+        /* tidak bisa diklik langsung */
+    }
+
+    .tanggal-merah {
+        background-color: #ffcccc !important;
+        color: red !important;
+        font-weight: bold;
+    }
+</style>
 <div class="page-wrapper">
     <div class="page-content">
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
@@ -22,8 +36,7 @@
                 <div class="card border-primary border-top border-3 border-0">
                     <div class="card-header text-end">
                         <button type="button" class="btn btn-outline-primary px-5" data-bs-toggle="modal"
-                            data-bs-target="#tambah-modal"
-                            onclick="BukaModalCutiAdmin('-1')"><i
+                            data-bs-target="#tambah-modal" onclick="BukaModalCutiAdmin('-1')"><i
                                 class="bx bx-user mr-1"></i>Tambah</button>
                     </div>
                     <div class="card-body">
@@ -231,8 +244,10 @@
                         </div>
                         <div class="row mb-3" id="row_dokumen_pendukung_admin" style="display: none;">
                             <div class="col">
-                                <label for="dokumen_pendukung_admin" class="form-label">Dokumen Pendukung </label><code>*</code>
-                                <input type="file" id="dokumen_pendukung_admin" name="dokumen_pendukung" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                                <label for="dokumen_pendukung_admin" class="form-label">Dokumen Pendukung
+                                </label><code>*</code>
+                                <input type="file" id="dokumen_pendukung_admin" name="dokumen_pendukung"
+                                    class="form-control" accept=".pdf,.jpg,.jpeg,.png">
                                 <small class="text-muted">Format: PDF, JPG, JPEG, PNG. Maksimal 5MB</small>
                                 <div id="preview_dokumen_admin" class="mt-2" style="display: none;">
                                     <p class="mb-1"><strong>File saat ini:</strong></p>
@@ -260,7 +275,7 @@
 <script>
     $(document).ready(function () {
         loadTabelRegisterCuti();
-        
+
         // Reset scroll position saat modal ditutup
         $('#tambah-modal').on('hidden.bs.modal', function () {
             var modalBody = $(this).find('.modal-body');
@@ -268,7 +283,7 @@
                 modalBody.scrollTop(0);
             }
         });
-        
+
         // Reset scroll position saat modal dibuka
         $('#tambah-modal').on('show.bs.modal', function () {
             var modalBody = $(this).find('.modal-body');

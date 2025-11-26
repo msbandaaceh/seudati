@@ -103,6 +103,7 @@ $route['get_tgl_merah'] = 'HalamanPengaturan/get_tanggal_merah';
 $route['get_hari_libur'] = 'HalamanPengaturan/get_hari_libur';
 $route['show_libur'] = 'HalamanPengaturan/show_libur';
 $route['simpan_hari_libur'] = 'HalamanPengaturan/simpan_hari_libur';
+$route['get_data_pegawai'] = 'HalamanPengaturan/get_data_pegawai';
 
 $route['generate_cuti'] = 'HalamanPengaturan/generate_cuti';
 $route['show_tabel_sisa_cuti'] = 'HalamanPengaturan/show_tabel_sisa_cuti';

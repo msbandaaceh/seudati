@@ -233,7 +233,7 @@ class HalamanCuti extends MY_Controller
             );
         }
 
-        $jenis = form_dropdown('jenis', $jenis, $jenis_cuti, 'onchange="UbahKalender(this)" class="form-control" id="jenis"');
+        $jenis = form_dropdown('jenis', $jenis, $jenis_cuti, 'onchange="UbahKalenderAdmin(this)" class="form-control" id="jenis"');
 
         echo json_encode(
             array(

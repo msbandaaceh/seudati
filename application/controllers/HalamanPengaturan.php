@@ -160,4 +160,28 @@ class HalamanPengaturan extends MY_Controller
         else
             echo json_encode(['success' => 3, 'message' => 'Simpan SI\isa Cuti Gagal, '.$query]);
     }
+
+    public function get_data_pegawai()
+    {
+        $pegawai_id = $this->input->post('pegawai_id');
+        $params = [
+            'tabel' => 'v_users',
+            'kolom_seleksi' => 'pegawai_id',
+            'seleksi' => $pegawai_id
+        ];
+
+        $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
+
+        if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
+            $user_data = $result['response']['data'][0];
+
+            $hari = $this->tanggalhelper->getSelisihHari($user_data['tmt'], date('Y-m-d'));
+            $masa_kerja_tahun = $this->tanggalhelper->konversiMasaKerjaTahun($hari);
+            echo json_encode(['success' => 1, 'masa_kerja' => $masa_kerja_tahun, 'id_grup' => $user_data['id_grup'], 'jk' => $user_data['jk']]);
+        }
+        else {
+            echo json_encode(['success' => 3]);
+            return;
+        }
+    }
 }
