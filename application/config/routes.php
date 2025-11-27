@@ -110,5 +110,7 @@ $route['show_tabel_sisa_cuti'] = 'HalamanPengaturan/show_tabel_sisa_cuti';
 $route['simpan_sisa_cuti'] = 'HalamanPengaturan/simpan_sisa_cuti';
 
 $route['get_cuti_kalender'] = 'HalamanCuti/get_cuti_kalender';
+$route['get_hari_libur_kalender'] = 'HalamanUtama/get_hari_libur_kalender';
+$route['hitung_hari_kerja_ajax'] = 'HalamanUtama/hitung_hari_kerja_ajax';
 
 $route['keluar'] = 'HalamanUtama/keluar';

@@ -1676,6 +1676,17 @@ class Model extends CI_Model
             return ['status' => false, 'message' => 'Gagal Simpan, ' . $querySimpan];
     }
 
+    public function get_hari_libur_kalender($tgl_awal, $tgl_akhir)
+    {
+        $this->db->select('tgl, ket');
+        $this->db->from('register_hari_libur');
+        $this->db->where('hapus', '0');
+        $this->db->where("tgl >= '" . $tgl_awal . "'");
+        $this->db->where("tgl <= '" . $tgl_akhir . "'");
+        $this->db->order_by('tgl', 'ASC');
+        return $this->db->get()->result_array();
+    }
+
     public function proses_simpan_sisa_cuti($tahun)
     {
         $active_pegawai = $this->model->get_seleksi($this->db_sso . '.pegawai', 'status_pegawai', '1');

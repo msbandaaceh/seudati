@@ -11,6 +11,90 @@ class HalamanUtama extends MY_Controller
         $this->load->view('layout', $data);
     }
 
+    public function get_hari_libur_kalender()
+    {
+        $start = $this->input->get('start');
+        $end = $this->input->get('end');
+
+        $data_hari_libur = $this->model->get_hari_libur_kalender($start, $end);
+
+        $events = [];
+
+        foreach ($data_hari_libur as $libur) {
+            $events[] = [
+                'id' => 'libur_' . $libur['tgl'],
+                'title' => $libur['ket'] ?? 'Hari Libur',
+                'start' => $libur['tgl'],
+                'color' => '#dc3545',
+                'display' => 'background',
+                'extendedProps' => [
+                    'tipe' => 'hari_libur',
+                    'keterangan' => $libur['ket'] ?? 'Hari Libur'
+                ]
+            ];
+        }
+
+        echo json_encode($events);
+    }
+
+    private function hitung_hari_kerja($tahun, $bulan)
+    {
+        // jumlah hari dalam bulan
+        $jumlah_hari = date('t', strtotime("$tahun-$bulan-01"));
+
+        // ambil daftar hari libur untuk 1 bulan penuh
+        $tgl_awal = "$tahun-$bulan-01";
+        $tgl_akhir = "$tahun-$bulan-$jumlah_hari";
+        $data_hari_libur = $this->model->get_hari_libur_kalender($tgl_awal, $tgl_akhir);
+
+        // convert libur ke array lookup supaya pengecekan cepat O(1)
+        $daftar_libur = array_column($data_hari_libur, 'tgl');
+        $libur_lookup = array_flip($daftar_libur);
+
+        // hitung hari kerja
+        $hari_weekend = 0;
+        $hari_libur_bukan_weekend = 0;
+        for ($i = 1; $i <= $jumlah_hari; $i++) {
+            $tanggal = sprintf('%04d-%02d-%02d', $tahun, $bulan, $i);
+            $hari_ke = date('w', strtotime($tanggal)); // 0 Minggu, 6 Sabtu
+
+            if ($hari_ke == 0 || $hari_ke == 6) {
+                $hari_weekend++;
+            } elseif (isset($libur_lookup[$tanggal])) {
+                $hari_libur_bukan_weekend++;
+            }
+        }
+
+        $hari_kerja = $jumlah_hari - $hari_weekend - $hari_libur_bukan_weekend;
+
+        if ($bulan < 10) {
+            $bulan = '0' . $bulan;
+        }
+
+        return [
+            'total_hari' => $jumlah_hari,
+            'hari_weekend' => $hari_weekend,
+            'hari_libur' => count($data_hari_libur),
+            'hari_libur_bukan_weekend' => $hari_libur_bukan_weekend,
+            'hari_kerja' => $hari_kerja,
+            'bulan' => $this->tanggalhelper->convertMonthDate($tahun . '-' . $bulan . '-01')
+        ];
+    }
+
+    private function hitung_hari_kerja_bulan_ini()
+    {
+        return $this->hitung_hari_kerja(date('Y'), date('m'));
+    }
+
+    public function hitung_hari_kerja_ajax()
+    {
+        $tahun = $this->input->post('tahun');
+        $bulan = $this->input->post('bulan');
+
+        $result = $this->hitung_hari_kerja($tahun, $bulan);
+        echo json_encode($result);
+    }
+
     public function page($halaman)
     {
         // Amanin nama file view agar tidak sembarang file bisa diload
@@ -41,6 +125,9 @@ class HalamanUtama extends MY_Controller
         if (in_array($halaman, $allowed)) {
             $data['peran'] = $this->session->userdata('peran');
             $data['page'] = $halaman;
+            if ($halaman == 'dashboard') {
+                $data['hari_kerja'] = $this->hitung_hari_kerja_bulan_ini();
+            }
 
             $this->load->view($halaman, $data);
         } else {
