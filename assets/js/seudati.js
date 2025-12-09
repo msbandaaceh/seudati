@@ -3397,7 +3397,7 @@ function loadTabelValidasiCutiPPK() {
                 } else if (row.status == '0') {
                     tombolAksi += `
                         <button type="button" class="btn btn-warning" data-bs-target="#tambah-modal"
-                            onclick="BukaModalValidasiCuti('${row.id}')" data-bs-toggle="modal" title="Proses">
+                            onclick="BukaModalValidasiCutiPPK('${row.id}')" data-bs-toggle="modal" title="Proses">
                             <i class="bx bxs-pencil"></i>
                         </button>
                     `;
@@ -4233,6 +4233,95 @@ function BukaModalValidasiCuti(id) {
             $("#tgl_selesai").val(json.tgl_akhir);
             $("#alamat").val(json.alamat);
             $("#alasan").val(json.alasan);
+
+            // Tampilkan dokumen pendukung jika jenis cuti adalah Cuti Sakit (2) atau Cuti Alasan Penting (5)
+            if (json.jenis_cuti_id == '2' || json.jenis_cuti_id == '5') {
+                $('#row_dokumen_validasi').show();
+                if (json.dokumen_pendukung && json.dokumen_pendukung !== '') {
+                    var dokumenUrl = 'dokumen/cuti/' + json.dokumen_pendukung;
+                    var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
+                    var isPdf = fileExtension === 'pdf';
+                    var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
+
+                    var dokumenHtml = '';
+                    if (isPdf) {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="bx bx-file"></i> Buka Dokumen PDF
+                                </a>
+                            </div>
+                        `;
+                    } else if (isImage) {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="bx bx-image"></i> Buka Dokumen Gambar
+                                </a>
+                            </div>
+                        `;
+                    } else {
+                        dokumenHtml = `
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>File:</strong> ${json.dokumen_pendukung}</p>
+                                <a href="${dokumenUrl}" target="_blank" class="btn btn-sm btn-primary" download>
+                                    <i class="bx bx-download"></i> Download Dokumen
+                                </a>
+                            </div>
+                        `;
+                    }
+                    $('#dokumen_pendukung_info').html(dokumenHtml);
+                } else {
+                    $('#dokumen_pendukung_info').html('<div class="alert alert-warning"><i class="bx bx-info-circle"></i> Tidak Ada Dokumen Pendukung</div>');
+                }
+            } else {
+                $('#row_dokumen_validasi').hide();
+                $('#dokumen_pendukung_info').html('');
+            }
+        } else if (json.st == 0) {
+            pesan('PERINGATAN', json.msg, '');
+            $('#table_pegawai').DataTable().ajax.reload();
+        }
+    });
+}
+
+function BukaModalValidasiCutiPPK(id) {
+    $.post('show_cuti_validasi_ppk', {
+        id: id
+    }, function (response) {
+        var json = jQuery.parseJSON(response);
+        if (json.st == 1) {
+            $("#judul").html("");
+            $("#id_cuti_").val('');
+            $("#nama").val('');
+            $("#nip").val('');
+            $("#jabatan").val('');
+            $("#jenis").val('');
+            $("#tgl_mulai").val('');
+            $("#tgl_selesai").val('');
+            $("#alamat").val('');
+            $("#alasan").val('');
+            $("#validasi_atsung").val('');
+            $("#pertimbangan_atsung").val('');
+
+            $("#judul").append(json.judul);
+            $("#id_cuti_").val(json.id);
+            $("#nama").val(json.nama);
+            if (json.nip) {
+                $("#nip").val(json.nip);
+            } else {
+                $("#nip").val('-');
+            }
+            $("#jabatan").val(json.jabatan);
+            $("#jenis").val(json.jenis_cuti);
+            $("#tgl_mulai").val(json.tgl_awal);
+            $("#tgl_selesai").val(json.tgl_akhir);
+            $("#alamat").val(json.alamat);
+            $("#alasan").val(json.alasan);
+            $("#validasi_atsung").val(json.status_validator);
+            $("#pertimbangan_atsung").val(json.alasan_validator);
 
             // Tampilkan dokumen pendukung jika jenis cuti adalah Cuti Sakit (2) atau Cuti Alasan Penting (5)
             if (json.jenis_cuti_id == '2' || json.jenis_cuti_id == '5') {

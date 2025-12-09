@@ -446,6 +446,82 @@ class HalamanCuti extends MY_Controller
         return;
     }
 
+    public function show_cuti_validasi_ppk()
+    {
+        $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
+
+        $judul = "VALIDASI PERMOHONAN CUTI PEGAWAI";
+
+        $cariCuti = $this->model->get_seleksi('v_cuti', 'id', $id);
+        $nama = $cariCuti->row()->pegawai_nama;
+        $nip = $cariCuti->row()->nip;
+        $jabatan = $cariCuti->row()->pegawai_jabatan;
+        switch ($cariCuti->row()->jenis_cuti) {
+            case 1:
+                $jenis_cuti = "Cuti Tahunan";
+                break;
+            case 2:
+                $jenis_cuti = "Cuti Sakit";
+                break;
+            case 3:
+                $jenis_cuti = "Cuti Melahirkan";
+                break;
+            case 4:
+                $jenis_cuti = "Cuti Besar";
+                break;
+            case 5:
+                $jenis_cuti = "Cuti Alasan Penting";
+                break;
+            case 6:
+                $jenis_cuti = "Cuti di Luar Tanggungan Negara";
+                break;
+        }
+
+        switch ($cariCuti->row()->status_validator) {
+            case 1:
+                $status_validator = "Disetujui";
+                break;
+            case 2:
+                $status_validator = "Perubahan";
+                break;
+            case 3:
+                $status_validator = "Penangguhan";
+                break;
+            case 4:
+                $status_validator = "Tidak Disetujui";
+                break;
+        }
+
+        $tgl_awal = $this->tanggalhelper->convertDayDate($cariCuti->row()->tgl_awal);
+        $tgl_akhir = $this->tanggalhelper->convertDayDate($cariCuti->row()->tgl_akhir);
+        $alasan = $cariCuti->row()->alasan;
+        $alamat = $cariCuti->row()->alamat;
+        $jenis_cuti_id = $cariCuti->row()->jenis_cuti; // ID jenis cuti (angka)
+        $dokumen_pendukung = $cariCuti->row()->dokumen_pendukung ?? '';
+        $alasan_validator = $cariCuti->row()->alasan_validator;
+
+        echo json_encode(
+            array(
+                'st' => 1,
+                'id' => $id,
+                'judul' => $judul,
+                'nama' => $nama,
+                'nip' => $nip,
+                'jabatan' => $jabatan,
+                'jenis_cuti' => $jenis_cuti,
+                'jenis_cuti_id' => $jenis_cuti_id, // ID jenis cuti untuk cek apakah 2 atau 5
+                'dokumen_pendukung' => $dokumen_pendukung,
+                'tgl_awal' => $tgl_awal,
+                'tgl_akhir' => $tgl_akhir,
+                'alamat' => $alamat,
+                'alasan' => $alasan,
+                'status_validator' => $status_validator,
+                'alasan_validator' => $alasan_validator
+            )
+        );
+        return;
+    }
+
     public function show_nomor()
     {
         $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
@@ -702,28 +778,16 @@ class HalamanCuti extends MY_Controller
     public function simpan_validasi_cuti_atasan()
     {
         $this->form_validation->set_rules('status_valid', 'Status Atasan', 'trim|required');
-        $this->form_validation->set_message(['required' => '%s Belum Dipilih']);
+        $this->form_validation->set_rules('ket', 'Pertimbangan Atasan Langsung', 'trim|required');
+        $this->form_validation->set_message(['required' => '%s Tidak Boleh Kosong']);
 
         if ($this->form_validation->run() == FALSE) {
             echo json_encode(['success' => 2, 'message' => validation_errors()]);
             return;
         }
 
-        $alasan_valid = '';
-
         $status_valid = $this->input->post('status_valid');
-        if ($status_valid != 1) {
-            $this->form_validation->set_rules('ket', 'Keterangan', 'trim|required');
-            $this->form_validation->set_message(['required' => '%s Tidak Boleh Kosong']);
-
-            if ($this->form_validation->run() == FALSE) {
-                echo json_encode(['success' => 2, 'message' => validation_errors()]);
-                return;
-            }
-
-            $alasan_valid = $this->input->post('ket');
-        }
-
+        $alasan_valid = $this->input->post('ket');
         $id = $this->input->post('id');
         $data = [
             'id' => $id,
@@ -742,28 +806,16 @@ class HalamanCuti extends MY_Controller
     public function simpan_validasi_cuti_ppk()
     {
         $this->form_validation->set_rules('status_valid', 'Status Pejabat Pembina Kepegawaian', 'trim|required');
-        $this->form_validation->set_message(['required' => '%s Belum Dipilih']);
+        $this->form_validation->set_rules('ket', 'Keterangan', 'trim|required');
+        $this->form_validation->set_message(['required' => '%s Tidak Boleh Kosong']);
 
         if ($this->form_validation->run() == FALSE) {
             echo json_encode(['success' => 2, 'message' => validation_errors()]);
             return;
         }
 
-        $alasan_valid = '';
-
         $status_valid = $this->input->post('status_valid');
-        if ($status_valid != 1) {
-            $this->form_validation->set_rules('ket', 'Keterangan', 'trim|required');
-            $this->form_validation->set_message(['required' => '%s Tidak Boleh Kosong']);
-
-            if ($this->form_validation->run() == FALSE) {
-                echo json_encode(['success' => 2, 'message' => validation_errors()]);
-                return;
-            }
-
-            $alasan_valid = $this->input->post('ket');
-        }
-
+        $alasan_valid = $this->input->post('ket');
         $id = $this->input->post('id');
         $data = [
             'id' => $id,
@@ -925,7 +977,7 @@ class HalamanCuti extends MY_Controller
                     'pegawai' => $pegawai_,
                 )
             );
-            
+
         } else {
             echo json_encode(
                 array(

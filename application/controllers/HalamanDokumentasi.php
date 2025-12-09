@@ -217,7 +217,11 @@ class HalamanDokumentasi extends MY_Controller
                             </tr>
                             <tr>
                                 <td><code>HalamanPanduan.php</code></td>
-                                <td>Panduan penggunaan</td>
+                                <td>Panduan penggunaan berdasarkan peran</td>
+                            </tr>
+                            <tr>
+                                <td><code>HalamanDokumentasi.php</code></td>
+                                <td>Dokumentasi teknis proyek untuk developer</td>
                             </tr>
                             <tr>
                                 <td><code>MY_Controller.php</code></td>
@@ -313,10 +317,10 @@ class HalamanDokumentasi extends MY_Controller
 ├── assets/
 │   ├── css/            # Stylesheets
 │   ├── js/             # JavaScript
-│   ├── plugins/        # Third-party plugins
-│   └── dokumen/        # Upload dokumen (cuti, diklat)
-│       ├── cuti/       # Dokumen pendukung cuti sakit & alasan penting
-│       └── diklat/     # Dokumen diklat (ST, sertifikat)
+│   └── plugins/        # Third-party plugins
+├── dokumen/            # Upload dokumen (di root project)
+│   ├── cuti/           # Dokumen pendukung cuti sakit & alasan penting
+│   └── diklat/         # Dokumen diklat (ST, sertifikat)
 ├── system/             # CodeIgniter core
 └── vendor/             # Composer packages</code></pre>
 
@@ -623,7 +627,7 @@ $id = $this->encryption->decrypt(base64_decode($encrypted));</code></pre>
                             </div>
                             <div class="timeline-item">
                                 <span class="badge bg-success">5</span>
-                                <p>Sistem validasi file dan simpan ke folder assets/dokumen/cuti/</p>
+                                <p>Sistem validasi file dan simpan ke folder dokumen/cuti/ (di root project)</p>
                             </div>
                             <div class="timeline-item">
                                 <span class="badge bg-info">6</span>
@@ -671,6 +675,52 @@ $id = $this->encryption->decrypt(base64_decode($encrypted));</code></pre>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <h3 class="mt-4">5.5 Fitur Kalender Cuti</h3>
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Visualisasi Cuti dan Izin Keluar</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Fitur kalender cuti memungkinkan admin untuk melihat visualisasi semua cuti dan izin keluar yang sudah tervalidasi dalam bentuk kalender interaktif.</p>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <span class="badge bg-primary">1</span>
+                                <p>Admin membuka menu "Kalender Cuti"</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-primary">2</span>
+                                <p>Sistem memanggil API <code>get_cuti_kalender</code> dan <code>get_hari_libur_kalender</code></p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-success">3</span>
+                                <p>Data cuti yang sudah tervalidasi (ada nomor cuti) ditampilkan sebagai event</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-info">4</span>
+                                <p>Data izin keluar yang disetujui ditampilkan sebagai event (hanya di view mingguan/harian)</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-warning">5</span>
+                                <p>Hari libur nasional ditampilkan sebagai background merah</p>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="badge bg-success">6</span>
+                                <p>Admin dapat klik event untuk melihat detail lengkap (nama, jenis, nomor, tanggal, alasan)</p>
+                            </div>
+                        </div>
+                        <p class="mt-3"><strong>Warna Event:</strong></p>
+                        <ul>
+                            <li><span class="badge" style="background-color: #28a745;">Hijau</span> = Cuti Tahunan</li>
+                            <li><span class="badge" style="background-color: #dc3545;">Merah</span> = Cuti Sakit</li>
+                            <li><span class="badge" style="background-color: #ffc107;">Kuning</span> = Cuti Melahirkan</li>
+                            <li><span class="badge" style="background-color: #17a2b8;">Biru</span> = Cuti Besar</li>
+                            <li><span class="badge" style="background-color: #6f42c1;">Ungu</span> = Cuti Alasan Penting</li>
+                            <li><span class="badge" style="background-color: #6c757d;">Abu-abu</span> = Cuti Luar Tanggungan Negara</li>
+                            <li><span class="badge" style="background-color: #fd7e14;">Orange</span> = Izin Keluar</li>
+                        </ul>
+                    </div>
                 </div>
             '
         ];
@@ -753,10 +803,12 @@ $id = $this->encryption->decrypt(base64_decode($encrypted));</code></pre>
                         <div id="collapseKalender" class="accordion-collapse collapse">
                             <div class="accordion-body">
                                 <ul>
-                                    <li><code>GET /kalender_cuti</code> - Halaman kalender cuti</li>
-                                    <li><code>GET /get_cuti_kalender?start={date}&end={date}</code> - API untuk mengambil data event kalender</li>
+                                    <li><code>GET /kalender_cuti</code> - Halaman kalender cuti (view)</li>
+                                    <li><code>GET /get_cuti_kalender?start={date}&end={date}</code> - API untuk mengambil data event kalender (cuti & izin keluar)</li>
+                                    <li><code>GET /get_hari_libur_kalender?start={date}&end={date}</code> - API untuk mengambil data hari libur nasional</li>
+                                    <li><code>POST /hitung_hari_kerja_ajax</code> - API untuk menghitung hari kerja per bulan (exclude weekend & hari libur)</li>
                                 </ul>
-                                <p class="mt-2"><strong>Response Format:</strong></p>
+                                <p class="mt-2"><strong>Response Format get_cuti_kalender:</strong></p>
                                 <pre class="bg-light p-2"><code>[{
   "id": "cuti-123",
   "title": "Nama Pegawai - Cuti Tahunan",
@@ -770,7 +822,41 @@ $id = $this->encryption->decrypt(base64_decode($encrypted));</code></pre>
     "nomor_cuti": "001/CUTI/2024",
     "alasan": "Alasan cuti"
   }
+},
+{
+  "id": "izin-456",
+  "title": "Nama Pegawai - Izin Keluar",
+  "start": "2024-01-15T08:00:00",
+  "end": "2024-01-15T12:00:00",
+  "color": "#fd7e14",
+  "extendedProps": {
+    "tipe": "izin_keluar",
+    "nama": "Nama Pegawai",
+    "jenis": "Izin Keluar",
+    "alasan": "Alasan izin"
+  }
 }]</code></pre>
+                                <p class="mt-2"><strong>Response Format get_hari_libur_kalender:</strong></p>
+                                <pre class="bg-light p-2"><code>[{
+  "id": "libur_2024-01-01",
+  "title": "Tahun Baru",
+  "start": "2024-01-01",
+  "color": "#dc3545",
+  "display": "background",
+  "extendedProps": {
+    "tipe": "hari_libur",
+    "keterangan": "Tahun Baru"
+  }
+}]</code></pre>
+                                <p class="mt-2"><strong>Response Format hitung_hari_kerja_ajax:</strong></p>
+                                <pre class="bg-light p-2"><code>{
+  "total_hari": 31,
+  "hari_weekend": 8,
+  "hari_libur": 2,
+  "hari_libur_bukan_weekend": 1,
+  "hari_kerja": 22,
+  "bulan": "Januari 2024"
+}</code></pre>
                             </div>
                         </div>
                     </div>
@@ -1155,17 +1241,31 @@ AFTER `alasan`;</code></pre>
                     <div class="card-body">
                         <p><strong>Konfigurasi Upload Dokumen Pendukung Cuti:</strong></p>
                         <ul>
-                            <li><strong>Path:</strong> <code>./assets/dokumen/cuti/</code></li>
+                            <li><strong>Path:</strong> <code>./dokumen/cuti/</code> (di root project, bukan di assets)</li>
                             <li><strong>Allowed Types:</strong> pdf, jpg, jpeg, png</li>
                             <li><strong>Max Size:</strong> 5MB (5120 KB)</li>
                             <li><strong>File Naming:</strong> Encrypted (menggunakan CodeIgniter upload library dengan encrypt_name = TRUE)</li>
-                            <li><strong>Auto Create Folder:</strong> Folder dibuat otomatis jika belum ada</li>
+                            <li><strong>Auto Create Folder:</strong> Folder dibuat otomatis jika belum ada (permission 0755)</li>
+                            <li><strong>Wajib untuk:</strong> Cuti Sakit (jenis 2) dan Cuti Alasan Penting (jenis 5)</li>
+                            <li><strong>Optional untuk:</strong> Jenis cuti lainnya</li>
                         </ul>
                         <p class="mt-3"><strong>Contoh Kode:</strong></p>
-                        <pre class="bg-light p-2"><code>$config[\'upload_path\'] = \'./assets/dokumen/cuti/\';
+                        <pre class="bg-light p-2"><code>$config[\'upload_path\'] = \'./dokumen/cuti/\';
 $config[\'allowed_types\'] = \'pdf|jpg|jpeg|png\';
 $config[\'max_size\'] = 5120; // 5MB
-$config[\'encrypt_name\'] = TRUE;</code></pre>
+$config[\'encrypt_name\'] = TRUE;
+
+// Buat folder jika belum ada
+if (!is_dir($config[\'upload_path\'])) {
+    mkdir($config[\'upload_path\'], 0755, true);
+}</code></pre>
+                        <p class="mt-3"><strong>Catatan Penting:</strong></p>
+                        <ul>
+                            <li>Dokumen pendukung hanya wajib untuk Cuti Sakit dan Cuti Alasan Penting</li>
+                            <li>Sistem akan validasi file saat submit form</li>
+                            <li>Jika edit permohonan yang sudah ada dokumen, tidak wajib upload ulang</li>
+                            <li>File lama akan tetap digunakan jika tidak upload file baru</li>
+                        </ul>
                     </div>
                 </div>
             '

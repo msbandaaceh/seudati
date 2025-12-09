@@ -71,6 +71,7 @@ $route['simpan_validasi_cuti_atasan'] = 'HalamanCuti/simpan_validasi_cuti_atasan
 
 $route['statistik_validasi_cuti_ppk'] = 'HalamanCuti/statistik_validasi_cuti_ppk';
 $route['show_tabel_validasi_cuti_ppk'] = 'HalamanCuti/show_tabel_validasi_cuti_ppk';
+$route['show_cuti_validasi_ppk'] = 'HalamanCuti/show_cuti_validasi_ppk';
 $route['simpan_validasi_cuti_ppk'] = 'HalamanCuti/simpan_validasi_cuti_ppk';
 
 $route['show_tabel_legalisasi_cuti'] = 'HalamanCuti/show_tabel_legalisasi_cuti';

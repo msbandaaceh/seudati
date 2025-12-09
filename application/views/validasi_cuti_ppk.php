@@ -135,9 +135,26 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
+                                    <div class="p-3 rounded shadow-sm" style="background-color: #fff8e1; border-left: 5px solid #ffc107;">
+                                        <label for="validasi_atsung" class="form-label fw-bold text-warning">VALIDASI ATASAN LANGSUNG </label>
+                                        <input type="text" id="validasi_atsung" class="form-control border-warning" readonly></input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <div class="form-group p-3 rounded shadow-sm" style="background-color: #fff8e1; border-left: 5px solid #ffc107;">
+                                        <label for="pertimbangan_atsung" class="form-label fw-bold text-warning">PERTIMBANGAN ATASAN LANGSUNG</label>
+                                        <textarea id="pertimbangan_atsung" class="form-control border-warning" rows="2" readonly></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
                                     <label for="status_valid" class="form-label">Proses Cuti <code>*</code></label>
                                     <select class="form-control" name="status_valid"
-                                        id="status_valid_cuti" onchange="showHide(this.value)">
+                                        id="status_valid_cuti">
                                         <option value='0' selected disabled>Pilih Jenis Proses</option>
                                         <option value='1'>Setuju</option>
                                         <option value='2'>Perubahan</option>
@@ -149,7 +166,7 @@
 
                             <div class="row mb-3">
                                 <div class="col">
-                                    <div class="form-group" id="keterangan" style="display:none">
+                                    <div class="form-group" id="keterangan">
                                         <label for="ket" class="form-label">KETERANGAN <code>*</code></label>
                                         <textarea id="ket" class="form-control" rows="2" name="ket"
                                             placeholder="Isi Keterangan Tidak Setuju"></textarea>

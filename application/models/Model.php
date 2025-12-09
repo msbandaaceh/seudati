@@ -716,7 +716,6 @@ class Model extends CI_Model
     {
         $this->db->order_by('created_on', 'ASC');
         $this->db->where('status_ppk', '0');
-        $this->db->where('(status_validator = 1 OR status_validator = 5)');
         $this->db->where('id_ppk', $this->session->userdata('jab_id'));
         return $this->db->select('*')->from('register_cuti')->get();
     }
@@ -724,7 +723,6 @@ class Model extends CI_Model
     public function get_data_validasi_ppk()
     {
         $this->db->order_by('status_ppk', 'ASC');
-        $this->db->where('(status_validator = 1 OR status_validator = 5)');
         $this->db->where('id_ppk', $this->session->userdata('jab_id'));
         return $this->db->select('*')->from('v_cuti')->get();
     }
@@ -836,7 +834,7 @@ class Model extends CI_Model
             }
             $id_jabatan_atasan = $dataPegawai->row()->atasan_id;
             $jabatan_atasan = $dataPegawai->row()->jabatan_atasan;
-            
+
             # Cek apakah atasan langsung ada plh
             $queryPlh = $this->get_seleksi($this->db_sso . '.v_plh', 'plh_id_jabatan', $id_jabatan_atasan);
             if ($queryPlh->row()->pegawai_id != null) {
@@ -971,7 +969,6 @@ class Model extends CI_Model
     {
         $dataCuti = $this->get_seleksi('v_cuti', 'id', $data['id']);
         $nama = $dataCuti->row()->pegawai_nama;
-        $id_pemohon = $dataCuti->row()->pegawai_id;
         $id_grup = $dataCuti->row()->id_grup;
 
         switch ($data['status']) {
@@ -986,104 +983,79 @@ class Model extends CI_Model
                 break;
         }
 
-        if ($data['status'] == '1') {
-            if (in_array($id_grup, ['3', '6'])) {
-                $id_ppk = '5';
-                //Cek apakah PPK ada plh
-                $queryPlh = $this->get_seleksi($this->db_sso . '.v_plh', 'plh_id_jabatan', $id_ppk);
-                if ($queryPlh->row()->pegawai_id != null) {
-                    //PPK ada plh
-                    $status_validator = '5';
-                    $id_pegawai = $queryPlh->row()->pegawai_id;
-                    $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt Sekretaris MS Banda Aceh* Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
-                } else {
-                    //PPK tidak ada plh
-                    $queryTujuanNotif = $this->get_seleksi($this->db_sso . '.v_users', 'jab_id', $id_ppk);
-                    $id_pegawai = $queryTujuanNotif->row()->pegawai_id;
-                    $status_validator = $data['status'];
-                    $pesan = 'Assalamualaikum Wr. Wb., Yth. *Sekretaris MS Banda Aceh* Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
-                }
-
-                $tujuanNotif = $id_pegawai;
+        if (in_array($id_grup, ['3', '6'])) {
+            $id_ppk = '5';
+            //Cek apakah PPK ada plh
+            $queryPlh = $this->get_seleksi($this->db_sso . '.v_plh', 'plh_id_jabatan', $id_ppk);
+            if ($queryPlh->row()->pegawai_id != null) {
+                //PPK ada plh
+                $id_pegawai = $queryPlh->row()->pegawai_id;
+                $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt Sekretaris MS Banda Aceh* Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
             } else {
-                $id_ppk = '1';
-                $queryPlhAtasan = $this->get_seleksi($this->db_sso . '.v_plh', 'plh_id_jabatan', $id_ppk);
-                if ($queryPlhAtasan->row()->pegawai_id != null) {
-                    //Ada Plh
-                    if ($queryPlhAtasan->row()->jabatan == 'Wakil Ketua') {
-                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Wakil Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Ketua sedang melakukan Dinas Luar Kantor, Terima Kasih';
-                    } else {
-                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Ketua sedang melakukan Dinas Luar Kantor, Terima Kasih';
-                    }
-
-                    $status_validator = '5';
-                    $id_pegawai = $queryPlhAtasan->row()->pegawai_id;
-                } else {
-                    //Tidak ada Plh
-                    $pesan = 'Assalamualaikum Wr. Wb., Yth. *Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih';
-                    $queryTujuanNotif = $this->get_seleksi($this->db_sso . '.v_users', 'jab_id', $id_ppk);
-                    $id_pegawai = $queryTujuanNotif->row()->pegawai_id;
-                    $status_validator = $data['status'];
-                }
-                $tujuanNotif = $id_pegawai;
+                //PPK tidak ada plh
+                $queryTujuanNotif = $this->get_seleksi($this->db_sso . '.v_users', 'jab_id', $id_ppk);
+                $id_pegawai = $queryTujuanNotif->row()->pegawai_id;
+                $pesan = 'Assalamualaikum Wr. Wb., Yth. *Sekretaris MS Banda Aceh* Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
             }
+
+            $tujuanNotif = $id_pegawai;
         } else {
-            $pesan = 'Assalamualaikum Wr. Wb., Yth. *' . $nama . '*, permohonan cuti anda, diberikan status *' . $status_valid_notif . '* dengan alasan *' . $data['alasan'] . '*. Terima Kasih ';
-            $tujuanNotif = $id_pemohon;
-            if ($this->session->userdata('status_plh') == 1 || $this->session->userdata('status_plt') == 1) {
-                switch ($data['status']) {
-                    case 2:
-                        $status_validator = '6';
-                        break;
-                    case 3:
-                        $status_validator = '7';
-                        break;
-                    case 4:
-                        $status_validator = '8';
-                        break;
+            $id_ppk = '1';
+            $queryPlhAtasan = $this->get_seleksi($this->db_sso . '.v_plh', 'plh_id_jabatan', $id_ppk);
+            if ($queryPlhAtasan->row()->pegawai_id != null) {
+                //Ada Plh
+                if ($queryPlhAtasan->row()->jabatan == 'Wakil Ketua') {
+                    $pesan = 'Assalamualaikum Wr. Wb., Yth. *Wakil Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Ketua sedang melakukan Dinas Luar Kantor, Terima Kasih';
+                } else {
+                    $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Ketua sedang melakukan Dinas Luar Kantor, Terima Kasih';
                 }
+
+                $id_pegawai = $queryPlhAtasan->row()->pegawai_id;
             } else {
-                $status_validator = $data['status'];
+                //Tidak ada Plh
+                $pesan = 'Assalamualaikum Wr. Wb., Yth. *Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih';
+                $queryTujuanNotif = $this->get_seleksi($this->db_sso . '.v_users', 'jab_id', $id_ppk);
+                $id_pegawai = $queryTujuanNotif->row()->pegawai_id;
             }
+            $tujuanNotif = $id_pegawai;
         }
 
-        if (in_array($data['status'], ['1', '5'])) {
-            $dataPengguna = array(
-                'status_validator' => $status_validator,
-                'alasan_validator' => $data['alasan'],
-                'id_ttd_validator' => $this->session->userdata('pegawai_id'),
-                'id_ppk' => $id_ppk,
-                'modified_by' => $this->session->userdata('fullname'),
-                'modified_on' => date('Y-m-d H:i:s')
-            );
-
-            $dataNotif = array(
-                'jenis_pesan' => 'cuti',
-                'id_pemohon' => $this->session->userdata('pegawai_id'),
-                'pesan' => $pesan,
-                'id_tujuan' => $tujuanNotif,
-                'created_by' => $this->session->userdata('fullname'),
-                'created_on' => date('Y-m-d H:i:s')
-            );
+        if ($this->session->userdata('status_plh') == 1 || $this->session->userdata('status_plt') == 1) {
+            switch ($data['status']) {
+                case 1:
+                    $status_validator = '5';
+                    break;
+                case 2:
+                    $status_validator = '6';
+                    break;
+                case 3:
+                    $status_validator = '7';
+                    break;
+                case 4:
+                    $status_validator = '8';
+                    break;
+            }
         } else {
-            $dataPengguna = array(
-                'status_validator' => $status_validator,
-                'alasan_validator' => $data['alasan'],
-                'id_ttd_validator' => $tujuanNotif,
-                'status_cuti' => $data['status'],
-                'modified_by' => $this->session->userdata('fullname'),
-                'modified_on' => date('Y-m-d H:i:s')
-            );
-
-            $dataNotif = array(
-                'jenis_pesan' => 'cuti',
-                'id_pemohon' => $this->session->userdata('pegawai_id'),
-                'pesan' => $pesan,
-                'id_tujuan' => $id_pemohon,
-                'created_by' => $this->session->userdata('fullname'),
-                'created_on' => date('Y-m-d H:i:s')
-            );
+            $status_validator = $data['status'];
         }
+
+        $dataPengguna = array(
+            'status_validator' => $status_validator,
+            'alasan_validator' => $data['alasan'],
+            'id_ttd_validator' => $this->session->userdata('pegawai_id'),
+            'id_ppk' => $id_ppk,
+            'modified_by' => $this->session->userdata('fullname'),
+            'modified_on' => date('Y-m-d H:i:s')
+        );
+
+        $dataNotif = array(
+            'jenis_pesan' => 'cuti',
+            'id_pemohon' => $this->session->userdata('pegawai_id'),
+            'pesan' => $pesan,
+            'id_tujuan' => $tujuanNotif,
+            'created_by' => $this->session->userdata('fullname'),
+            'created_on' => date('Y-m-d H:i:s')
+        );
 
         $querySimpan = $this->pembaharuan_data('register_cuti', $dataPengguna, 'id', $data['id']);
         $this->kirim_notif($dataNotif);

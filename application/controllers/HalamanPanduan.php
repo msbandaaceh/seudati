@@ -37,7 +37,9 @@ class HalamanPanduan extends MY_Controller
                         'langkah' => [
                             'Klik menu "Beranda" di sidebar',
                             'Lihat grafik dan statistik permohonan',
-                            'Monitor status permohonan yang pending'
+                            'Monitor status permohonan yang pending',
+                            'Lihat informasi hari kerja bulan ini (total hari, hari weekend, hari libur, hari kerja efektif)',
+                            'Lihat kalender hari libur di bagian bawah dashboard'
                         ]
                     ],
                     [
@@ -91,13 +93,14 @@ class HalamanPanduan extends MY_Controller
                             [
                                 'nama' => 'Kalender Cuti',
                                 'langkah' => [
-                                    'Klik menu "Laporan" > "Kalender Cuti"',
-                                    'Lihat kalender dengan semua cuti yang sudah tervalidasi',
+                                    'Klik menu "Kalender Cuti" di sidebar (di bawah menu Pengaturan)',
+                                    'Lihat kalender dengan semua cuti yang sudah tervalidasi (ada nomor cuti)',
                                     'Gunakan tombol di kanan atas untuk beralih antara tampilan bulanan, mingguan, dan harian',
-                                    'Klik pada event cuti untuk melihat detail lengkap',
-                                    'Event berwarna hijau = Cuti Tahunan, Merah = Cuti Sakit, Kuning = Cuti Melahirkan, dll',
+                                    'Klik pada event cuti/izin untuk melihat detail lengkap (nama, jenis, nomor, tanggal, alasan)',
+                                    'Legenda warna: Hijau = Cuti Tahunan, Merah = Cuti Sakit, Kuning = Cuti Melahirkan, Biru = Cuti Besar, Ungu = Cuti Alasan Penting, Abu-abu = Cuti Luar Tanggungan Negara',
                                     'Event berwarna orange = Izin Keluar (hanya tampil di view mingguan dan harian)',
-                                    'Tanggal hari ini ditandai dengan background kuning dan label "Hari Ini"'
+                                    'Tanggal hari ini ditandai dengan background kuning dan label "Hari Ini"',
+                                    'Hari libur nasional ditampilkan sebagai background merah di kalender'
                                 ]
                             ]
                         ]
@@ -121,11 +124,12 @@ class HalamanPanduan extends MY_Controller
                                 'langkah' => [
                                     'Klik menu "Sisa Cuti"',
                                     'Lihat daftar sisa cuti semua pegawai',
-                                    'Tabel menampilkan: Sisa Tahun Ini, Sisa Tahun Lalu, Sisa 2 Tahun Lalu',
+                                    'Tabel menampilkan: Sisa Tahun Ini (N1), Sisa Tahun Lalu (N2), Sisa 2 Tahun Lalu (N3)',
                                     'Tabel juga menampilkan: Cuti Sakit Tahun Ini dan Cuti Alasan Penting Tahun Ini',
-                                    'Klik "Generate" untuk tahun baru (awal tahun)',
+                                    'Klik "Generate" untuk tahun baru (awal tahun) - akan membuat sisa cuti 12 hari untuk semua pegawai aktif',
                                     'Edit sisa cuti dengan klik langsung pada cell yang ingin diubah',
-                                    'Tekan Enter atau klik di luar cell untuk menyimpan perubahan'
+                                    'Tekan Enter atau klik di luar cell untuk menyimpan perubahan',
+                                    'Perubahan akan otomatis tersimpan ke database'
                                 ]
                             ]
                         ]
@@ -192,16 +196,21 @@ class HalamanPanduan extends MY_Controller
                                     'Filter berdasarkan jenis cuti atau status',
                                     'Admin dapat menambah cuti langsung dengan klik tombol "Tambah"',
                                     'Untuk cuti sakit dan cuti alasan penting, wajib upload dokumen pendukung (maks 5MB)',
-                                    'Cetak formulir cuti'
+                                    'Cetak formulir cuti',
+                                    'Lihat dokumen pendukung dengan klik icon dokumen (jika ada)'
                                 ]
                             ],
                             [
                                 'nama' => 'Kalender Cuti',
                                 'langkah' => [
-                                    'Klik menu "Laporan" > "Kalender Cuti"',
-                                    'Lihat kalender dengan semua cuti dan izin keluar',
-                                    'Gunakan tombol di kanan atas untuk beralih tampilan',
-                                    'Klik pada event untuk melihat detail lengkap'
+                                    'Klik menu "Kalender Cuti" di sidebar (di bawah menu Pengaturan)',
+                                    'Lihat kalender dengan semua cuti yang sudah tervalidasi (ada nomor cuti)',
+                                    'Gunakan tombol di kanan atas untuk beralih antara tampilan bulanan, mingguan, dan harian',
+                                    'Klik pada event cuti/izin untuk melihat detail lengkap (nama, jenis, nomor, tanggal, alasan)',
+                                    'Legenda warna: Hijau = Cuti Tahunan, Merah = Cuti Sakit, Kuning = Cuti Melahirkan, Biru = Cuti Besar, Ungu = Cuti Alasan Penting, Abu-abu = Cuti Luar Tanggungan Negara',
+                                    'Event berwarna orange = Izin Keluar (hanya tampil di view mingguan dan harian)',
+                                    'Tanggal hari ini ditandai dengan background kuning dan label "Hari Ini"',
+                                    'Hari libur nasional ditampilkan sebagai background merah di kalender'
                                 ]
                             ]
                         ]
@@ -316,18 +325,19 @@ class HalamanPanduan extends MY_Controller
                         'deskripsi' => 'Mengajukan permohonan cuti (tahunan, sakit, melahirkan, dll).',
                         'langkah' => [
                             'Klik menu "Cuti"',
+                            'Lihat informasi sisa cuti di bagian atas: Sisa Cuti Tahunan, Sisa Cuti Sakit, Sisa Cuti Alasan Penting',
                             'Klik tombol "Tambah Permohonan Cuti"',
-                            'Lihat informasi sisa cuti tahunan, sisa cuti sakit, dan sisa cuti alasan penting di bagian atas form',
                             'Pilih jenis cuti (Tahunan, Sakit, Melahirkan, Besar, Alasan Penting, dll)',
-                            'Untuk Cuti Sakit dan Cuti Alasan Penting, field "Dokumen Pendukung" akan muncul',
-                            'Upload dokumen pendukung (PDF/JPG/PNG, maksimal 5MB) jika jenis cuti Sakit atau Alasan Penting',
+                            'Untuk Cuti Sakit (jenis 2) dan Cuti Alasan Penting (jenis 5), field "Dokumen Pendukung" akan muncul',
+                            'Upload dokumen pendukung (PDF/JPG/JPEG/PNG, maksimal 5MB) - WAJIB untuk cuti sakit dan alasan penting',
                             'Isi tanggal mulai dan selesai cuti',
-                            'Sistem akan otomatis menghitung lama cuti',
+                            'Sistem akan otomatis menghitung lama cuti (exclude hari libur dan weekend)',
                             'Isi alamat selama cuti dan alasan',
                             'Klik "Simpan"',
                             'Permohonan akan diproses oleh atasan dan PPK',
                             'Cek status permohonan di tabel yang tersedia',
-                            'Setelah disetujui, Anda dapat mencetak formulir cuti'
+                            'Setelah disetujui, Anda dapat mencetak formulir cuti',
+                            'Untuk edit permohonan yang belum divalidasi, klik tombol edit di tabel'
                         ]
                     ],
                     [
@@ -370,8 +380,10 @@ class HalamanPanduan extends MY_Controller
                                     'Klik menu "Cuti" (di bagian Validasi Permohonan) > "Atasan"',
                                     'Lihat daftar permohonan cuti bawahan',
                                     'Klik tombol "Validasi"',
+                                    'Lihat detail permohonan termasuk dokumen pendukung (jika ada)',
+                                    'Untuk cuti sakit/alasan penting, dapat melihat dan download dokumen pendukung',
                                     'Pilih status: Setuju, Perubahan, Ditangguhkan, atau Ditolak',
-                                    'Isi alasan jika diperlukan',
+                                    'Isi "Pertimbangan Atasan Langsung" (wajib diisi)',
                                     'Klik "Simpan"',
                                     'Jika disetujui, permohonan akan diteruskan ke PPK'
                                 ]
@@ -382,10 +394,12 @@ class HalamanPanduan extends MY_Controller
                                     'Klik menu "Cuti" (di bagian Validasi Permohonan) > "PPK"',
                                     'Lihat permohonan yang sudah disetujui atasan',
                                     'Klik tombol "Validasi"',
-                                    'Pilih status validasi',
-                                    'Isi keterangan jika ada',
+                                    'Lihat detail permohonan termasuk dokumen pendukung (jika ada)',
+                                    'Pilih status validasi: Setuju, Perubahan, Ditangguhkan, atau Ditolak',
+                                    'Isi keterangan jika diperlukan',
                                     'Klik "Simpan"',
-                                    'Sistem akan otomatis mengurangi kuota cuti pegawai'
+                                    'Sistem akan otomatis mengurangi kuota cuti pegawai (untuk cuti tahunan)',
+                                    'Jika disetujui, notifikasi akan dikirim ke Admin Kepegawaian untuk legalisasi'
                                 ]
                             ]
                         ]
@@ -396,14 +410,16 @@ class HalamanPanduan extends MY_Controller
                         'deskripsi' => 'Tips dan informasi penting',
                         'langkah' => [
                             'Pastikan Anda sudah memilih atasan langsung di sistem kepegawaian',
-                            'Cek sisa kuota cuti Anda sebelum mengajukan cuti tahunan',
-                            'Untuk Cuti Sakit dan Cuti Alasan Penting, siapkan dokumen pendukung (surat dokter, dll)',
+                            'Cek sisa kuota cuti Anda sebelum mengajukan cuti tahunan (lihat di halaman Cuti)',
+                            'Untuk Cuti Sakit dan Cuti Alasan Penting, siapkan dokumen pendukung (surat dokter, surat keterangan, dll)',
                             'Format dokumen pendukung: PDF, JPG, JPEG, atau PNG dengan ukuran maksimal 5MB',
+                            'Dokumen pendukung akan di-encrypt oleh sistem untuk keamanan',
                             'Untuk cuti tahunan > 3 hari berturut-turut, pastikan sudah koordinasi dengan atasan',
+                            'Sistem otomatis menghitung hari kerja (exclude weekend dan hari libur nasional)',
                             'Upload sertifikat diklat maksimal 7 hari setelah diklat selesai',
                             'Simpan/cetak formulir cuti yang sudah disetujui untuk arsip',
-                            'Gunakan Kalender Cuti untuk melihat jadwal cuti rekan kerja',
-                            'Pastikan koneksi internet stabil saat mengajukan permohonan'
+                            'Gunakan Dashboard untuk melihat statistik permohonan Anda',
+                            'Pastikan koneksi internet stabil saat mengajukan permohonan dan upload dokumen'
                         ]
                     ]
                 ]

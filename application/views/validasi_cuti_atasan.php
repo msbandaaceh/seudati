@@ -135,10 +135,9 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
-                                    <label for="status_valid" class="form-label">Proses Cuti <code>*</code></label>
-                                    <select class="form-control" name="status_valid" id="status_valid_cuti"
-                                        onchange="showHide(this.value)">
-                                        <option value='0' selected disabled>Pilih Jenis Proses</option>
+                                    <label for="status_valid" class="form-label">Pertimbangan Atasan <code>*</code></label>
+                                    <select class="form-control" name="status_valid" id="status_valid_cuti">
+                                        <option value='0' selected disabled>Pilih Pertimbangan Atasan</option>
                                         <option value='1'>Setuju</option>
                                         <option value='2'>Perubahan</option>
                                         <option value='3'>Tangguhkan</option>
@@ -149,10 +148,10 @@
 
                             <div class="row mb-3">
                                 <div class="col">
-                                    <div class="form-group" id="keterangan" style="display:none">
+                                    <div class="form-group" id="keterangan">
                                         <label for="ket" class="form-label">KETERANGAN <code>*</code></label>
                                         <textarea id="ket" class="form-control" rows="2" name="ket"
-                                            placeholder="Isi Keterangan Tidak Setuju"></textarea>
+                                            placeholder="Isi Pertimbangan Atasan Langsung"></textarea>
                                     </div>
                                 </div>
                             </div>
