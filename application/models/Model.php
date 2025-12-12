@@ -706,8 +706,8 @@ class Model extends CI_Model
     public function cuti_legalisasi_data()
     {
         $this->db->order_by('created_on', 'ASC');
-        $this->db->where('(status_ppk = 1 OR status_ppk = 5)');
-        $this->db->where('(status_validator = 1 OR status_validator = 5)');
+        $this->db->where('(status_ppk = 1 OR status_ppk = 5 OR status_ppk = 3 OR status_ppk = 7)');
+        $this->db->where('(status_validator = 1 OR status_validator = 5 OR status_ppk = 3 OR status_ppk = 7)');
         $this->db->where('nomor_cuti', NULL);
         return $this->db->select('*')->from('v_cuti')->get();
     }
@@ -1254,7 +1254,6 @@ class Model extends CI_Model
                     //die(var_dump($dataCuti[0]));
 
                 } else {
-                    $pesan = 'Assalamualaikum Wr. Wb., Yth. *' . $nama . '*, permohonan cuti anda, diberikan status *' . $status_valid_notif . '* dengan alasan *' . $data['alasan'] . '* oleh Pejabat Pembina Kepegawaian. Terima Kasih ';
                     $queryCatatanCuti = $this->get_seleksi2('register_catatan_cuti', 'pegawai_id', $tujuanNotif, 'tahun', date("Y"));
                     if ($queryCatatanCuti->num_rows() > 0) {
                         $dataPenangguhan = array(
@@ -1284,6 +1283,18 @@ class Model extends CI_Model
                         'modified_by' => $this->session->userdata('fullname'),
                         'modified_on' => date('Y-m-d H:i:s')
                     );
+
+                    # Kirim notif ke Bagian Kepegawaian
+                    # Cek apakah Kasub Kepegawaian ada PLH
+                    $queryPlh = $this->get_seleksi($this->db_sso . '.v_plh', 'plh_id_jabatan', '11');
+                    if ($queryPlh->row()->pegawai_id != NULL) {
+                        $tujuanNotif = $queryPlh->row()->pegawai_id;
+                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt Kepala Sub Bagian Kepegawaian MS Banda Aceh*, Ada permohonan cuti yang diberikan penangguhan oleh Pejabat Pembina Kepegawaian, silakan berikan nomor untuk legalisasi Cuti Tahunan melalui LITERASI MS Banda Aceh. Terima Kasih.';
+                    } else {
+                        $queryPegawai = $this->get_seleksi($this->db_sso . '.v_users', 'jab_id', '11');
+                        $tujuanNotif = $queryPegawai->row()->pegawai_id;
+                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Kepala Sub Bagian Kepegawaian MS Banda Aceh*, Ada permohonan cuti yang diberikan penangguhan oleh Pejabat Pembina Kepegawaian, silakan berikan nomor untuk legalisasi Cuti Tahunan melalui LITERASI MS Banda Aceh. Terima Kasih.';
+                    }
                 }
             } else { # Untuk Cuti Selain Cuti Tahunan
                 $pegawai_id = $tujuanNotif;
