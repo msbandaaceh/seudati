@@ -76,6 +76,17 @@
                                         <input type="text" id="tgl" class="form-control" disabled />
                                     </div>
                                 </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <div class="p-3 rounded shadow-sm"
+                                            style="background-color: #fff8e1; border-left: 5px solid #ffc107;">
+                                            <label for="status_cuti" class="form-label fw-bold text-warning">STATUS CUTI
+                                            </label>
+                                            <input type="text" id="status_cuti" class="form-control border-warning"
+                                                readonly></input>
+                                        </div>
+                                    </div>
+                                </div>
                                 <br />
                                 <dt>PERHATIAN :</dt>
                                 <dd>
@@ -89,8 +100,10 @@
 
                                 <div class="row g-2">
                                     <div class="col">
-                                        <label for="nomor_cuti" class="form-label">Masukkan Nomor Surat Cuti</label><code> *</code>
-                                        <input type="text" name="nomor_cuti" id="nomor_cuti" class="form-control" autocomplete="off"/>
+                                        <label for="nomor_cuti" class="form-label">Masukkan Nomor Surat
+                                            Cuti</label><code> *</code>
+                                        <input type="text" name="nomor_cuti" id="nomor_cuti" class="form-control"
+                                            autocomplete="off" />
                                     </div>
                                 </div>
                                 <label class="form-label"><code><i>* Wajib Diisi</i></code></label>

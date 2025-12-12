@@ -534,6 +534,16 @@ class HalamanCuti extends MY_Controller
         $nip = $cariCuti->row()->nip;
         $id_grup = $cariCuti->row()->id_grup;
         $tgl = date('Y-m-d', strtotime($cariCuti->row()->created_on));
+        $status_cuti_ = $cariCuti->row()->status_cuti;
+        switch ($status_cuti_) {
+            case 1:
+                $status_cuti = "Disetujui";
+                break;
+            case 3:
+                $status_cuti = "Penangguhan";
+                break;
+        }
+
         switch ($cariCuti->row()->jenis_cuti) {
             case 1:
                 $jenis_cuti = "Cuti Tahunan";
@@ -587,7 +597,8 @@ class HalamanCuti extends MY_Controller
                 'id_grup' => $id_grup,
                 'grup' => $grup,
                 'tanggal' => $this->tanggalhelper->convertDayDate($tgl),
-                'jenis_cuti' => $jenis_cuti
+                'jenis_cuti' => $jenis_cuti,
+                'status_cuti' => $status_cuti
             )
         );
         return;

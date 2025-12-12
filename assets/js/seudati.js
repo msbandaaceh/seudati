@@ -4186,6 +4186,7 @@ function BukaModalPenomoranCuti(id) {
             $("#jenis").val('');
             $('#jenis_cuti').val('');
             $('#tgl').val('');
+            $('#status_cuti').val('');
 
             $("#judul").append(json.judul);
             $("#id").val(json.id);
@@ -4195,6 +4196,7 @@ function BukaModalPenomoranCuti(id) {
             $("#jenis").val(json.grup);
             $('#jenis_cuti').val(json.jenis_cuti);
             $('#tgl').val(json.tanggal);
+            $('#status_cuti').val(json.status_cuti);
         } else if (json.st == 0) {
             pesan('PERINGATAN', json.msg, '');
             $('#table_pegawai').DataTable().ajax.reload();
