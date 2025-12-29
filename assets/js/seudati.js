@@ -1079,29 +1079,6 @@ function BukaDokumen(id) {
     });
 }
 
-function BukaModalLibur(id) {
-    $.post('show_libur', {
-        id: id
-    }, function (response) {
-        var json = jQuery.parseJSON(response);
-        if (json.st == 1) {
-            $("#judul").html("");
-            $("#id").val('');
-            $("#tgl_libur").val('');
-            $("#ket").val('');
-
-            $("#judul").append(json.judul);
-            $("#id").val(json.id);
-            $("#tgl_libur").val(json.tgl);
-            $("#ket").val(json.ket);
-
-        } else if (json.st == 0) {
-            pesan('PERINGATAN', json.msg, '');
-            $('#table_pegawai').DataTable().ajax.reload();
-        }
-    });
-}
-
 function fetchRequestIzin() {
     $('#jum_req_izin').html('');
     $('#jum_req_cuti').html('');

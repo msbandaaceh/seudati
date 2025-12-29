@@ -696,7 +696,6 @@ class Model extends CI_Model
     public function get_tgl_merah()
     {
         try {
-            $this->db->where('YEAR(tgl) = YEAR(CURDATE())');
             return $this->db->get('register_hari_libur');
         } catch (Exception $e) {
             return $e;
