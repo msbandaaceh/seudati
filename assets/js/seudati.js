@@ -4767,6 +4767,7 @@ function GenerateCuti() {
         var json = jQuery.parseJSON(response);
         if (json.success) {
             notifikasi(json.message, json.success);
+            fetchSisaCuti();
         }
     });
 }

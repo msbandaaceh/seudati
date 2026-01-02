@@ -113,7 +113,6 @@ class HalamanPengaturan extends MY_Controller
             return;
         } else {
             $result = $this->model->proses_generate_sisa_cuti($tahun);
-
             if ($result['status']) {
                 echo json_encode(['success' => 1, 'message' => $result['message']]);
             } else {

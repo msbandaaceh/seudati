@@ -1717,4 +1717,57 @@ class Model extends CI_Model
         $this->db->order_by('p.id', 'ASC');
         return $this->db->get()->result_array();
     }
+
+    public function proses_generate_sisa_cuti($tahun)
+    {
+        // Mengambil seluruh pegawai dengan status_pegawai = 1
+        $active_pegawai = $this->get_pegawai_aktif();
+        $data = array();
+
+        if (count($active_pegawai) > 0) {
+            //die(var_dump("Tahun ini belum ada"));
+            foreach ($active_pegawai as $pegawai) {
+                //proses penginputan ke tabel sisa cuti
+                $data[] = array(
+                    'pegawai_id' => $pegawai->id,
+                    'tahun' => $tahun,
+                    'sisa' => '12',
+                    'created_by' => $this->session->userdata("fullname"),
+                    'created_on' => date('Y-m-d H:i:s')
+                );
+            }
+
+            $query = $this->insert_sisa($data);
+            //echo "Data berhasil diinput.";
+            if ($query) {
+                return ['status' => true, 'message' => 'Inisialisasi Cuti Tahun ' . $tahun . ' Berhasil Di Generate di Tabel Sisa Cuti'];
+            } else {
+                return ['status' => false, 'message' => 'Inisialisasi Cuti Tahun ' . $tahun . ' Gagal Di Generate di Tabel Sisa Cuti'];
+            }
+        } else {
+            //echo "Tidak ada pegawai dengan status aktif.";
+            return ['status' => false, 'message' => 'Tidak ada pegawai dengan status aktif'];
+        }
+    }
+
+    public function get_pegawai_aktif()
+    {
+        $this->db->select('id');
+        $this->db->where('status_pegawai', 1);
+        $this->db->where_not_in('jenis_pegawai', array(5));
+        $query = $this->db->get($this->db_sso . '.pegawai');
+        return $query->result();
+    }
+
+    public function insert_sisa($data)
+    {
+        if ($this->db->insert_batch('register_sisa_cuti_tahunan', $data)) {
+            return true;
+        } else {
+            // Log error or get the error message
+            $error = $this->db->error();
+            log_message('error', print_r($error, true));
+            return false;
+        }
+    }
 }

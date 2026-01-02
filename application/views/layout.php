@@ -470,7 +470,7 @@
         };
     </script>
 
-    <script src="<?= site_url('assets/js/seudati.js?v=1.8.0'); ?>"></script>
+    <script src="<?= site_url('assets/js/seudati.js?v=1.9.0'); ?>"></script>
 </body>
 
 </html>
