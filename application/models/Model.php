@@ -774,18 +774,6 @@ class Model extends CI_Model
 
     public function proses_simpan_cuti($data)
     {
-        $param = [
-            "tabel" => "v_pegawai",
-            "kolom_seleksi" => "id",
-            "seleksi" => $data['pegawai_id']
-        ];
-
-        $users = $this->apihelper->get('apiclient/get_data_seleksi', $param);
-
-        if ($users['status_code'] === 200 && $users['response']['status'] == 'success') {
-            $nama = $users['response']['data'][0]['nama_gelar'];
-        }
-
         if ($data['id']) {
             $dataPengguna = array(
                 'pegawai_id' => $data['pegawai_id'],
@@ -847,14 +835,14 @@ class Model extends CI_Model
                     if ($queryPlhAtasan->row()->pegawai_id != null) {
                         # Ada Plh
                         if ($queryPlhAtasan->row()->jabatan == 'Wakil Ketua') {
-                            $pesan = 'Assalamualaikum Wr. Wb., Yth. *Wakil Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama *' . $nama . '*. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh sebagai *Plh/Plt Ketua* dikarenakan Atasan Langsung Pegawai (*' . $jabatan_atasan . '*) sedang melakukan Dinas Luar Kantor, Terima Kasih ';
+                            $pesan = 'Assalamualaikum Wr. Wb., Yth. *Wakil Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama *' . $data['nama'] . '*. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh sebagai *Plh/Plt Ketua* dikarenakan Atasan Langsung Pegawai (*' . $jabatan_atasan . '*) sedang melakukan Dinas Luar Kantor, Terima Kasih ';
                         } else {
-                            $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama *' . $nama . '*. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Atasan Langsung Pegawai (*' . $jabatan_atasan . '*) sedang melakukan Dinas Luar Kantor, Terima Kasih ';
+                            $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama *' . $data['nama'] . '*. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Atasan Langsung Pegawai (*' . $jabatan_atasan . '*) sedang melakukan Dinas Luar Kantor, Terima Kasih ';
                         }
                         $id_pegawai = $queryPlhAtasan->row()->pegawai_id;
                     } else {
                         # Tidak ada Plh
-                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama *' . $nama . '*. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Atasan Langsung Pegawai (*' . $jabatan_atasan . '*) sedang melakukan Dinas Luar Kantor, Terima Kasih ';
+                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama *' . $data['nama'] . '*. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Atasan Langsung Pegawai (*' . $jabatan_atasan . '*) sedang melakukan Dinas Luar Kantor, Terima Kasih ';
                         $queryTujuanNotif = $this->get_seleksi2($this->db_sso . '.v_users', 'jab_id', $jab_tujuan, 'status_pegawai', '1');
                         if ($queryTujuanNotif->num_rows() > 0)
                             $id_pegawai = $queryTujuanNotif->row()->pegawai_id;
@@ -875,15 +863,15 @@ class Model extends CI_Model
                         if ($queryPlhAtasan->row()->pegawai_id != null) {
                             $queryJabatan = $this->get_seleksi($this->db_sso . '.ref_jabatan', 'id', $id_jabatan_atasan);
                             if ($queryPlhAtasan->row()->pegawai_id == '2') {
-                                $pesan = 'Assalamualaikum Wr. Wb., Yth. *Wakil Ketua MS Banda Aceh* Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan ' . $queryJabatan->row()->nama_jabatan . ' sedang melakukan Dinas Luar Kantor, Terima Kasih ';
+                                $pesan = 'Assalamualaikum Wr. Wb., Yth. *Wakil Ketua MS Banda Aceh* Ada permohonan cuti, atas nama ' . $data['nama'] . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan ' . $queryJabatan->row()->nama_jabatan . ' sedang melakukan Dinas Luar Kantor, Terima Kasih ';
                             } else {
-                                $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt ' . $queryJabatan->row()->nama_jabatan . ' MS Banda Aceh* Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan ' . $queryJabatan->row()->nama_jabatan . ' sedang melakukan Dinas Luar Kantor, Terima Kasih ';
+                                $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt ' . $queryJabatan->row()->nama_jabatan . ' MS Banda Aceh* Ada permohonan cuti, atas nama ' . $data['nama'] . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan ' . $queryJabatan->row()->nama_jabatan . ' sedang melakukan Dinas Luar Kantor, Terima Kasih ';
                             }
                             $id_pegawai = $queryPlhAtasan->row()->pegawai_id;
                         } else {
                             $qryJabatan = $this->get_seleksi2($this->db_sso . '.v_users', 'jab_id', $id_jabatan_atasan, 'status_pegawai', '1');
                             if ($qryJabatan->num_rows() > 0) {
-                                $pesan = 'Assalamualaikum Wr. Wb., Yth. *' . $qryJabatan->row()->jabatan . ' MS Banda Aceh* Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Pemohon merupakan Plh/Plt dari Atasan Langsungnya, Terima Kasih ';
+                                $pesan = 'Assalamualaikum Wr. Wb., Yth. *' . $qryJabatan->row()->jabatan . ' MS Banda Aceh* Ada permohonan cuti, atas nama ' . $data['nama'] . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh dikarenakan Pemohon merupakan Plh/Plt dari Atasan Langsungnya, Terima Kasih ';
                                 $id_pegawai = $qryJabatan->row()->pegawai_id;
                             } else {
                                 return ['status' => false, 'message' => 'Atasan langsung anda tidak ada dan tidak ada plh atau pltnya, silakan hubungi bagian kepegawaian.'];
@@ -893,16 +881,16 @@ class Model extends CI_Model
                         $jab_tujuan = $id_jabatan_atasan;
 
                     } else {
-                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt ' . $jabatan_atasan . ' MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
+                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt ' . $jabatan_atasan . ' MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $data['nama'] . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
                         $jab_tujuan = $id_jabatan_atasan;
                         $id_pegawai = $queryPlh->row()->pegawai_id;
                     }
                 } else {
                     # Jika Atasan adalah Ketua
                     if ($queryPlh->row()->jabatan == 'Wakil Ketua') {
-                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Wakil Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh sebagai *Plh/Plt Ketua* dikarenakan Ketua sedang Dinas Luar, Terima Kasih ';
+                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Wakil Ketua MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $data['nama'] . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh sebagai *Plh/Plt Ketua* dikarenakan Ketua sedang Dinas Luar, Terima Kasih ';
                     } else {
-                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt ' . $jabatan_atasan . ' MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
+                        $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt ' . $jabatan_atasan . ' MS Banda Aceh*, Ada permohonan cuti, atas nama ' . $data['nama'] . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
                     }
                     $jab_tujuan = $id_jabatan_atasan;
                     $id_pegawai = $queryPlh->row()->pegawai_id;
@@ -915,7 +903,7 @@ class Model extends CI_Model
                 if ($queryTujuanNotif->num_rows() > 0) {
                     $tujuanNotif = $queryTujuanNotif->row()->pegawai_id;
                     $jab_tujuan = $id_jabatan_atasan;
-                    $pesan = 'Assalamualaikum Wr. Wb., Yth. *' . $queryTujuanNotif->row()->jabatan . ' MS Banda Aceh* Ada permohonan cuti, atas nama ' . $nama . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
+                    $pesan = 'Assalamualaikum Wr. Wb., Yth. *' . $queryTujuanNotif->row()->jabatan . ' MS Banda Aceh* Ada permohonan cuti, atas nama ' . $data['nama'] . '. Mohon untuk ditindaklanjuti melalui LITERASI MS Banda Aceh, Terima Kasih ';
                 } else {
                     return ['status' => false, 'message' => 'Atasan langsung anda tidak ada dan tidak ada plh atau pltnya, silakan hubungi bagian kepegawaian.'];
                 }
@@ -923,6 +911,8 @@ class Model extends CI_Model
 
             $dataPengguna = array(
                 'pegawai_id' => $data['pegawai_id'],
+                'jabatan_id' => $data['jabatan_id'],
+                'pangkat_id' => $data['pangkat_id'],
                 'jenis_cuti' => $data['jenis'],
                 'tgl_awal' => $data['tgl_awal'],
                 'tgl_akhir' => $data['tgl_akhir'],
@@ -1489,7 +1479,7 @@ class Model extends CI_Model
         $data['nomor_cuti'] = $cuti->nomor_cuti;
         $data['nama'] = $cuti->pegawai_nama;
         $data['nip'] = $cuti->nip;
-        $data['jabatan'] = $cuti->pegawai_jabatan;
+        $data['jabatan'] = $cuti->jabatan_pegawai;
         $data['pangkat'] = $cuti->golongan . ' | ' . $cuti->pangkat;
         $data['id_grup'] = $cuti->id_grup;
         $jml_hari = $this->tanggalhelper->getSelisihHari($cuti->tmt, date('Y-m-d'));
@@ -1509,6 +1499,12 @@ class Model extends CI_Model
         $data['n1'] = $cuti->n1;
         $data['n2'] = $cuti->n2;
         $data['n3'] = $cuti->n3;
+
+        $tahun_cuti = date('Y', strtotime($cuti->tgl_awal));
+
+        $data['tahun_n1'] = $tahun_cuti;
+        $data['tahun_n2'] = $tahun_cuti - 1;
+        $data['tahun_n3'] = $tahun_cuti - 2;
 
         $queryCatatanCuti = $this->get_seleksi2('register_catatan_cuti', 'pegawai_id', $cuti->pegawai_id, 'tahun', date('Y'));
         if ($queryCatatanCuti->num_rows > 0) {

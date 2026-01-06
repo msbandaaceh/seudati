@@ -674,6 +674,9 @@ class HalamanCuti extends MY_Controller
         $data = [
             'id' => $this->input->post('id'),
             'pegawai_id' => $this->session->userdata('pegawai_id'),
+            'jabatan_id' => $this->session->userdata('jab_id'),
+            'pangkat_id' => $this->session->userdata('pangkat_id'),
+            'nama' => $this->session->userdata('fullname'),
             'jenis' => $jenis_cuti,
             'tgl_awal' => $this->input->post('tgl_awal'),
             'tgl_akhir' => $this->input->post('tgl_akhir'),
@@ -762,9 +765,14 @@ class HalamanCuti extends MY_Controller
             }
         }
 
+        $pegawai = $this->ambilDataPegawai($this->input->post('pegawai'));
+
         $data = [
             'id' => $id_cuti,
             'pegawai_id' => $this->input->post('pegawai'),
+            'jabatan_id' => $pegawai['jab_id'],
+            'pangkat_id' => $pegawai['gol_id'],
+            'nama' => $pegawai['nama_gelar'],
             'jenis' => $jenis_cuti,
             'tgl_awal' => $this->input->post('tgl_awal'),
             'tgl_akhir' => $this->input->post('tgl_akhir'),
@@ -783,6 +791,20 @@ class HalamanCuti extends MY_Controller
                 unlink($config['upload_path'] . $dokumen_pendukung);
             }
             echo json_encode(['success' => 3, 'message' => $result['message']]);
+        }
+    }
+
+    private function ambilDataPegawai($id) {
+        $params = [
+            'tabel' => 'v_pegawai',
+            'kolom_seleksi' => 'id',
+            'seleksi' => $id
+        ];
+
+        $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
+
+        if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
+            return $result['response']['data'][0];
         }
     }
 

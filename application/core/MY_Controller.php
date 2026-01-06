@@ -43,23 +43,23 @@ class MY_Controller extends CI_Controller
         if (!$this->session->userdata('status_plh')) {
             if (!$this->session->userdata('status_plt')) {
                 $params = [
-                    'tabel' => 'v_users',
-                    'kolom_seleksi' => 'userid',
-                    'seleksi' => $this->session->userdata("userid")
+                    'tabel' => 'v_pegawai',
+                    'kolom_seleksi' => 'id',
+                    'seleksi' => $this->session->userdata("pegawai_id")
                 ];
 
                 $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
 
                 if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
                     $user_data = $result['response']['data'][0];
-                    $this->session->set_userdata('pegawai_id', $user_data['pegawai_id']);
                     $this->session->set_userdata('id_grup', $user_data['id_grup']);
 
                     $hari = $this->tanggalhelper->getSelisihHari($user_data['tmt'], date('Y-m-d'));
                     $masa_kerja_tahun = $this->tanggalhelper->konversiMasaKerjaTahun($hari);
                     $this->session->set_userdata('masa_kerja', $masa_kerja_tahun);
                     $this->session->set_userdata('jk', $user_data['jk']);
-                    $this->session->set_userdata('jabatan', $user_data['jabatan']);
+                    $this->session->set_userdata('jabatan', $user_data['nama_jabatan']);
+                    $this->session->set_userdata('pangkat_id', $user_data['gol_id']);
                 }
             } else {
                 $params = [

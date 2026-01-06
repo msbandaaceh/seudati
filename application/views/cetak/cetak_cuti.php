@@ -217,7 +217,7 @@
         </tr>
         <tr>
             <td style="text-align:center">
-                <?= date('Y') ?>
+                <?= $tahun_n1 ?>
             </td>
             <td style="text-align:center"><?= $n1 ?></td>
             <td style="text-align:center"></td>
@@ -234,7 +234,7 @@
         </tr>
         <tr>
             <td style="text-align:center">
-                <?= date('Y') - 1 ?>
+                <?= $tahun_n2 ?>
             </td>
             <td style="text-align:center"><?= $n2 ?></td>
             <td style="text-align:center"></td>
@@ -251,7 +251,7 @@
         </tr>
         <tr>
             <td style="text-align:center">
-                <?= date('Y') - 2 ?>
+                <?= $tahun_n3 ?>
             </td>
             <td style="text-align:center"><?= $n3 ?></td>
             <td style="text-align:center"></td>

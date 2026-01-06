@@ -47,7 +47,7 @@ class HalamanLaporan extends MY_Controller {
                 'id' => base64_encode($this->encryption->encrypt($row->id)),
                 'created_on' => $row->created_on,
                 'nama' => $row->pegawai_nama,
-                'jabatan' => $row->pegawai_jabatan,
+                'jabatan' => $row->jabatan_pegawai,
                 'jenis' => $row->jenis_cuti,
                 'lama' => $row->lama,
                 'status_cuti' => $row->status_cuti,
