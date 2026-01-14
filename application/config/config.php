@@ -12,7 +12,7 @@ $ssl =
 $protocol = $ssl ? "https://" : "http://";
 
 $config['base_url'] = $protocol . $_SERVER['SERVER_NAME'] . '/';
-$config['sso_server'] = 'https://sso.ms-bandaaceh.go.id/'; # Domain SSO Server
+$config['sso_server'] = $protocol . 'sso.ms-bandaaceh.go.id/'; # Domain SSO Server
 $config['id_app'] = '4'; # ID Aplikasi Client
 
 $config['index_page'] = '';
