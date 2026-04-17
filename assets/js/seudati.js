@@ -4075,7 +4075,7 @@ function BukaModalDetailCuti(id) {
             if (json.jenis_cuti_id == '2' || json.jenis_cuti_id == '5') {
                 $('#v_row_dokumen').show();
                 if (json.dokumen_pendukung && json.dokumen_pendukung !== '') {
-                    var dokumenUrl = 'assets/dokumen/cuti/' + json.dokumen_pendukung;
+                    var dokumenUrl = 'dokumen/cuti/' + json.dokumen_pendukung;
                     var fileExtension = json.dokumen_pendukung.split('.').pop().toLowerCase();
                     var isPdf = fileExtension === 'pdf';
                     var isImage = ['jpg', 'jpeg', 'png'].includes(fileExtension);
