@@ -708,6 +708,7 @@ class Model extends CI_Model
         $this->db->where('(status_ppk = 1 OR status_ppk = 5 OR status_ppk = 3 OR status_ppk = 7)');
         $this->db->where('(status_validator = 1 OR status_validator = 5 OR status_ppk = 3 OR status_ppk = 7)');
         $this->db->where('nomor_cuti', NULL);
+        $this->db->where('hapus', 0);
         return $this->db->select('*')->from('v_cuti')->get();
     }
 
