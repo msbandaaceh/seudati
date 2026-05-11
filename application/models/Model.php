@@ -1212,7 +1212,7 @@ class Model extends CI_Model
                         $tujuanNotif = $cekPlhAtasan->row()->pegawai_id;
                         $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt ' . $jabAtasan . '*, Permohonan cuti staf pegawai atas nama ' . $nama_pegawai . ' telah disetujui oleh Pejabat Pembina Kepegawaian.';
                     } else {
-                        $queryPegawai = $this->get_seleksi($this->db_sso . '.v_users', 'jab_id', $idAtasan);
+                        $queryPegawai = $this->get_seleksi2($this->db_sso . '.v_users', 'jab_id', $idAtasan, 'status_pegawai', 1);
                         $tujuanNotif = $queryPegawai->row()->pegawai_id;
                         $pesan = 'Assalamualaikum Wr. Wb., Yth. *' . $jabAtasan . '*, Permohonan cuti staf pegawai atas nama ' . $nama_pegawai . ' telah disetujui oleh Pejabat Pembina Kepegawaian.';
                     }
@@ -1236,7 +1236,7 @@ class Model extends CI_Model
                         $tujuanNotif = $queryPlh->row()->pegawai_id;
                         $pesan = 'Assalamualaikum Wr. Wb., Yth. *Plh/Plt Kepala Sub Bagian Kepegawaian MS Banda Aceh*, Ada permohonan cuti yang disetujui oleh Pejabat Pembina Kepegawaian, silakan berikan nomor untuk legalisasi Cuti Tahunan melalui LITERASI MS Banda Aceh. Terima Kasih.';
                     } else {
-                        $queryPegawai = $this->get_seleksi($this->db_sso . '.v_users', 'jab_id', '11');
+                        $queryPegawai = $this->get_seleksi2($this->db_sso . '.v_users', 'jab_id', '11', 'status_pegawai', 1);
                         $tujuanNotif = $queryPegawai->row()->pegawai_id;
                         $pesan = 'Assalamualaikum Wr. Wb., Yth. *Kepala Sub Bagian Kepegawaian MS Banda Aceh*, Ada permohonan cuti yang disetujui oleh Pejabat Pembina Kepegawaian, silakan berikan nomor untuk legalisasi Cuti Tahunan melalui LITERASI MS Banda Aceh. Terima Kasih.';
                     }
