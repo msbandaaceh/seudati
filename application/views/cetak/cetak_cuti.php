@@ -110,13 +110,13 @@
             <td>1. CUTI TAHUNAN</td>
             <td style="width:10%;text-align:center;"><?php
             if ($jenis == 1) {
-                echo '<i class="nav-icon fas fa-check"></i>';
+                echo '<i class="bx bx-check"></i>';
             }
             ?></td>
             <td>2. CUTI BESAR</td>
             <td style="width:10%;text-align:center;"><?php
             if ($jenis == 4) {
-                echo '<i class="nav-icon fas fa-check"></i>';
+                echo '<i class="bx bx-check"></i>';
             }
             ?></td>
         </tr>
@@ -124,13 +124,13 @@
             <td>3. CUTI SAKIT</td>
             <td style="width:10%;text-align:center;"><?php
             if ($jenis == 2) {
-                echo '<i class="nav-icon fas fa-check"></i>';
+                echo '<i class="bx bx-check"></i>';
             }
             ?></td>
             <td>4. CUTI MELAHIRKAN</td>
             <td style="width:10%;text-align:center;"><?php
             if ($jenis == 3) {
-                echo '<i class="nav-icon fas fa-check"></i>';
+                echo '<i class="bx bx-check"></i>';
             }
             ?></td>
         </tr>
@@ -138,13 +138,13 @@
             <td>5. CUTI ALASAN PENTING</td>
             <td style="width:10%;text-align:center;"><?php
             if ($jenis == 5) {
-                echo '<i class="nav-icon fas fa-check"></i>';
+                echo '<i class="bx bx-check"></i>';
             }
             ?></td>
             <td>6. CUTI LUAR TANGGUNGAN NEGARA</td>
             <td style="width:10%;text-align:center;"><?php
             if ($jenis == 6) {
-                echo '<i class="nav-icon fas fa-check"></i>';
+                echo '<i class="bx bx-check"></i>';
             }
             ?></td>
         </tr>
