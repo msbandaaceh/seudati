@@ -1307,6 +1307,7 @@ class Model extends CI_Model
                     'n1' => $n1,
                     'n2' => $n2,
                     'n3' => $n3,
+                    'status_cuti' => $data['status'],
                     'modified_by' => $this->session->userdata('fullname'),
                     'modified_on' => date('Y-m-d H:i:s')
                 );

@@ -530,11 +530,12 @@ class HalamanCuti extends MY_Controller
 
         $cariCuti = $this->model->get_seleksi('v_cuti', 'id', $id);
         $nama = $cariCuti->row()->pegawai_nama;
-        $jabatan = $cariCuti->row()->pegawai_jabatan;
+        $jabatan = $cariCuti->row()->jabatan_pegawai;
         $nip = $cariCuti->row()->nip;
         $id_grup = $cariCuti->row()->id_grup;
         $tgl = date('Y-m-d', strtotime($cariCuti->row()->created_on));
         $status_cuti_ = $cariCuti->row()->status_cuti;
+        $status_cuti = '';
         switch ($status_cuti_) {
             case 1:
                 $status_cuti = "Disetujui";
