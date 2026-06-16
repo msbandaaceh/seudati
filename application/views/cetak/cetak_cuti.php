@@ -81,7 +81,7 @@
     <table style="border:none;">
         <tr>
             <td style="border: none; width: 60%"></td>
-            <td style="width:100%; border:none">Banda Aceh,
+            <td style="width:100%; border:none"><?= $this->session->userdata('kota_satker') ?>,
                 <?= $this->tanggalhelper->konversiTanggal($modified_on) ?>
             </td>
         </tr>
@@ -89,10 +89,10 @@
             <td style="border: none; width: 60%"></td>
             <?php
             if (in_array($id_grup, ['3', '6'])) { ?>
-                <td style="width:100%; border:none">Yth. Sekretaris Mahkamah Syar'iyah Banda Aceh
+                <td style="width:100%; border:none">Yth. Sekretaris <?= $this->session->userdata('nama_satker')?>
                 </td>
             <?php } else { ?>
-                <td style="width:100%; border:none">Yth. Ketua Mahkamah Syar'iyah Banda Aceh
+                <td style="width:100%; border:none">Yth. Ketua <?= $this->session->userdata('nama_satker')?>
                 </td>
             <?php } ?>
         </tr>
@@ -142,7 +142,7 @@
         </tr>
         <tr>
             <td>UNIT KERJA</td>
-            <td>MAHKAMAH SYAR'IYAH BANDA ACEH</td>
+            <td><?= $this->session->userdata('nama_satker')?></td>
             <td>MASA KERJA</td>
             <td><?= $masa_kerja ?></td>
         </tr>
