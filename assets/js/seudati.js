@@ -1976,7 +1976,7 @@ function loadTabelDiklat() {
                 data += `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>
+                        <td style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">
                             ${row.nama} <br>
                             <span class="badge rounded-pill bg-info"><i>Dibuat pada ${row.created_on}</i></span>
                         </td>
@@ -2258,7 +2258,7 @@ function loadTabelRegisterDiklat() {
                             ${row.nama} </br>
                             <small>${row.jabatan}</small>    
                         </td>
-                        <td>${row.nama_diklat}</td>
+                        <td style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">${row.nama_diklat}</td>
                         <td>${row.tgl_mulai}</td>
                         <td>${row.tgl_selesai}</td>
                         <td>${statusBadge}</td>
