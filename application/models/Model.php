@@ -1483,7 +1483,7 @@ class Model extends CI_Model
         $data['jabatan'] = $cuti->jabatan_pegawai;
         $data['pangkat'] = $cuti->golongan . ' | ' . $cuti->pangkat;
         $data['id_grup'] = $cuti->id_grup;
-        $jml_hari = $this->tanggalhelper->getSelisihHari($cuti->tmt, date('Y-m-d'));
+        $jml_hari = $this->tanggalhelper->getSelisihHari($cuti->tmt, date('Y-m-d', strtotime($cuti->created_on)));
         $data['masa_kerja'] = $this->tanggalhelper->konversiMasaKerja($jml_hari);
         $data['jenis'] = $cuti->jenis_cuti;
         $data['alasan'] = $cuti->alasan;

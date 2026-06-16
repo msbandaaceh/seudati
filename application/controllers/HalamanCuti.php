@@ -397,7 +397,7 @@ class HalamanCuti extends MY_Controller
         $cariCuti = $this->model->get_seleksi('v_cuti', 'id', $id);
         $nama = $cariCuti->row()->pegawai_nama;
         $nip = $cariCuti->row()->nip;
-        $jabatan = $cariCuti->row()->pegawai_jabatan;
+        $jabatan = $cariCuti->row()->jabatan_pegawai;
         switch ($cariCuti->row()->jenis_cuti) {
             case 1:
                 $jenis_cuti = "Cuti Tahunan";
@@ -455,7 +455,7 @@ class HalamanCuti extends MY_Controller
         $cariCuti = $this->model->get_seleksi('v_cuti', 'id', $id);
         $nama = $cariCuti->row()->pegawai_nama;
         $nip = $cariCuti->row()->nip;
-        $jabatan = $cariCuti->row()->pegawai_jabatan;
+        $jabatan = $cariCuti->row()->jabatan_pegawai;
         switch ($cariCuti->row()->jenis_cuti) {
             case 1:
                 $jenis_cuti = "Cuti Tahunan";

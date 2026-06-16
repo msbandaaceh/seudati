@@ -1,9 +1,9 @@
 <html>
 
 <head>
-    <link href="<?= site_url('assets/css/bootstrap.min.css')?>" rel="stylesheet">
-    <link href="<?= site_url('assets/css/app.css')?>" rel="stylesheet">
-    <link href="<?= site_url('assets/css/icons.css')?>" rel="stylesheet">
+    <link href="<?= site_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
+    <link href="<?= site_url('assets/css/app.css') ?>" rel="stylesheet">
+    <link href="<?= site_url('assets/css/icons.css') ?>" rel="stylesheet">
     <style>
         table,
         td,
@@ -21,8 +21,57 @@
         }
 
         @media print {
+            @page {
+                size: F4 portrait;
+                margin: 10mm 12mm;
+            }
+
             body {
-                zoom: 0.8;
+                width: 220mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 8pt !important;
+                -webkit-transform: scale(1);
+                -moz-transform: scale(1);
+                -ms-transform: scale(1);
+                transform: scale(1);
+                -webkit-transform-origin: top left;
+                -moz-transform-origin: top left;
+                -ms-transform-origin: top left;
+                transform-origin: top left;
+            }
+
+            html,
+            body {
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            *,
+            table,
+            tr,
+            td,
+            th,
+            thead,
+            tbody,
+            p,
+            br,
+            div {
+                page-break-inside: avoid !important;
+                -webkit-column-break-inside: avoid !important;
+                break-inside: avoid !important;
+                font-size: 8pt;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6,
+            th.section-title {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
             }
         }
     </style>
@@ -56,8 +105,7 @@
             <td style="width:100%; border:none">Banda Aceh</td>
         </tr>
     </table>
-    <br />
-    <br />
+    <br>
     <table style="border:none;">
         <tr>
             <td style="width:100%;text-align:center;border:none" colspan=4><strong>FORMULIR PERMINTAAN DAN PEMBERIAN
@@ -73,7 +121,7 @@
             </td>
         </tr>
     </table>
-    <br />
+    <br>
     <table width="100%">
         <tr>
             <td colspan=4>
@@ -99,7 +147,7 @@
             <td><?= $masa_kerja ?></td>
         </tr>
     </table>
-    <br />
+    <br>
     <table width="100%">
         <tr>
             <td colspan=4>
@@ -149,7 +197,7 @@
             ?></td>
         </tr>
     </table>
-    <br />
+    <br>
     <table width="100%">
         <tr>
             <td colspan=4>
@@ -160,7 +208,7 @@
             <td style="text-align:center;" colspan=4><?= $alasan ?></td>
         </tr>
     </table>
-    <br />
+    <br>
     <table width="100%">
         <tr>
             <td colspan=6>
@@ -176,7 +224,7 @@
             <td style="text-align:center"><?= $tgl_akhir ?></td>
         </tr>
     </table>
-    <br />
+    <br>
     <table width="100%">
         <tr>
             <td colspan=5>
@@ -267,7 +315,7 @@
             </td>
         </tr>
     </table>
-    <br />
+    <br>
     <table width="100%">
         <tr>
             <td colspan=3>
@@ -275,22 +323,22 @@
             </td>
         </tr>
         <tr>
-            <td rowspan="2" style="text-align:center; width: 60%; height: 100px"><?= $alamat ?></td>
+            <td rowspan="2" style="text-align:center; width: 60%; height: 45px"><?= $alamat ?></td>
             <td>Telp.</td>
             <td><?= $nohp ?></td>
         </tr>
         <tr>
             <td colspan=2 style="text-align:center">
                 Hormat Saya,
-                <br />
-                <img src="<?= $ttd ?>" width="30%">
-                <br />
-                (<?= $nama ?>)<br />
+                <br>
+                <img src="<?= $ttd ?>" width="100px">
+                <br>
+                (<?= $nama ?>)<br>
                 NIP. <?= $nip ?>
             </td>
         </tr>
     </table>
-    <br />
+    <br>
     <table width="100%">
         <tr>
             <td colspan=5>
@@ -303,23 +351,23 @@
             <td style="text-align:center; width: 20%">DITANGGUHKAN</td>
             <td style="text-align:center; width: 20%">TIDAK DISETUJUI</td>
             <td rowspan=2 style="text-align:center">
-                <br />
-                <br />
-                <img src="<?= $ttd_validator ?>" width="60%">
-                <br /><br />
-                (<?= $nama_validator ?>)<br />
+                <br>
+                <br>
+                <img src="<?= $ttd_validator ?>" width="100px">
+                <br><br>
+                (<?= $nama_validator ?>)<br>
                 NIP. <?= $nip_validator ?>
             </td>
         </tr>
         <tr>
-            <td style="text-align:center; height: 100px">
+            <td style="text-align:center; height: 45px">
                 <?php
                 if (in_array($status_validator, ['1', '5'])) {
                     echo '<i class="bx bx-check"></i>';
                 }
                 ?>
             </td>
-            <td style="text-align:center; height: 100px">
+            <td style="text-align:center; height: 45px">
                 <?php
                 if (in_array($status_validator, ['2', '6'])) {
                     echo '<i class="bx bx-check"></i><br/>';
@@ -327,7 +375,7 @@
                 }
                 ?>
             </td>
-            <td style="text-align:center; height: 100px">
+            <td style="text-align:center; height: 45px">
                 <?php
                 if (in_array($status_validator, ['3', '7'])) {
                     echo '<i class="bx bx-check"></i><br/>';
@@ -335,7 +383,7 @@
                 }
                 ?>
             </td>
-            <td style="text-align:center; height: 100px"><?php
+            <td style="text-align:center; height: 45px"><?php
             if (in_array($status_validator, ['4', '8'])) {
                 echo '<i class="bx bx-check"></i><br/>';
                 echo '<br/>Alasan : ' . $alasan_validator;
@@ -345,7 +393,7 @@
         </tr>
     </table>
 
-    <br />
+    <br>
     <table width="100%">
         <tr>
             <td colspan=5>
@@ -358,23 +406,23 @@
             <td style="text-align:center; width: 20%">DITANGGUHKAN</td>
             <td style="text-align:center; width: 20%">TIDAK DISETUJUI</td>
             <td rowspan=2 style="text-align:center">
-                <br />
-                <br />
-                <img src="<?= $ttd_ppk ?>" width="60%">
-                <br /><br />
-                (<?= $nama_ppk ?>)<br />
+                <br>
+                <br>
+                <img src="<?= $ttd_ppk ?>" width="100px">
+                <br><br>
+                (<?= $nama_ppk ?>)<br>
                 NIP. <?= $nip_ppk ?>
             </td>
         </tr>
         <tr>
-            <td style="text-align:center; height: 100px">
+            <td style="text-align:center; height: 45px">
                 <?php
                 if (in_array($status_ppk, ['1', '5'])) {
                     echo '<i class="bx bx-check"></i>';
                 }
                 ?>
             </td>
-            <td style="text-align:center; height: 100px">
+            <td style="text-align:center; height: 45px">
                 <?php
                 if (in_array($status_ppk, ['2', '6'])) {
                     echo '<i class="bx bx-check"></i><br/>';
@@ -382,7 +430,7 @@
                 }
                 ?>
             </td>
-            <td style="text-align:center; height: 100px">
+            <td style="text-align:center; height: 45px">
                 <?php
                 if (in_array($status_ppk, ['3', '7'])) {
                     echo '<i class="bx bx-check"></i><br/>';
@@ -390,7 +438,7 @@
                 }
                 ?>
             </td>
-            <td style="text-align:center; height: 100px"><?php
+            <td style="text-align:center; height: 45px"><?php
             if (in_array($status_ppk, ['4', '8'])) {
                 echo '<i class="bx bx-check"></i><br/>';
                 echo '<br/>Alasan : ' . $alasan_ppk;
@@ -399,7 +447,7 @@
             </td>
         </tr>
     </table>
-    <br />
+    <br>
     Di-<i>generated</i> melalui LITERASI MS Banda Aceh (<?= date('Y-m-d H:i:s') ?>)
 
     <script>
