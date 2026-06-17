@@ -204,6 +204,103 @@
 
     $('.timepicker').bootstrapMaterialDatePicker({
         date: false,
+        time: true,
         format: 'HH:mm'
+    });
+
+    // Nonaktifkan jam_selesai sampai jam_mulai dipilih
+    $('#jam_selesai').prop('disabled', true);
+
+    // Helper: tentukan maxTime berdasarkan hari dari tanggal izin
+    function getMaxTimeByHari() {
+        let tgl = $('#tgl_izin').val();
+        if (!tgl) {
+            return { maxTime: '17:00', labelHari: '' };
+        }
+
+        // Coba parse tanggal (format umum: DD/MM/YYYY atau YYYY-MM-DD)
+        let parts = tgl.split('/');
+        let date;
+        if (parts.length === 3) {
+            date = new Date(parts[2], parts[1] - 1, parts[0]);
+        } else {
+            date = new Date(tgl);
+        }
+
+        if (isNaN(date.getTime())) {
+            return { maxTime: '17:00', labelHari: '' };
+        }
+
+        // getDay(): 0=Minggu, 1=Senin, 2=Selasa, 3=Rabu, 4=Kamis, 5=Jumat, 6=Sabtu
+        let day = date.getDay();
+        const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+        if (day === 5) {
+            return { maxTime: '17:00', labelHari: namaHari[day] };
+        } else if (day >= 1 && day <= 4) {
+            return { maxTime: '16:30', labelHari: namaHari[day] };
+        } else {
+            // Sabtu/Minggu - default 17:00, bisa disesuaikan
+            return { maxTime: '17:00', labelHari: namaHari[day] };
+        }
+    }
+
+    $('#jam_mulai').on('change', function () {
+
+        let jamMulai = $(this).val();
+        let minTime = '08:00';
+        let { maxTime, labelHari } = getMaxTimeByHari();
+        let pesanRange = `Jam hanya boleh antara ${minTime} - ${maxTime}` + (labelHari ? ` (${labelHari})` : '');
+
+        if (jamMulai < minTime || jamMulai > maxTime) {
+
+            notifikasi(pesanRange, 2);
+
+            $(this).val('');
+            $('#jam_selesai').val('').prop('disabled', true);
+            return;
+        }
+
+        // Aktifkan jam_selesai setelah jam_mulai valid
+        $('#jam_selesai').prop('disabled', false);
+    });
+
+    $('#jam_selesai').on('change', function () {
+
+        let jamSelesai = $(this).val();
+        let jamMulai = $('#jam_mulai').val();
+        let minTime = '08:00';
+        let { maxTime, labelHari } = getMaxTimeByHari();
+        let pesanRange = `Jam hanya boleh antara ${minTime} - ${maxTime}` + (labelHari ? ` (${labelHari})` : '');
+
+        if (jamSelesai < minTime || jamSelesai > maxTime) {
+
+            notifikasi(pesanRange, 2);
+
+            $(this).val('');
+            return;
+        }
+
+        if (!jamMulai) {
+
+            notifikasi('Pilih Jam Mulai terlebih dahulu', 2);
+
+            $(this).val('');
+            return;
+        }
+
+        if (jamSelesai <= jamMulai) {
+
+            notifikasi('Jam Selesai tidak boleh kurang dari atau sama dengan Jam Mulai', 2);
+
+            $(this).val('');
+        }
+
+    });
+
+    // Reset waktu saat tanggal izin berubah
+    $('#tgl_izin').on('change', function () {
+        $('#jam_mulai').val('');
+        $('#jam_selesai').val('').prop('disabled', true);
     });
 </script>
