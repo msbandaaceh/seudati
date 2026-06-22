@@ -1533,7 +1533,7 @@ class Model extends CI_Model
         $data['nip_ppk'] = $cuti->nip_ttd_ppk;
         $data['status_ppk'] = $cuti->status_ppk;
         $data['alasan_ppk'] = $cuti->alasan_ppk;
-        $data['modified_on'] = date('Y-m-d', strtotime($cuti->modified_on));
+        $data['modified_on'] = date('Y-m-d', strtotime($cuti->created_on));
 
         $data['userid_pegawai'] = $this->get_seleksi($this->db_sso . '.v_users', 'pegawai_id', $cuti->pegawai_id)->row()->userid;
         $data['userid_validator'] = $this->get_seleksi($this->db_sso . '.v_users', 'pegawai_id', $cuti->id_ttd_validator)->row()->userid;
