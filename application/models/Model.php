@@ -715,12 +715,15 @@ class Model extends CI_Model
 
     public function cuti_legalisasi_data()
     {
-        $this->db->order_by('created_on', 'ASC');
-        $this->db->where('(status_ppk = 1 OR status_ppk = 5 OR status_ppk = 3 OR status_ppk = 7)');
-        $this->db->where('(status_validator = 1 OR status_validator = 5 OR status_ppk = 3 OR status_ppk = 7)');
-        $this->db->where('nomor_cuti', NULL);
-        $this->db->where('hapus', 0);
-        return $this->db->select('*')->from('v_cuti')->get();
+        $this->db->select('c.id, c.jenis_cuti, p.nama_gelar AS pegawai_nama');
+        $this->db->from('register_cuti c');
+        $this->db->join($this->db_sso . '.v_pegawai p', 'c.pegawai_id = p.id', 'left');
+        $this->db->where('c.hapus', 0);
+        $this->db->where('c.nomor_cuti', NULL);
+        $this->db->where('c.status_ppk IN (1, 3, 5, 7)');
+        $this->db->where('(c.status_validator IN (1, 5) OR c.status_ppk IN (3, 7))');
+        $this->db->order_by('c.created_on', 'ASC');
+        return $this->db->get();
     }
 
     public function get_validasi_ppk()
@@ -733,9 +736,13 @@ class Model extends CI_Model
 
     public function get_data_validasi_ppk()
     {
-        $this->db->order_by('status_ppk', 'ASC');
-        $this->db->where('id_ppk', $this->session->userdata('jab_id'));
-        return $this->db->select('*')->from('v_cuti')->get();
+        $this->db->select('c.id, c.jenis_cuti, p.nama_gelar AS pegawai_nama, c.status_ppk, c.status_validator');
+        $this->db->from('register_cuti c');
+        $this->db->join($this->db_sso . '.v_pegawai p', 'c.pegawai_id = p.id', 'left');
+        $this->db->where('c.id_ppk', $this->session->userdata('jab_id'));
+        $this->db->where('c.hapus', 0);
+        $this->db->order_by('c.status_ppk', 'ASC');
+        return $this->db->get();
     }
 
     public function proses_simpan_nomor_cuti($data)
