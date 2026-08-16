@@ -223,10 +223,13 @@ class Model extends CI_Model
     # MODEL PERIZINAN
     public function statistik_bulanan($tabel)
     {
+        $tahun = date('Y');
+        $tahun_depan = $tahun + 1;
         $this->db->select('MONTH(created_on) AS bulan, COUNT(*) AS total');
         $this->db->from($tabel);
-        $this->db->where('YEAR(created_on) = YEAR(NOW())');
-        $this->db->where('hapus = "0"');
+        $this->db->where('created_on >=', "$tahun-01-01 00:00:00");
+        $this->db->where('created_on <', "$tahun_depan-01-01 00:00:00");
+        $this->db->where('hapus', 0);
         $this->db->group_by('MONTH(created_on)');
         $this->db->order_by('MONTH(created_on)', 'ASC');
         return $this->db->get();
@@ -234,27 +237,35 @@ class Model extends CI_Model
 
     public function get_izin_keluar_statistik()
     {
+        $tahun = date('Y');
+        $tahun_depan = $tahun + 1;
         $query = $this->db->query("
-        SELECT 
+        SELECT
             COUNT(*) AS total_semua,
             SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS total_proses,
             SUM(CASE WHEN status > 0 THEN 1 ELSE 0 END) AS total_selesai
         FROM register_izin_keluar
-        WHERE YEAR(created_on) = YEAR(CURDATE()) AND hapus = '0'
+        WHERE created_on >= '$tahun-01-01 00:00:00'
+            AND created_on < '$tahun_depan-01-01 00:00:00'
+            AND hapus = 0
         ");
         return $query->row_array();
     }
 
     public function get_izin_diklat_statistik()
     {
+        $tahun = date('Y');
+        $tahun_depan = $tahun + 1;
         $query = $this->db->query("
-        SELECT 
+        SELECT
             COUNT(*) AS total_semua,
             SUM(CASE WHEN status_permohonan = '0' THEN 1 ELSE 0 END) AS belum_proses,
             SUM(CASE WHEN status_permohonan IN ('1','2') THEN 1 ELSE 0 END) AS on_process,
             SUM(CASE WHEN status_permohonan >= '3' THEN 1 ELSE 0 END) AS total_selesai
         FROM register_izin_diklat
-        WHERE YEAR(created_on) = YEAR(CURDATE()) AND hapus = '0';
+        WHERE created_on >= '$tahun-01-01 00:00:00'
+            AND created_on < '$tahun_depan-01-01 00:00:00'
+            AND hapus = 0
         ");
         return $query->row_array();
     }
@@ -761,14 +772,18 @@ class Model extends CI_Model
 
     public function get_cuti_statistik()
     {
+        $tahun = date('Y');
+        $tahun_depan = $tahun + 1;
         $query = $this->db->query("
-        SELECT 
+        SELECT
             COUNT(*) AS total_semua,
             SUM(CASE WHEN status_cuti = 0 THEN 1 ELSE 0 END) AS belum_proses,
             SUM(CASE WHEN status_cuti > 0 AND nomor_cuti IS NULL THEN 1 ELSE 0 END) AS on_process,
             SUM(CASE WHEN status_cuti > 0 AND nomor_cuti IS NOT NULL THEN 1 ELSE 0 END) AS total_selesai
         FROM register_cuti
-        WHERE YEAR(created_on) = YEAR(CURDATE()) AND hapus = '0';
+        WHERE created_on >= '$tahun-01-01 00:00:00'
+            AND created_on < '$tahun_depan-01-01 00:00:00'
+            AND hapus = 0
         ");
         return $query->row_array();
     }
@@ -1573,20 +1588,45 @@ class Model extends CI_Model
 
     public function cari_data_keluar($tgl_awal, $tgl_akhir)
     {
-        $this->db->order_by('created_on', 'ASC');
-        return $this->db->select('*')->from('v_izin_keluar')->where('Date(created_on) BETWEEN "' . $tgl_awal . '" AND "' . $tgl_akhir . '"')->get()->result();
+        // Query langsung ke table dasar agar bisa pakai index pada created_on
+        $this->db->select('i.*, u.pegawai_id AS id_pegawai, u.fullname AS nama_pegawai,
+            u.jabatan AS jabatan_pegawai, up.fullname AS validator, up.nip AS nip_validator, up.jabatan AS jabatan_validator');
+        $this->db->from('register_izin_keluar i');
+        $this->db->join('sso_msbna.v_users u', 'i.id_user = u.userid', 'left');
+        $this->db->join('sso_msbna.v_users up', 'i.validator = up.pegawai_id', 'left');
+        $this->db->where("i.created_on >= '$tgl_awal 00:00:00'");
+        $this->db->where("i.created_on <= '$tgl_akhir 23:59:59'");
+        $this->db->where('i.hapus', 0);
+        $this->db->order_by('i.created_on', 'ASC');
+        return $this->db->get()->result();
     }
 
     public function cari_data_diklat($tgl_awal, $tgl_akhir)
     {
-        $this->db->order_by('created_on', 'ASC');
-        return $this->db->select('*')->from('v_izin_diklat')->where('Date(created_on) BETWEEN "' . $tgl_awal . '" AND "' . $tgl_akhir . '"')->get()->result();
+        // Query langsung ke table dasar agar bisa pakai index pada created_on
+        $this->db->select('d.*, p.nama_gelar AS nama, p.nip, p.nama_jabatan AS jabatan');
+        $this->db->from('register_izin_diklat d');
+        $this->db->join('sso_msbna.v_pegawai p', 'd.pegawai_id = p.id', 'left');
+        $this->db->where("d.created_on >= '$tgl_awal 00:00:00'");
+        $this->db->where("d.created_on <= '$tgl_akhir 23:59:59'");
+        $this->db->where('d.hapus', 0);
+        $this->db->order_by('d.created_on', 'ASC');
+        return $this->db->get()->result();
     }
 
     public function cari_data_cuti($tgl_awal, $tgl_akhir)
     {
-        $this->db->order_by('created_on', 'ASC');
-        return $this->db->select('*')->from('v_cuti')->where('Date(created_on) BETWEEN "' . $tgl_awal . '" AND "' . $tgl_akhir . '"')->get()->result();
+        // Query langsung ke table dasar agar bisa pakai index pada created_on
+        $this->db->select('c.*, p.nama_gelar AS pegawai_nama, j.nama_jabatan AS jabatan_pegawai, g.golongan, g.pangkat');
+        $this->db->from('register_cuti c');
+        $this->db->join('sso_msbna.v_pegawai p', 'c.pegawai_id = p.id', 'left');
+        $this->db->join('sso_msbna.ref_jabatan j', 'c.jabatan_id = j.id', 'left');
+        $this->db->join('sso_msbna.ref_pangkat g', 'c.pangkat_id = g.id', 'left');
+        $this->db->where("c.created_on >= '$tgl_awal 00:00:00'");
+        $this->db->where("c.created_on <= '$tgl_akhir 23:59:59'");
+        $this->db->where('c.hapus', 0);
+        $this->db->order_by('c.created_on', 'ASC');
+        return $this->db->get()->result();
     }
 
     public function get_cuti_kalender($tgl_awal, $tgl_akhir)
