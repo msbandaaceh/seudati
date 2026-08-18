@@ -3615,12 +3615,21 @@ function HariKalender() {
                 var start = selectedDates[0];
                 var end = selectedDates[1];
 
+                var jenis = document.getElementById('jenis').value;
+
                 // Hitung jumlah hari valid
                 var validDays = 0;
                 var currentDate = new Date(start);
 
                 while (currentDate <= end) {
-                    validDays++;
+                    var day = currentDate.getDay();
+                    if (jenis == 2) {
+                        if (day !== 0 && day !== 6) {
+                            validDays++;
+                        }
+                    } else {
+                        validDays++;
+                    }
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
 
