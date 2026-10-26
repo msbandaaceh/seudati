@@ -1638,28 +1638,57 @@ class Model extends CI_Model
 
     public function get_cuti_kalender($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('c.id, c.pegawai_id, c.tgl_awal, c.tgl_akhir, c.jenis_cuti, c.nomor_cuti, c.alasan, p.nama_gelar AS nama_pegawai');
-        $this->db->from('register_cuti c');
-        $this->db->join($this->db_sso . '.v_pegawai p', 'c.pegawai_id = p.id', 'left');
-        $this->db->where('c.nomor_cuti IS NOT NULL');
-        $this->db->where('c.hapus', '0');
-        $this->db->where("(c.tgl_awal <= '" . $tgl_akhir . "' AND c.tgl_akhir >= '" . $tgl_awal . "')");
-        $this->db->order_by('c.tgl_awal', 'ASC');
-        return $this->db->get()->result_array();
+        $this->db->select('id, pegawai_id, tgl_awal, tgl_akhir, jenis_cuti, nomor_cuti, alasan');
+        $this->db->from('register_cuti');
+        $this->db->where('nomor_cuti IS NOT NULL');
+        $this->db->where('hapus', '0');
+        $this->db->where("(tgl_awal <= '" . $tgl_akhir . "' AND tgl_akhir >= '" . $tgl_awal . "')");
+        $this->db->order_by('tgl_awal', 'ASC');
+        $data_cuti = $this->db->get()->result_array();
+
+        $params = ['api_key' => $this->config->item('api_key')];
+        $result = $this->apihelper->get('apiclient/get_semua_pegawai_aktif', $params);
+
+        $pegawai_map = [];
+        if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
+            foreach ($result['response']['data'] as $pegawai) {
+                $pegawai_map[$pegawai['id']] = $pegawai['nama_gelar'];
+            }
+        }
+
+        foreach ($data_cuti as &$cuti) {
+            $cuti['nama_pegawai'] = $pegawai_map[$cuti['pegawai_id']] ?? '';
+        }
+        return $data_cuti;
     }
 
     public function get_izin_keluar_kalender($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('i.id, i.id_user, i.tgl_izin, i.jam_mulai, i.jam_akhir, i.alasan, i.status, u.fullname AS nama_pegawai');
-        $this->db->from('register_izin_keluar i');
-        $this->db->join($this->db_sso . '.v_users u', 'i.id_user = u.userid', 'left');
-        $this->db->where_in('i.status', [1, 3]); // Hanya izin yang disetujui
-        $this->db->where('i.hapus', '0');
-        $this->db->where("i.tgl_izin >= '" . $tgl_awal . "'");
-        $this->db->where("i.tgl_izin <= '" . $tgl_akhir . "'");
-        $this->db->order_by('i.tgl_izin', 'ASC');
-        $this->db->order_by('i.jam_mulai', 'ASC');
-        return $this->db->get()->result_array();
+        $this->db->select('id, id_user, tgl_izin, jam_mulai, jam_akhir, alasan, status');
+        $this->db->from('register_izin_keluar');
+        $this->db->where_in('status', [1, 3]); // Hanya izin yang disetujui
+        $this->db->where('hapus', '0');
+        $this->db->where("tgl_izin >= '" . $tgl_awal . "'");
+        $this->db->where("tgl_izin <= '" . $tgl_akhir . "'");
+        $this->db->order_by('tgl_izin', 'ASC');
+        $this->db->order_by('jam_mulai', 'ASC');
+        $data_izin = $this->db->get()->result_array();
+                    
+        $params = ['api_key' => $this->config->item('api_key')];
+        $result = $this->apihelper->get('apiclient/get_semua_user_aktif', $params);
+
+        $pegawai_map = [];
+        if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
+            foreach ($result['response']['data'] as $user) {
+                $pegawai_map[$user['id']] = $user['fullname'];
+            }
+        }
+
+        foreach ($data_izin as &$izin) {
+            $izin['nama_pegawai'] = $pegawai_map[$izin['id_user']] ?? '';
+        }
+
+        return $data_izin;
     }
 
     public function get_tahun_terakhir()

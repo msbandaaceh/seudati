@@ -76,6 +76,29 @@
         font-size: 0.75em;
         font-weight: normal;
     }
+    .fc-daygrid-bg-tr .fc-daygrid-day-frame,
+    .fc-daygrid-day-bg {
+        cursor: default;
+    }
+    .fc-daygrid-day-events {
+        min-height: 0;
+    }
+    .fc-daygrid-bg-event {
+        cursor: default !important;
+    }
+    .fc-daygrid-bg-event:hover {
+        cursor: default !important;
+    }
+    /* Weekend styling */
+    #kalenderCuti .fc-daygrid-day.fc-day-sat .fc-daygrid-day-number,
+    #kalenderCuti .fc-daygrid-day.fc-day-sun .fc-daygrid-day-number {
+        color: #dc3545 !important;
+        font-weight: bold !important;
+    }
+    #kalenderCuti .fc-daygrid-day.fc-day-sat,
+    #kalenderCuti .fc-daygrid-day.fc-day-sun {
+        background-color: #fff0f0 !important;
+    }
 </style>
 
 <script>
@@ -120,7 +143,14 @@
             eventClick: function (info) {
                 var event = info.event;
                 var extendedProps = event.extendedProps;
-                var title = extendedProps.tipe === 'izin_keluar' ? 'Detail Izin Keluar' : 'Detail Cuti';
+                var title;
+                if (extendedProps.tipe == 'izin_keluar') {
+                    title = 'Detail Izin Keluar';
+                } else if (extendedProps.tipe == 'cuti') {
+                    title = 'Detail Cuti';
+                } else {
+                    title = 'Detail Hari Libur';
+                }
                 var htmlContent = '';
 
                 if (extendedProps.tipe === 'izin_keluar') {
@@ -139,7 +169,7 @@
                             <p><strong>Alasan:</strong> ${extendedProps.alasan || '-'}</p>
                         </div>
                     `;
-                } else {
+                } else if (extendedProps.tipe === 'cuti') {
                     // Format untuk Cuti
                     htmlContent = `
                         <div class="text-start">
@@ -149,6 +179,14 @@
                             <p><strong>Tanggal Mulai:</strong> ${event.start.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                             <p><strong>Tanggal Selesai:</strong> ${new Date(event.end.getTime() - 86400000).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                             <p><strong>Alasan:</strong> ${extendedProps.alasan || '-'}</p>
+                        </div>
+                    `;
+                } else {
+                    // Format untuk Hari Libur
+                    htmlContent = `
+                        <div class="text-start">
+                            <p><strong>Tanggal:</strong> ${event.start.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            <p><strong>Keterangan:</strong> ${extendedProps.keterangan || '-'}</p>
                         </div>
                     `;
                 }
@@ -161,11 +199,38 @@
                     width: '600px'
                 });
             },
+            datesSet: function() {
+                // Apply weekend classes after calendar renders
+                setTimeout(function() {
+                    var container = document.getElementById('kalenderCuti');
+                    if (!container) return;
+                    var days = container.querySelectorAll('.fc-daygrid-day[data-date]');
+                    days.forEach(function(el) {
+                        el.classList.remove('fc-day-sat', 'fc-day-sun');
+                        var date = new Date(el.getAttribute('data-date'));
+                        if (date.getDay() === 0) el.classList.add('fc-day-sun');
+                        if (date.getDay() === 6) el.classList.add('fc-day-sat');
+                    });
+                }, 0);
+            },
             eventDisplay: 'block',
             dayMaxEvents: 3,
             moreLinkClick: 'popover'
         });
 
         calendar.render();
+
+        // Apply weekend classes on initial render
+        setTimeout(function() {
+            var container = document.getElementById('kalenderCuti');
+            if (!container) return;
+            var days = container.querySelectorAll('.fc-daygrid-day[data-date]');
+            days.forEach(function(el) {
+                el.classList.remove('fc-day-sat', 'fc-day-sun');
+                var date = new Date(el.getAttribute('data-date'));
+                if (date.getDay() === 0) el.classList.add('fc-day-sun');
+                if (date.getDay() === 6) el.classList.add('fc-day-sat');
+            });
+        }, 0);
     });
 </script>

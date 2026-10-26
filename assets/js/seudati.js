@@ -3585,263 +3585,479 @@ function loadTabelRegisterCuti() {
     });
 }
 
-function HariKalender() {
-    tglCutiPicker = flatpickr('#tgl_cuti', {
-        mode: 'range',
-        altInput: true,
-        altFormat: 'd F Y',
-        locale: {
-            firstDayOfWeek: 7,
-            rangeSeparator: " sampai ",
-            weekdays: {
-                shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
-            },
-            months: {
-                shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-            },
-        },
-        onReady: function (selectedDates, dateStr, instance) {
-            // Kalau ada tanggal dari JSON, set langsung di sini
-            if (window.tglAwalSet && window.tglAkhirSet) {
-                instance.setDate([window.tglAwalSet, window.tglAkhirSet], true);
-            }
-        },
-        onChange: function (selectedDates) {
-            if (selectedDates.length === 2) {
-                var start = selectedDates[0];
-                var end = selectedDates[1];
+function Kalender() {
 
-                var jenis = document.getElementById('jenis').value;
+    $.ajax({
+        url: 'get_tgl_merah',
+        type: 'GET',
+        dataType: 'json',
 
-                // Hitung jumlah hari valid
-                var validDays = 0;
-                var currentDate = new Date(start);
+        success: function (disabledDates) {
 
-                while (currentDate <= end) {
-                    var day = currentDate.getDay();
-                    if (jenis == 2) {
-                        if (day !== 0 && day !== 6) {
+            // Pastikan array
+            disabledDates = Array.isArray(disabledDates)
+                ? disabledDates
+                : [];
+
+            tglCutiPicker = flatpickr('#tgl_cuti', {
+
+                mode: 'range',
+                altInput: true,
+                altFormat: 'd F Y',
+                dateFormat: 'Y-m-d',
+
+                locale: {
+                    firstDayOfWeek: 7,
+                    rangeSeparator: " sampai ",
+
+                    weekdays: {
+                        shorthand: [
+                            'Min', 'Sen', 'Sel', 'Rab',
+                            'Kam', 'Jum', 'Sab'
+                        ],
+                        longhand: [
+                            'Minggu', 'Senin', 'Selasa', 'Rabu',
+                            'Kamis', 'Jumat', 'Sabtu'
+                        ]
+                    },
+
+                    months: {
+                        shorthand: [
+                            'Jan', 'Feb', 'Mar', 'Apr',
+                            'Mei', 'Jun', 'Jul', 'Agu',
+                            'Sep', 'Okt', 'Nov', 'Des'
+                        ],
+                        longhand: [
+                            'Januari', 'Februari', 'Maret', 'April',
+                            'Mei', 'Juni', 'Juli', 'Agustus',
+                            'September', 'Oktober', 'November', 'Desember'
+                        ]
+                    }
+                },
+
+                /**
+                 * Menandai tanggal yang tidak dapat dipilih
+                 */
+                onDayCreate: function (dObj, dStr, fp, dayElem) {
+
+                    var day = dayElem.dateObj.getDay();
+
+                    var dateStr = fp.formatDate(
+                        dayElem.dateObj,
+                        "Y-m-d"
+                    );
+
+                    var jenis = parseInt(
+                        document.getElementById('jenis').value
+                    );
+
+                    /**
+                     * H+5 hanya berlaku untuk jenis 1
+                     */
+                    if (jenis === 1) {
+
+                        var today = new Date();
+
+                        var minDate = new Date();
+                        minDate.setHours(0, 0, 0, 0);
+                        minDate.setDate(today.getDate() + 5);
+
+                        if (dayElem.dateObj < minDate) {
+                            dayElem.classList.add("disabled-date");
+                        }
+                    }
+
+                    /**
+                     * Sabtu & Minggu + tanggal merah
+                     * hanya berlaku untuk jenis 1 dan 2
+                     */
+                    if (
+                        jenis === 1 ||
+                        jenis === 2
+                    ) {
+
+                        if (day === 0 || day === 6) {
+                            dayElem.classList.add("disabled-date");
+                        }
+
+                        if (disabledDates.includes(dateStr)) {
+                            dayElem.classList.add("disabled-date");
+                            dayElem.classList.add("tanggal-merah");
+                        }
+                    }
+                },
+
+                /**
+                 * Saat flatpickr selesai dibuat
+                 */
+                onReady: function (selectedDates, dateStr, instance) {
+
+                    // Cegah klik pada tanggal disabled
+                    instance.calendarContainer.addEventListener(
+                        "click",
+                        function (e) {
+
+                            if (e.target.closest(".disabled-date")) {
+                                e.stopPropagation();
+                            }
+
+                        },
+                        true
+                    );
+
+                    // Bersihkan tanggal sebelumnya
+                    instance.clear();
+
+                    // Jika ada tanggal dari JSON
+                    if (
+                        window.tglAwalSet &&
+                        window.tglAkhirSet
+                    ) {
+                        instance.setDate(
+                            [
+                                window.tglAwalSet,
+                                window.tglAkhirSet
+                            ],
+                            true
+                        );
+                    }
+                },
+
+                /**
+                 * Saat user memilih range tanggal
+                 */
+                onChange: function (
+                    selectedDates,
+                    dateStr,
+                    instance
+                ) {
+
+                    if (selectedDates.length !== 2) {
+                        return;
+                    }
+
+                    var start = selectedDates[0];
+                    var end = selectedDates[1];
+
+                    var jenis = parseInt(
+                        document.getElementById('jenis').value
+                    );
+
+                    var validDays = 0;
+
+                    var currentDate = new Date(start);
+
+                    /**
+                     * Jenis 1 dan 2:
+                     * hanya menghitung hari kerja.
+                     *
+                     * Jenis selain 1 dan 2:
+                     * semua hari dihitung.
+                     */
+                    var hitungHariKerja =
+                        jenis === 1 || jenis === 2;
+
+                    while (currentDate <= end) {
+
+                        var day = currentDate.getDay();
+
+                        var formatted = instance.formatDate(
+                            currentDate,
+                            'Y-m-d'
+                        );
+
+                        if (hitungHariKerja) {
+
+                            // Jenis 1 & 2
+                            if (
+                                day !== 0 &&
+                                day !== 6 &&
+                                !disabledDates.includes(formatted)
+                            ) {
+                                validDays++;
+                            }
+
+                        } else {
+
+                            // Jenis selain 1 & 2
                             validDays++;
-                        }
-                    } else {
-                        validDays++;
-                    }
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
 
-                document.getElementById('lama').value = validDays;
-                document.getElementById('tgl_awal').value = formatDate(start);
-                document.getElementById('tgl_akhir').value = formatDate(end);
-            }
+                        }
+
+                        currentDate.setDate(
+                            currentDate.getDate() + 1
+                        );
+                    }
+
+                    /**
+                     * Cek kuota hanya untuk cuti jenis 1
+                     */
+                    var kuota = parseInt(
+                        document.getElementById('kuota').value
+                    ) || 0;
+
+                    if (jenis === 1 && validDays > kuota) {
+
+                        notifikasi(
+                            'Sisa Cuti Tahunan Anda Tidak Mencukupi, Silakan Periksa Kembali Sisa Cuti Anda Sebelum Mengajukan Permohonan',
+                            '2'
+                        );
+
+                        return;
+                    }
+
+                    /**
+                     * Simpan hasil
+                     */
+                    document.getElementById('lama').value =
+                        validDays;
+
+                    document.getElementById('tgl_awal').value =
+                        formatDate(start);
+
+                    document.getElementById('tgl_akhir').value =
+                        formatDate(end);
+                }
+            });
+        },
+
+        error: function (xhr, status, error) {
+
+            console.error(
+                "Error in fetching dates: ",
+                error
+            );
+
         }
     });
 }
 
-function HariKerja() {
-    var disabledDates = []; // Untuk menyimpan tanggal yang dinonaktifkan
-
-    // AJAX untuk mengambil tanggal dari database
+function KalenderAdmin() {
     $.ajax({
-        url: 'get_tgl_merah', // URL ke script PHP yang dibuat
+        url: 'get_tgl_merah',
         type: 'GET',
         dataType: 'json',
-        success: function (response) {
-            disabledDates = response; // Menyimpan tanggal dari respons ke array
-            //console.log(disabledDates); // Cek data yang diterima (optional)
 
-            // Inisialisasi daterangepicker setelah data diterima
+        success: function (disabledDates) {
+
+            // Pastikan array
+            disabledDates = Array.isArray(disabledDates)
+                ? disabledDates
+                : [];
+
             tglCutiPicker = flatpickr('#tgl_cuti', {
+
                 mode: 'range',
-                altFormat: 'd F Y',
                 altInput: true,
+                altFormat: 'd F Y',
                 dateFormat: 'Y-m-d',
+
                 locale: {
                     firstDayOfWeek: 7,
                     rangeSeparator: " sampai ",
+
                     weekdays: {
-                        shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                        longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                        shorthand: [
+                            'Min', 'Sen', 'Sel', 'Rab',
+                            'Kam', 'Jum', 'Sab'
+                        ],
+                        longhand: [
+                            'Minggu', 'Senin', 'Selasa', 'Rabu',
+                            'Kamis', 'Jumat', 'Sabtu'
+                        ]
                     },
+
                     months: {
-                        shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                            'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                        longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                    },
+                        shorthand: [
+                            'Jan', 'Feb', 'Mar', 'Apr',
+                            'Mei', 'Jun', 'Jul', 'Agu',
+                            'Sep', 'Okt', 'Nov', 'Des'
+                        ],
+                        longhand: [
+                            'Januari', 'Februari', 'Maret', 'April',
+                            'Mei', 'Juni', 'Juli', 'Agustus',
+                            'September', 'Oktober', 'November', 'Desember'
+                        ]
+                    }
                 },
+
+                /**
+                 * Menandai tanggal yang tidak dapat dipilih
+                 */
                 onDayCreate: function (dObj, dStr, fp, dayElem) {
+
                     var day = dayElem.dateObj.getDay();
-                    var dateStr = fp.formatDate(dayElem.dateObj, "Y-m-d");
 
-                    var today = new Date();
-                    var minDate = new Date();
-                    minDate.setDate(today.getDate() + 5);
+                    var dateStr = fp.formatDate(
+                        dayElem.dateObj,
+                        "Y-m-d"
+                    );
 
-                    // Disable 5 hari ke belakang
-                    if (dayElem.dateObj < minDate) {
-                        dayElem.classList.add("disabled-date");
-                    }
+                    var jenis = parseInt(
+                        document.getElementById('jenis').value
+                    );
 
-                    // Disable Sabtu & Minggu + tanggal merah (tidak bisa diklik langsung)
-                    if (day === 0 || day === 6 || disabledDates.includes(dateStr)) {
-                        dayElem.classList.add("disabled-date");
-                    }
+                    /**
+                     * Sabtu & Minggu + tanggal merah
+                     * hanya berlaku untuk jenis 1 dan 2
+                     */
+                    if (
+                        jenis === 1 ||
+                        jenis === 2
+                    ) {
 
-                    // Highlight merah untuk tanggal merah
-                    if (disabledDates.includes(dateStr)) {
-                        dayElem.classList.add("tanggal-merah");
-                    }
-                },
-                onReady: function (selectedDates, dateStr, instance) {
-                    // Cegah klik langsung di tanggal disable
-                    instance.calendarContainer.addEventListener("click", function (e) {
-                        if (e.target.closest(".disabled-date")) {
-                            e.stopPropagation();
+                        if (day === 0 || day === 6) {
+                            dayElem.classList.add("disabled-date");
                         }
-                    }, true);
 
-                    tglCutiPicker.clear();
-
-                    if (window.tglAwalSet && window.tglAkhirSet) {
-                        instance.setDate([window.tglAwalSet, window.tglAkhirSet], true);
+                        if (disabledDates.includes(dateStr)) {
+                            dayElem.classList.add("disabled-date");
+                            dayElem.classList.add("tanggal-merah");
+                        }
                     }
                 },
-                onChange: function (selectedDates, dateStr, instance) {
-                    if (selectedDates.length === 2) {
-                        var start = selectedDates[0];
-                        var end = selectedDates[1];
 
-                        // Hitung jumlah hari valid
-                        var validDays = 0;
-                        var currentDate = new Date(start);
+                /**
+                 * Saat flatpickr selesai dibuat
+                 */
+                onReady: function (selectedDates, dateStr, instance) {
 
-                        while (currentDate <= end) {
-                            var day = currentDate.getDay();
-                            var formatted = instance.formatDate(currentDate, 'Y-m-d');
+                    // Cegah klik pada tanggal disabled
+                    instance.calendarContainer.addEventListener(
+                        "click",
+                        function (e) {
 
-                            if (day !== 0 && day !== 6 && !disabledDates.includes(formatted)) {
+                            if (e.target.closest(".disabled-date")) {
+                                e.stopPropagation();
+                            }
+
+                        },
+                        true
+                    );
+
+                    // Bersihkan tanggal sebelumnya
+                    instance.clear();
+
+                    // Jika ada tanggal dari JSON
+                    if (
+                        window.tglAwalSet &&
+                        window.tglAkhirSet
+                    ) {
+                        instance.setDate(
+                            [
+                                window.tglAwalSet,
+                                window.tglAkhirSet
+                            ],
+                            true
+                        );
+                    }
+                },
+
+                /**
+                 * Saat user memilih range tanggal
+                 */
+                onChange: function (
+                    selectedDates,
+                    dateStr,
+                    instance
+                ) {
+
+                    if (selectedDates.length !== 2) {
+                        return;
+                    }
+
+                    var start = selectedDates[0];
+                    var end = selectedDates[1];
+
+                    var jenis = parseInt(
+                        document.getElementById('jenis').value
+                    );
+
+                    var validDays = 0;
+
+                    var currentDate = new Date(start);
+
+                    /**
+                     * Jenis 1 dan 2:
+                     * hanya menghitung hari kerja.
+                     *
+                     * Jenis selain 1 dan 2:
+                     * semua hari dihitung.
+                     */
+                    var hitungHariKerja =
+                        jenis === 1 || jenis === 2;
+
+                    while (currentDate <= end) {
+
+                        var day = currentDate.getDay();
+
+                        var formatted = instance.formatDate(
+                            currentDate,
+                            'Y-m-d'
+                        );
+
+                        if (hitungHariKerja) {
+
+                            // Jenis 1 & 2
+                            if (
+                                day !== 0 &&
+                                day !== 6 &&
+                                !disabledDates.includes(formatted)
+                            ) {
                                 validDays++;
                             }
-                            currentDate.setDate(currentDate.getDate() + 1);
-                        }
 
-                        var jenis = document.getElementById('jenis').value;
-                        var kuota = parseInt(document.getElementById('kuota').value);
-
-                        if (jenis == 1 && validDays > kuota) {
-                            notifikasi('Sisa Cuti Tahunan Anda Tidak Mencukupi, Silakan Periksa Kembali Sisa Cuti Anda Sebelum Mengajukan Permohonan', '2');
                         } else {
-                            document.getElementById('lama').value = validDays;
-                            document.getElementById('tgl_awal').value = formatDate(start);
-                            document.getElementById('tgl_akhir').value = formatDate(end);
+
+                            // Jenis selain 1 & 2
+                            validDays++;
+
                         }
+
+                        currentDate.setDate(
+                            currentDate.getDate() + 1
+                        );
                     }
+
+                    /**
+                     * Cek kuota hanya untuk cuti jenis 1
+                     */
+                    var kuota = parseInt(
+                        document.getElementById('kuota').value
+                    ) || 0;
+
+                    if (jenis === 1 && validDays > kuota) {
+
+                        notifikasi(
+                            'Sisa Cuti Tahunan Anda Tidak Mencukupi, Silakan Periksa Kembali Sisa Cuti Anda Sebelum Mengajukan Permohonan',
+                            '2'
+                        );
+
+                        return;
+                    }
+
+                    /**
+                     * Simpan hasil
+                     */
+                    document.getElementById('lama').value =
+                        validDays;
+
+                    document.getElementById('tgl_awal').value =
+                        formatDate(start);
+
+                    document.getElementById('tgl_akhir').value =
+                        formatDate(end);
                 }
             });
         },
+
         error: function (xhr, status, error) {
-            console.error("Error in fetching dates: ", error);
-        }
-    });
-}
 
-function HariKerjaAdmin() {
-    var disabledDates = []; // Untuk menyimpan tanggal yang dinonaktifkan
+            console.error(
+                "Error in fetching dates: ",
+                error
+            );
 
-    // AJAX untuk mengambil tanggal dari database
-    $.ajax({
-        url: 'get_tgl_merah', // URL ke script PHP yang dibuat
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-            disabledDates = response; // Menyimpan tanggal dari respons ke array
-            //console.log(disabledDates); // Cek data yang diterima (optional)
-
-            // Inisialisasi daterangepicker setelah data diterima
-            tglCutiPicker = flatpickr('#tgl_cuti', {
-                mode: 'range',
-                altFormat: 'd F Y',
-                altInput: true,
-                dateFormat: 'Y-m-d',
-                locale: {
-                    firstDayOfWeek: 7,
-                    rangeSeparator: " sampai ",
-                    weekdays: {
-                        shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                        longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
-                    },
-                    months: {
-                        shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                            'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                        longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                    },
-                },
-                onDayCreate: function (dObj, dStr, fp, dayElem) {
-                    var day = dayElem.dateObj.getDay();
-                    var dateStr = fp.formatDate(dayElem.dateObj, "Y-m-d");
-
-                    // Disable Sabtu & Minggu + tanggal merah (tidak bisa diklik langsung)
-                    if (day === 0 || day === 6 || disabledDates.includes(dateStr)) {
-                        dayElem.classList.add("disabled-date");
-                    }
-
-                    // Highlight merah untuk tanggal merah
-                    if (disabledDates.includes(dateStr)) {
-                        dayElem.classList.add("tanggal-merah");
-                    }
-                },
-                onReady: function (selectedDates, dateStr, instance) {
-                    // Cegah klik langsung di tanggal disable
-                    instance.calendarContainer.addEventListener("click", function (e) {
-                        if (e.target.closest(".disabled-date")) {
-                            e.stopPropagation();
-                        }
-                    }, true);
-
-                    if (window.tglAwalSet && window.tglAkhirSet) {
-                        instance.setDate([window.tglAwalSet, window.tglAkhirSet], true);
-                    }
-                },
-                onChange: function (selectedDates, dateStr, instance) {
-                    if (selectedDates.length === 2) {
-                        var start = selectedDates[0];
-                        var end = selectedDates[1];
-
-                        // Hitung jumlah hari valid
-                        var validDays = 0;
-                        var currentDate = new Date(start);
-
-                        while (currentDate <= end) {
-                            var day = currentDate.getDay();
-                            var formatted = instance.formatDate(currentDate, 'Y-m-d');
-
-                            if (day !== 0 && day !== 6 && !disabledDates.includes(formatted)) {
-                                validDays++;
-                            }
-                            currentDate.setDate(currentDate.getDate() + 1);
-                        }
-
-                        var jenis = document.getElementById('jenis').value;
-                        var kuota = parseInt(document.getElementById('kuota').value);
-
-                        if (jenis == 1 && validDays > kuota) {
-                            notifikasi('Sisa Cuti Tahunan Anda Tidak Mencukupi, Silakan Periksa Kembali Sisa Cuti Anda Sebelum Mengajukan Permohonan', '2');
-                        } else {
-                            document.getElementById('lama').value = validDays;
-                            document.getElementById('tgl_awal').value = formatDate(start);
-                            document.getElementById('tgl_akhir').value = formatDate(end);
-                        }
-                    }
-                }
-            });
-        },
-        error: function (xhr, status, error) {
-            console.error("Error in fetching dates: ", error);
         }
     });
 }
@@ -3882,7 +4098,7 @@ function UbahKalender(id) {
                     $('#row_dokumen_pendukung_admin').hide();
                     $('#dokumen_pendukung_admin').prop('required', false);
                 }
-                HariKerja();
+                Kalender();
             }
             break;
         case 2:
@@ -3894,7 +4110,7 @@ function UbahKalender(id) {
                 $('#row_dokumen_pendukung_admin').show();
                 $('#dokumen_pendukung_admin').prop('required', true);
             }
-            HariKalender();
+            Kalender();
             break;
         case 3:
             //console.log("Masuk Sini " + jk);
@@ -3910,7 +4126,7 @@ function UbahKalender(id) {
                     $('#row_dokumen_pendukung_admin').hide();
                     $('#dokumen_pendukung_admin').prop('required', false);
                 }
-                HariKalender();
+                Kalender();
             }
             break;
         case 4:
@@ -3921,7 +4137,7 @@ function UbahKalender(id) {
                 $('#detil_cuti').show();
                 $('#row_dokumen_pendukung').hide();
                 $('#dokumen_pendukung').prop('required', false);
-                HariKalender();
+                Kalender();
             }
             break;
         case 5:
@@ -3933,7 +4149,7 @@ function UbahKalender(id) {
                 $('#row_dokumen_pendukung_admin').show();
                 $('#dokumen_pendukung_admin').prop('required', true);
             }
-            HariKalender();
+            Kalender();
             break;
         case 6:
             if (masa_kerja < 5) {
@@ -3943,7 +4159,7 @@ function UbahKalender(id) {
                 $('#detil_cuti').show();
                 $('#row_dokumen_pendukung').hide();
                 $('#dokumen_pendukung').prop('required', false);
-                HariKalender();
+                Kalender();
             }
             break;
     }
@@ -3972,7 +4188,7 @@ function UbahKalenderAdmin(id) {
             switch (parseInt(id.value)) {
                 case 1:
                     if (masa_kerja < 1) {
-                        var pesan = 'Masa Kerja anda belum genap 1 Tahun. Anda belum diperbolehkan untuk melakukan permohonan Cuti Tahunan';
+                        var pesan = 'Masa Kerja Pegawai belum genap 1 Tahun. Pegawai Ybs belum diperbolehkan untuk melakukan permohonan Cuti Tahunan';
                         notifikasi(pesan, '2');
                     } else {
                         $('#detil_cuti').show();
@@ -3983,7 +4199,7 @@ function UbahKalenderAdmin(id) {
                             $('#row_dokumen_pendukung_admin').hide();
                             $('#dokumen_pendukung_admin').prop('required', false);
                         }
-                        HariKerjaAdmin();
+                        KalenderAdmin();
                     }
                     break;
                 case 2:
@@ -3995,12 +4211,12 @@ function UbahKalenderAdmin(id) {
                         $('#row_dokumen_pendukung_admin').show();
                         $('#dokumen_pendukung_admin').prop('required', true);
                     }
-                    HariKalender();
+                    KalenderAdmin();
                     break;
                 case 3:
                     //console.log("Masuk Sini " + jk);
                     if (jk == '1') {
-                        var pesan = 'Anda Bukan Wanita, Anda Tidak Melahirkan';
+                        var pesan = 'Jenis Kelamin Pegawai Bukan Wanita, Pegawai Ybs Tidak Melahirkan';
                         notifikasi(pesan, '2');
                     } else {
                         $('#detil_cuti').show();
@@ -4011,18 +4227,18 @@ function UbahKalenderAdmin(id) {
                             $('#row_dokumen_pendukung_admin').hide();
                             $('#dokumen_pendukung_admin').prop('required', false);
                         }
-                        HariKalender();
+                        KalenderAdmin();
                     }
                     break;
                 case 4:
                     if (masa_kerja < 5) {
-                        var pesan = 'Masa Kerja anda belum genap 5 Tahun. Anda belum diperbolehkan untuk melakukan permohonan Cuti Besar';
+                        var pesan = 'Masa Kerja Pegawai belum genap 5 Tahun. Pegawai Ybs belum diperbolehkan untuk melakukan permohonan Cuti Besar';
                         notifikasi(pesan, '2');
                     } else {
                         $('#detil_cuti').show();
                         $('#row_dokumen_pendukung').hide();
                         $('#dokumen_pendukung').prop('required', false);
-                        HariKalender();
+                        KalenderAdmin();
                     }
                     break;
                 case 5:
@@ -4034,17 +4250,17 @@ function UbahKalenderAdmin(id) {
                         $('#row_dokumen_pendukung_admin').show();
                         $('#dokumen_pendukung_admin').prop('required', true);
                     }
-                    HariKalender();
+                    KalenderAdmin();
                     break;
                 case 6:
                     if (masa_kerja < 5) {
-                        var pesan = 'Masa Kerja anda belum genap 5 Tahun. Anda belum diperbolehkan untuk melakukan permohonan Cuti di Luar Tanggungan Negara';
+                        var pesan = 'Masa Kerja Pegawai belum genap 5 Tahun. Pegawai Ybs belum diperbolehkan untuk melakukan permohonan Cuti di Luar Tanggungan Negara';
                         notifikasi(pesan, '2');
                     } else {
                         $('#detil_cuti').show();
                         $('#row_dokumen_pendukung').hide();
                         $('#dokumen_pendukung').prop('required', false);
-                        HariKalender();
+                        KalenderAdmin();
                     }
                     break;
             }
