@@ -7,7 +7,6 @@ class MY_Controller extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-
         $this->jwt_key = $this->config->item('jwt_key'); // inisialisasi di sini
         $cookie_domain = $this->config->item('cookie_domain');
         $sso_server = $this->config->item('sso_server');
@@ -27,26 +26,40 @@ class MY_Controller extends CI_Controller
         }
 
         # Cek Data Pengguna dan Periksa apakah user login sebagai plh/plt atau bukan
-        if (!$this->session->userdata('status_plh')) {
-            if (!$this->session->userdata('status_plt')) {
-                $params = [
-                    'tabel' => 'v_pegawai',
-                    'kolom_seleksi' => 'id',
-                    'seleksi' => $this->session->userdata("pegawai_id")
-                ];
+        if (!$this->session->userdata('id_grup') || !$this->session->userdata('masa_kerja')) {
+            if (!$this->session->userdata('status_plh')) {
+                if (!$this->session->userdata('status_plt')) {
+                    $params = [
+                        'tabel' => 'v_pegawai',
+                        'kolom_seleksi' => 'id',
+                        'seleksi' => $this->session->userdata("pegawai_id")
+                    ];
 
-                $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
+                    $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
 
-                if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
-                    $user_data = $result['response']['data'][0];
-                    $this->session->set_userdata('id_grup', $user_data['id_grup']);
+                    if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
+                        $user_data = $result['response']['data'][0];
+                        $this->session->set_userdata('id_grup', $user_data['id_grup']);
 
-                    $hari = $this->tanggalhelper->getSelisihHari($user_data['tmt'], date('Y-m-d'));
-                    $masa_kerja_tahun = $this->tanggalhelper->konversiMasaKerjaTahun($hari);
-                    $this->session->set_userdata('masa_kerja', $masa_kerja_tahun);
-                    $this->session->set_userdata('jk', $user_data['jk']);
-                    $this->session->set_userdata('jabatan', $user_data['nama_jabatan']);
-                    $this->session->set_userdata('pangkat_id', $user_data['gol_id']);
+                        $hari = $this->tanggalhelper->getSelisihHari($user_data['tmt'], date('Y-m-d'));
+                        $masa_kerja_tahun = $this->tanggalhelper->konversiMasaKerjaTahun($hari);
+                        $this->session->set_userdata('masa_kerja', $masa_kerja_tahun);
+                        $this->session->set_userdata('jk', $user_data['jk']);
+                        $this->session->set_userdata('jabatan', $user_data['nama_jabatan']);
+                        $this->session->set_userdata('pangkat_id', $user_data['gol_id']);
+                    }
+                } else {
+                    $params = [
+                        'tabel' => 'v_plh',
+                        'kolom_seleksi' => 'plh_id_jabatan',
+                        'seleksi' => $this->session->userdata("jab_id")
+                    ];
+
+                    $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
+                    if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
+                        $user_data = $result['response']['data'][0];
+                        $this->session->set_userdata('pegawai_id', $user_data['pegawai_id']);
+                    }
                 }
             } else {
                 $params = [
@@ -61,36 +74,27 @@ class MY_Controller extends CI_Controller
                     $this->session->set_userdata('pegawai_id', $user_data['pegawai_id']);
                 }
             }
-        } else {
-            $params = [
-                'tabel' => 'v_plh',
-                'kolom_seleksi' => 'plh_id_jabatan',
-                'seleksi' => $this->session->userdata("jab_id")
-            ];
-
-            $result = $this->apihelper->get('apiclient/get_data_seleksi', $params);
-            if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
-                $user_data = $result['response']['data'][0];
-                $this->session->set_userdata('pegawai_id', $user_data['pegawai_id']);
-            }
         }
 
         # Cek Data Aplikasi Ini
-        $this->model->cek_aplikasi($this->config->item('id_app'));
+        if (!$this->session->userdata('peran')) {
+            $this->model->cek_aplikasi($this->config->item('id_app'));
 
-        #Cek peran pegawai
-        if (in_array($this->session->userdata('role'), ['super', 'validator_kepeg_satker', 'admin_satker'])) {
-            $this->session->set_userdata('peran', 'admin');
-        } else {
-            $query = $this->model->get_seleksi2('peran', 'userid', $this->session->userdata('userid'), 'hapus', '0');
-            if ($query->num_rows() > 0) {
-                $this->session->set_userdata('peran', $query->row()->role);
+            #Cek peran pegawai
+            if (in_array($this->session->userdata('role'), ['super', 'validator_kepeg_satker', 'admin_satker'])) {
+                $this->session->set_userdata('peran', 'admin');
             } else {
-                $this->session->set_userdata('peran', '');
+                $query = $this->model->get_seleksi2('peran', 'userid', $this->session->userdata('userid'), 'hapus', '0');
+                if ($query->num_rows() > 0) {
+                    $this->session->set_userdata('peran', $query->row()->role);
+                } else {
+                    $this->session->set_userdata('peran', '');
+                }
             }
         }
 
         $this->session->set_userdata('logged_in', TRUE);
+        session_write_close();
     }
 
     protected function cek_token($token)
