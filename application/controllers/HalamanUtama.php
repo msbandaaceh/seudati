@@ -17,6 +17,7 @@ class HalamanUtama extends MY_Controller
 
     public function get_hari_libur_kalender()
     {
+        session_write_close();
         $start = $this->input->get('start');
         $end = $this->input->get('end');
 
@@ -43,6 +44,7 @@ class HalamanUtama extends MY_Controller
 
     private function hitung_hari_kerja($tahun, $bulan)
     {
+        session_write_close();
         // jumlah hari dalam bulan
         $jumlah_hari = date('t', strtotime("$tahun-$bulan-01"));
 
@@ -92,6 +94,7 @@ class HalamanUtama extends MY_Controller
 
     public function hitung_hari_kerja_ajax()
     {
+        session_write_close();
         $tahun = $this->input->post('tahun');
         $bulan = $this->input->post('bulan');
 
@@ -326,72 +329,84 @@ class HalamanUtama extends MY_Controller
 
     public function statistik_bulanan_izin_keluar()
     {
+        session_write_close();
         $data = $this->model->statistik_bulanan('register_izin_keluar')->result_array();
         echo json_encode($data);
     }
 
     public function statistik_bulanan_izin_diklat()
     {
+        session_write_close();
         $data = $this->model->statistik_bulanan('register_izin_diklat')->result_array();
         echo json_encode($data);
     }
 
     public function statistik_bulanan_cuti()
     {
+        session_write_close();
         $data = $this->model->statistik_bulanan('register_cuti')->result_array();
         echo json_encode($data);
     }
 
     public function chart_izin_keluar()
     {
+        session_write_close();
         $data = $this->model->get_izin_keluar_statistik();
         echo json_encode($data);
     }
 
     public function chart_izin_diklat()
     {
+        session_write_close();
         $data = $this->model->get_izin_diklat_statistik();
         echo json_encode($data);
     }
 
     public function chart_cuti()
     {
+        session_write_close();
         $data = $this->model->get_cuti_statistik();
         echo json_encode($data);
     }
 
     public function ambil_permohonan_nomor()
     {
+        session_write_close();
         $req_nomor = $this->model->cuti_legalisasi_data()->result_array();
         echo json_encode($req_nomor);
     }
 
     public function ambil_permohonan_dokumen()
     {
+        session_write_close();
         $req_nomor = $this->model->get_seleksi('register_izin_diklat', 'status_permohonan', '1')->result_array();
         echo json_encode($req_nomor);
     }
 
     public function ambil_permohonan_izin_keluar()
     {
+        session_write_close();
         $req_izin = $this->model->get_count_seleksi_array('register_izin_keluar', ['jab_tujuan' => $this->session->userdata('jab_id'), 'status' => '0']);
         echo json_encode(array('count' => $req_izin));
     }
 
     public function ambil_permohonan_izin_diklat()
     {
+        session_write_close();
         $req_izin = $this->model->get_count_seleksi_array('register_izin_diklat', ['tujuan_permohonan' => $this->session->userdata('jab_id'), 'status_permohonan' => '0']);
         echo json_encode(array('count' => $req_izin));
     }
 
     public function ambil_permohonan_cuti_atasan()
     {
+        session_write_close();
         $req_cuti = $this->model->get_count_seleksi_array('register_cuti', ['id_validator' => $this->session->userdata('jab_id'), 'status_validator' => '0']);
         echo json_encode(array('count' => $req_cuti));
     }
 
     public function ambil_permohonan_cuti_ppk()
     {
+        session_write_close();
         $req_cuti = $this->model->get_count_seleksi_array('register_cuti', ['id_ppk' => $this->session->userdata('jab_id'), 'status_ppk' => '0']);
         echo json_encode(array('count' => $req_cuti));
     }
