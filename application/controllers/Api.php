@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @property Model $model
+ */
+
 class Api extends CI_Controller
 {
     function __construct()
@@ -9,13 +13,14 @@ class Api extends CI_Controller
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
         header('Content-Type: application/json');
+
+        $this->load->model('Model', 'model');
     }
 
     public function cek_hari_libur()
     {
         $key = $this->input->get('api_key');
         if ($key == $this->config->item('api_key')) {
-            $this->load->model('Model', 'model');
 
             $data = $this->model->get_seleksi_array('register_hari_libur', ['tgl' => date('Y-m-d')]);
 
@@ -43,7 +48,6 @@ class Api extends CI_Controller
         $key = $this->input->get('api_key');
         $tgl = $this->input->get('tgl');
         if ($key == $this->config->item('api_key')) {
-            $this->load->model('Model', 'model');
 
             $data = $this->model->get_seleksi_array('register_hari_libur', ['tgl' => $tgl]);
 
@@ -72,19 +76,13 @@ class Api extends CI_Controller
         $tahun = $this->input->get('tahun');
 
         if ($key == $this->config->item('api_key')) {
-            $this->load->model('Model', 'model');
-
             // Jika tahun tidak diisi, gunakan tahun sekarang
             if (empty($tahun)) {
                 $tahun = date('Y');
             }
 
             // Ambil semua tanggal merah untuk tahun tertentu
-            $this->db->select('tgl');
-            $this->db->from('register_hari_libur');
-            $this->db->where('YEAR(tgl)', $tahun);
-            $this->db->order_by('tgl', 'ASC');
-            $query = $this->db->get();
+            $query = $this->model->get_tgl_merah($tahun);
 
             $tanggal_merah = [];
             foreach ($query->result() as $row) {
@@ -111,15 +109,8 @@ class Api extends CI_Controller
         $tgl_akhir = $this->input->get('tgl_akhir');
 
         if ($key == $this->config->item('api_key')) {
-            $this->load->model('Model', 'model');
 
-            $this->db->select('c.id, c.pegawai_id, c.tgl_awal, c.tgl_akhir, c.jenis_cuti, c.nomor_cuti, c.alasan');
-            $this->db->from('register_cuti c');
-            $this->db->where('c.nomor_cuti IS NOT NULL');
-            $this->db->where('c.hapus', '0');
-            $this->db->where("(c.tgl_awal <= '{$tgl_akhir}' AND c.tgl_akhir >= '{$tgl_awal}')");
-            $this->db->order_by('c.tgl_awal', 'ASC');
-            $data = $this->db->get()->result_array();
+            $data = $this->model->get_cuti_kalender($tgl_awal, $tgl_akhir);
 
             echo json_encode([
                 'status' => 'success',
@@ -140,17 +131,8 @@ class Api extends CI_Controller
         $tgl_akhir = $this->input->get('tgl_akhir');
 
         if ($key == $this->config->item('api_key')) {
-            $this->load->model('Model', 'model');
 
-            $this->db->select('i.id, i.id_user, i.tgl_izin, i.jam_mulai, i.jam_akhir, i.alasan, i.status');
-            $this->db->from('register_izin_keluar i');
-            $this->db->where_in('i.status', [1, 3]);
-            $this->db->where('i.hapus', '0');
-            $this->db->where("i.tgl_izin >= '{$tgl_awal}'");
-            $this->db->where("i.tgl_izin <= '{$tgl_akhir}'");
-            $this->db->order_by('i.tgl_izin', 'ASC');
-            $this->db->order_by('i.jam_mulai', 'ASC');
-            $data = $this->db->get()->result_array();
+            $data = $this->model->get_izin_keluar_kalender($tgl_awal, $tgl_akhir);
 
             echo json_encode([
                 'status' => 'success',
@@ -171,7 +153,6 @@ class Api extends CI_Controller
         $tgl_akhir = $this->input->get('tgl_akhir');
 
         if ($key == $this->config->item('api_key')) {
-            $this->load->model('Model', 'model');
 
             $data = $this->model->get_hari_libur_kalender($tgl_awal, $tgl_akhir);
 
@@ -206,7 +187,6 @@ class Api extends CI_Controller
         $data = $input['data'];
 
         if ($input['api_key'] == $this->config->item('api_key')) {
-            $this->load->model('Model', 'model');
             try {
                 $query = $this->model->pembaharuan_data($tabel, $data, $kunci, $id);
                 if ($query) {

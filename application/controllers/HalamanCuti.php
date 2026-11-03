@@ -1,4 +1,7 @@
 <?php
+/**
+ * @property Model $model
+ */
 
 class HalamanCuti extends MY_Controller
 {

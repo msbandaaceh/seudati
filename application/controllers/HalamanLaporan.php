@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @property Model $model
+ */
+
 class HalamanLaporan extends MY_Controller {
     public function show_tabel_register_izin_keluar() {
         $queryIzin = $this->model->get_seleksi_array('v_izin_keluar', '', ['status' => 'ASC', 'created_on' => 'DESC'])->result();

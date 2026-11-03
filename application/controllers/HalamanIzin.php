@@ -5,6 +5,10 @@ use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
 
+/**
+ * @property Model $model
+ */
+
 class HalamanIzin extends MY_Controller
 {
 
@@ -614,7 +618,7 @@ class HalamanIzin extends MY_Controller
             } else {
                 # Kepegawaian Tidak ada Plh
                 $pesan = 'Assalamualaikum Wr. Wb., Yth. Kepala Sub Bagian Kepegawaian MS Banda Aceh, ada permohonan izin Diklat/Bimtek yang disetujui. Mohon untuk ditindaklanjuti dengan mengupload Surat Tugas/Disposisi/Memo/Nota Dinas melalui LITERASI MS Banda Aceh. Terima Kasih.';
-                $queryTujuanNotif = $this->izin->get_seleksi2('v_users', 'jab_id', '11', 'status_pegawai', '1');
+                $queryTujuanNotif = $this->model->get_seleksi2('v_users', 'jab_id', '11', 'status_pegawai', '1');
                 if ($queryTujuanNotif->num_rows > 0)
                     $tujuanNotif = $queryTujuanNotif->row()->pegawai_id;
                 else {

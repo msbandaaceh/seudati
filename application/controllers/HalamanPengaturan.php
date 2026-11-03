@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @property Model $model
+ */
+
 class HalamanPengaturan extends MY_Controller
 {
     public function get_tanggal_merah()

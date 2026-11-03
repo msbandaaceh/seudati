@@ -96,6 +96,31 @@ class Model extends CI_Model
         }
     }
 
+    public function get_count_seleksi_array($tabel, $where = [], $order_by = [])
+    {
+        try {
+            $this->db->where('hapus', '0');
+
+            // multiple where
+            if (!empty($where)) {
+                foreach ($where as $kolom => $nilai) {
+                    $this->db->where($kolom, $nilai);
+                }
+            }
+
+            // multiple order by
+            if (!empty($order_by)) {
+                foreach ($order_by as $kolom => $arah) {
+                    $this->db->order_by($kolom, $arah); // ASC / DESC
+                }
+            }
+
+            return $this->db->count_all_results($tabel);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
     public function get_seleksi_array($tabel, $where = [], $order_by = [])
     {
         try {
@@ -704,9 +729,13 @@ class Model extends CI_Model
         }
     }
 
-    public function get_tgl_merah()
+    public function get_tgl_merah($tahun = null)
     {
         try {
+            $this->db->order_by('tgl', 'ASC');
+            if ($tahun !== null) {
+                $this->db->where('YEAR(tgl)', $tahun);
+            }
             return $this->db->get('register_hari_libur');
         } catch (Exception $e) {
             return $e;
@@ -1673,7 +1702,7 @@ class Model extends CI_Model
         $this->db->order_by('tgl_izin', 'ASC');
         $this->db->order_by('jam_mulai', 'ASC');
         $data_izin = $this->db->get()->result_array();
-                    
+
         $params = ['api_key' => $this->config->item('api_key')];
         $result = $this->apihelper->get('apiclient/get_semua_user_aktif', $params);
 

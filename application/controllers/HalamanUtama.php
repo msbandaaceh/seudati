@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @property Model $model
+ */
+
 class HalamanUtama extends MY_Controller
 {
     public function index()
@@ -370,25 +374,25 @@ class HalamanUtama extends MY_Controller
 
     public function ambil_permohonan_izin_keluar()
     {
-        $req_izin = $this->model->get_seleksi2('register_izin_keluar', 'jab_tujuan', $this->session->userdata('jab_id'), 'status', '0')->result_array();
-        echo json_encode($req_izin);
+        $req_izin = $this->model->get_count_seleksi_array('register_izin_keluar', ['jab_tujuan' => $this->session->userdata('jab_id'), 'status' => '0']);
+        echo json_encode(array('count' => $req_izin));
     }
 
     public function ambil_permohonan_izin_diklat()
     {
-        $req_izin = $this->model->get_seleksi2('register_izin_diklat', 'tujuan_permohonan', $this->session->userdata('jab_id'), 'status_permohonan', '0')->result_array();
-        echo json_encode($req_izin);
+        $req_izin = $this->model->get_count_seleksi_array('register_izin_diklat', ['tujuan_permohonan' => $this->session->userdata('jab_id'), 'status_permohonan' => '0']);
+        echo json_encode(array('count' => $req_izin));
     }
 
     public function ambil_permohonan_cuti_atasan()
     {
-        $req_cuti = $this->model->get_seleksi2('register_cuti', 'id_validator', $this->session->userdata('jab_id'), 'status_validator', '0')->result_array();
-        echo json_encode($req_cuti);
+        $req_cuti = $this->model->get_count_seleksi_array('register_cuti', ['id_validator' => $this->session->userdata('jab_id'), 'status_validator' => '0']);
+        echo json_encode(array('count' => $req_cuti));
     }
 
     public function ambil_permohonan_cuti_ppk()
     {
-        $req_cuti = $this->model->get_validasi_ppk()->result_array();
-        echo json_encode($req_cuti);
+        $req_cuti = $this->model->get_count_seleksi_array('register_cuti', ['id_ppk' => $this->session->userdata('jab_id'), 'status_ppk' => '0']);
+        echo json_encode(array('count' => $req_cuti));
     }
 }

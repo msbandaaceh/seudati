@@ -1,12 +1,13 @@
 let tglCutiPicker;
 var result = config.result;
 var pesan = config.pesan;
+let _lastBadgeFetch = 0;
 if (result != '-1') {
     notifikasi(pesan, result);
 }
 
 $(document).ready(function () {
-    fetchRequestIzin();
+    fetchRequestIzin(true);
     var legal = document.getElementById('jum_req_legal');
     if (legal) {
         fetchRequestLegalisasi();
@@ -113,7 +114,7 @@ $(function () {
                     $('#validasi').modal('hide');
                     loadTabelValidasiKeluar();
                     loadStatistikValidasiKeluar();
-                    fetchRequestIzin();
+                    fetchRequestIzin(true);
                 }
             },
             error: function () {
@@ -196,7 +197,7 @@ $(function () {
                     $('#proses').modal('hide');
                     loadTabelValidasiDiklat();
                     loadStatistikValidasiDiklat();
-                    fetchRequestIzin();
+                    fetchRequestIzin(true);
                 }
             },
             error: function () {
@@ -222,7 +223,7 @@ $(function () {
                 if (res.success == '1') {
                     $('#nomor-modal').modal('hide');
                     loadTabelVerifikasiDiklat();
-                    fetchRequestIzin();
+                    fetchRequestIzin(true);
                     fetchRequestLegalisasi();
                 }
             },
@@ -409,7 +410,7 @@ $(function () {
                     $('#tambah-modal').modal('hide');
                     loadTabelValidasiCutiAtasan();
                     loadStatistikValidasiCutiAtasan();
-                    fetchRequestIzin();
+                    fetchRequestIzin(true);
                 }
             },
             error: function () {
@@ -435,7 +436,7 @@ $(function () {
                 if (res.success == '1') {
                     $('#nomor-modal').modal('hide');
                     loadTabelLegalisasi();
-                    fetchRequestIzin();
+                    fetchRequestIzin(true);
                     fetchRequestLegalisasi();
                 }
             },
@@ -463,7 +464,7 @@ $(function () {
                     $('#tambah-modal').modal('hide');
                     loadTabelValidasiCutiPPK();
                     loadStatistikValidasiCutiPPK();
-                    fetchRequestIzin();
+                    fetchRequestIzin(true);
                 }
             },
             error: function () {
@@ -1079,104 +1080,29 @@ function BukaDokumen(id) {
     });
 }
 
-function fetchRequestIzin() {
-    $('#jum_req_izin').html('');
-    $('#jum_req_cuti').html('');
-    $('#jum_req_izin_keluar').html('');
-    $('#jum_req_izin_diklat').html('');
-    $('#jum_req_cuti_atasan').html('');
-    $('#jum_req_cuti_ppk').html('');
-    var jum_req_izin = $('#jum_req_izin');
-    var jum_req_cuti = $('#jum_req_cuti');
-    var notifIzin = 0;
-    var notifcuti = 0;
+function fetchRequestIzin(force = false) {
+    const now = Date.now();
+    if (!force && now - _lastBadgeFetch < 30000) return;
+    _lastBadgeFetch = now;
 
-    // Gunakan $.when untuk menunggu semua AJAX selesai
     $.when(
-        $.ajax({
-            url: 'ambil_permohonan_izin_keluar',
-            method: 'GET'
-        }),
-        $.ajax({
-            url: 'ambil_permohonan_izin_diklat',
-            method: 'GET'
-        }),
-        $.ajax({
-            url: 'ambil_permohonan_cuti_atasan',
-            method: 'GET'
-        }),
-        $.ajax({
-            url: 'ambil_permohonan_cuti_ppk',
-            method: 'GET'
-        })
-    ).done(function (dataIzinKeluar, dataIzinDiklat, dataCutiAtasan, dataCutiPPK) {
-        // Handle hasil dari 'ambil_permohonan_izin'
-        try {
-            var izinKeluar = JSON.parse(dataIzinKeluar[0]);  // Access the first element (the response text)
+        $.getJSON('ambil_permohonan_izin_keluar'),
+        $.getJSON('ambil_permohonan_izin_diklat'),
+        $.getJSON('ambil_permohonan_cuti_atasan'),
+        $.getJSON('ambil_permohonan_cuti_ppk')
+    ).done(function (r1, r2, r3, r4) {
+        const c1 = r1[0].count || 0;
+        const c2 = r2[0].count || 0;
+        const c3 = r3[0].count || 0;
+        const c4 = r4[0].count || 0;
 
-            if (Array.isArray(izinKeluar) && izinKeluar.length > 0) {
-                var req_izin_keluar = $('#jum_req_izin_keluar');
-                req_izin_keluar.empty();
-                notifIzin += izinKeluar.length;
-                req_izin_keluar.append(izinKeluar.length);
-            }
-        } catch (e) {
-            console.error("Error parsing izin data:", e);
-        }
+        $('#jum_req_izin_keluar').text(c1 || '').toggle(c1 > 0);
+        $('#jum_req_izin_diklat').text(c2 || '').toggle(c2 > 0);
+        $('#jum_req_cuti_atasan').text(c3 || '').toggle(c3 > 0);
+        $('#jum_req_cuti_ppk').text(c4 || '').toggle(c4 > 0);
 
-        try {
-            var izinDiklat = JSON.parse(dataIzinDiklat[0]);  // Access the first element (the response text)
-
-            if (Array.isArray(izinDiklat) && izinDiklat.length > 0) {
-                var req_izin_diklat = $('#jum_req_izin_diklat');
-                req_izin_diklat.empty();
-                notifIzin += izinDiklat.length;
-                req_izin_diklat.append(izinDiklat.length);
-            }
-        } catch (e) {
-            console.error("Error parsing izin data:", e);
-        }
-
-        // Handle hasil dari 'ambil_permohonan_cuti_atasan'
-        try {
-            var cutiAtasan = JSON.parse(dataCutiAtasan[0]);  // Access the first element (the response text)
-
-            if (Array.isArray(cutiAtasan) && cutiAtasan.length > 0) {
-                var req_cuti_atasan = $('#jum_req_cuti_atasan');
-                req_cuti_atasan.empty();
-                notifcuti += cutiAtasan.length;
-                req_cuti_atasan.append(cutiAtasan.length);
-            }
-        } catch (e) {
-            console.error("Error parsing cuti atasan data:", e);
-        }
-
-        // Handle hasil dari 'ambil_permohonan_cuti_ppk'
-        try {
-            var cutiPPK = JSON.parse(dataCutiPPK[0]);
-            if (Array.isArray(cutiPPK) && cutiPPK.length > 0) {
-                var req_cuti_ppk = $('#jum_req_cuti_ppk');
-                req_cuti_ppk.empty();
-                notifcuti += cutiPPK.length;
-                req_cuti_ppk.append(cutiPPK.length);
-            }
-        } catch (e) {
-            console.error("Error parsing cuti ppk data:", e);
-        }
-
-        // Perbarui elemen setelah semua request selesai
-        jum_req_izin.empty();
-        jum_req_cuti.empty();
-
-        if (notifIzin > 0) {
-            jum_req_izin.append('<span class="badge rounded-pill shake-badge bg-danger">Baru</span>');
-        }
-
-        if (notifcuti > 0) {
-            jum_req_cuti.append('<span class="badge rounded-pill shake-badge bg-danger">Baru</span>');
-        }
-    }).fail(function (xhr, status, error) {
-        console.error("AJAX request failed:", status, error);
+        $('#jum_req_izin').html(c1 + c2 > 0 ? '<span class="badge rounded-pill shake-badge bg-danger">Baru</span>' : '');
+        $('#jum_req_cuti').html(c3 + c4 > 0 ? '<span class="badge rounded-pill shake-badge bg-danger">Baru</span>' : '');
     });
 }
 

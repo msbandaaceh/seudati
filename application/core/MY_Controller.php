@@ -1,18 +1,5 @@
 <?php
 
-/**
- * @property CI_Config $config
- * @property CI_Input $input
- * @property CI_Model $model
- * @property CI_Model $api
- * @property CI_Encryption $encryption
- * @property Apihelper $apihelper
- * @property TanggalHelper $tanggalhelper
- * @property CI_Session $session
- * @property CI_Upload $upload
- * @property CI_Form_validation $form_validation
- */
-
 class MY_Controller extends CI_Controller
 {
     private $jwt_key;
